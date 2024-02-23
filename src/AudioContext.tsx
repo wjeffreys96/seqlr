@@ -48,7 +48,11 @@ const reducer = (state: any, action: any) => {
 export const audioCtx: React.Context<any> =
   createContext<AudioContextType>(initialState);
 
-export const EngineProvider = ({ children }: { children: React.ReactNode }) => {
+export const AudioContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -60,7 +64,7 @@ export const EngineProvider = ({ children }: { children: React.ReactNode }) => {
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
-      // play silent buffer to unlock audio - otherwise clicking happens when first pressing play 
+      // play silent buffer to unlock audio - otherwise clicking happens when first pressing play
       const silentBuffer = engine.createBuffer(1, 1, 22050);
       const node = engine.createBufferSource();
       node.buffer = silentBuffer;
