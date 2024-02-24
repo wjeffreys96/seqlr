@@ -5,6 +5,7 @@ import { audioCtx, AudioContextType } from "./AudioContext";
 import PlayIcon from "./components/ui/icons/PlayIcon";
 import PauseIcon from "./components/ui/icons/PauseIcon";
 import LogSlider from "./components/ui/LogSlider";
+import Scheduler from "./components/Scheduler";
 
 export default function App() {
   const actx = useContext<AudioContextType>(audioCtx);
@@ -17,17 +18,7 @@ export default function App() {
   const handleMasterPlayPause = () => {
     if (!masterPlaying && engine && masterVol) {
       dispatch({ type: "TOGGLEMASTERPLAYING" });
-      let delay = 0;
-      for (let i = 0; i < 16; i++) {
-        setTimeout(() => {
-          playTone(
-            { type: "sine", freq: freq, duration: 150 },
-            engine,
-            masterVol
-          );
-        }, delay);
-        delay += 500;
-      }
+      playTone({ type: "sine", freq: freq, duration: 150 }, engine, masterVol);
     } else {
       dispatch({ type: "TOGGLEMASTERPLAYING" });
     }
@@ -74,11 +65,14 @@ export default function App() {
           {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
         </button>
         <div className="flex flex-col gap-2">
+          <div className="flex justify-center">
+            {audioCtx && <Scheduler />}
+          </div>
+
           <div className="flex justify-between border rounded p-4 bg-zinc-700 border-zinc-600 p">
             <label className="w-32 text-left" htmlFor="masterVolume">
               Master Volume:
             </label>
-
             <LogSlider options={MasterVolSliderOpts} />
           </div>
           <div className="flex justify-evenly gap-4 border rounded p-4 bg-zinc-700 border-zinc-600 p">
