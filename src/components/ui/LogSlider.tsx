@@ -1,7 +1,7 @@
 import { LegacyRef, forwardRef, useState } from "react";
 import { LogRange } from "../../utils";
 
-interface LogSliderProps {
+export interface LogSliderProps {
   ref: LegacyRef<HTMLInputElement>;
   defaultValue?: number;
   minpos?: number;
@@ -9,7 +9,8 @@ interface LogSliderProps {
   minval?: number;
   maxval?: number;
   labelFor: string;
-  onInput: (newValues: { position: number; value: number }) => void;
+  onInput?: (newValues: { position: number; value: number }) => void;
+  onChange?: (newValues: { position: number; value: number }) => void;
 }
 
 const LogSlider = forwardRef(function LogSlider(
@@ -27,6 +28,7 @@ const LogSlider = forwardRef(function LogSlider(
     minval = options.minval || 5,
     maxval = options.maxval || 20000,
     onInput,
+    onChange,
     labelFor,
   } = options;
 
@@ -54,16 +56,18 @@ const LogSlider = forwardRef(function LogSlider(
     const newPos = e.target.value;
     setPosition(newPos);
 
-    if (!onInput) {
-      return console.error("Pass an onInput prop to <LogSlider />");
-    }
-
     const newValues = {
       position: newPos,
       value: calculateValue(newPos),
     };
 
-    onInput(newValues);
+    if (onInput) {
+      onInput(newValues);
+    } else if (onChange) {
+      onChange(newValues);
+    } else {
+      console.error("Pass an onChange or onInput prop to LogSlider");
+    }
   };
 
   return (

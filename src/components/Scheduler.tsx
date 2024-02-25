@@ -4,13 +4,16 @@ import { audioCtx, AudioContextType } from "../AudioContext";
 interface Note {
   note: number;
   time: number;
+  freq: number;
 }
+
+let timerID: number;
 
 export default function Scheduler({ freq }: { freq: number }) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone } = actx;
   const { masterPlaying, engine } = state;
-  const [timerID, setTimerId] = useState<number | undefined>(0);
+  // const [timerID, setTimerId] = useState<number | undefined>(0);
 
   let tempo = 120;
   let currentNote: number = 0;
@@ -20,13 +23,10 @@ export default function Scheduler({ freq }: { freq: number }) {
   let notesInQueue: Array<Note> = [];
 
   const nextNote = () => {
-    // Advance current note and time by a 16th note...
+    // Advance current note and time by a 16th note
     const secondsPerBeat = 60.0 / tempo;
-
     nextNoteTime += secondsPerBeat;
-
     currentNote++; // increment beat counter
-
     if (currentNote === 16) {
       currentNote = 0;
     } // wrap to zero
@@ -34,17 +34,21 @@ export default function Scheduler({ freq }: { freq: number }) {
 
   const scheduleNote = (notes: Note) => {
     notesInQueue.push(notes);
-    playTone({ type: "sine", freq: freq, duration: 100 });
+    playTone({ type: "sine", freq: notesInQueue[0].freq, duration: 100 });
     notesInQueue.shift();
   };
 
   const scheduler = () => {
     while (nextNoteTime < engine.currentTime + scheduleAheadTime) {
-      const params: Note = { note: currentNote, time: nextNoteTime };
-      scheduleNote(params);
+      scheduleNote({ note: currentNote, time: nextNoteTime, freq });
+      console.log("scheduled note: ", {
+        note: currentNote,
+        time: nextNoteTime,
+        freq,
+      });
       nextNote();
     }
-    setTimerId(setTimeout(scheduler, lookahead));
+    timerID = setTimeout(scheduler, lookahead);
   };
 
   const play = () => {

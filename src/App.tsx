@@ -4,7 +4,7 @@ import { audioCtx, AudioContextType } from "./AudioContext";
 
 import PlayIcon from "./components/ui/icons/PlayIcon";
 import PauseIcon from "./components/ui/icons/PauseIcon";
-import LogSlider from "./components/ui/LogSlider";
+import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
 import Scheduler from "./components/Scheduler";
 
 let freqVal: number = 440;
@@ -28,7 +28,7 @@ export default function App() {
     freqVal = input.value;
   };
 
-  const MasterVolSliderOpts = {
+  const MasterVolSliderOpts: LogSliderProps = {
     ref: masterVolRef,
     onInput: handleMasterVolChange,
     labelFor: "masterVolume",
@@ -37,7 +37,7 @@ export default function App() {
     maxval: 100,
   };
 
-  const FreqSliderOpts = {
+  const FreqSliderOpts: LogSliderProps = {
     ref: freqRef,
     onInput: handleFreqChange,
     labelFor: "frequency",
@@ -60,9 +60,8 @@ export default function App() {
           </button>
           <div className="flex flex-col gap-2">
             <div className="flex justify-center">
-              {audioCtx && <Scheduler freq={freqVal} />}
+              <Scheduler freq={freqVal} />
             </div>
-
             <div className="flex justify-between border rounded p-4 bg-zinc-700 border-zinc-600 p">
               <label className="w-32 text-left" htmlFor="masterVolume">
                 Master Volume:
