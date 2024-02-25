@@ -12,11 +12,7 @@ export interface AudioContextType {
   masterVol: GainNode | null;
   state: any;
   dispatch: React.Dispatch<any>;
-  playTone: (
-    { type, freq, duration }: OscParams,
-    engine: AudioContext,
-    masterVol: GainNode
-  ) => void;
+  playTone: ({ type, freq, duration }: OscParams) => void;
 }
 
 let init: boolean;
@@ -74,28 +70,24 @@ export const AudioContextProvider = ({
     }
   }, []);
 
-  const playTone = (
-    oscParams: OscParams,
-    engine: AudioContext,
-    masterVol: GainNode
-  ) => {
+  const playTone = (oscParams: OscParams) => {
     const { type, freq, duration } = oscParams;
-    const osc = engine.createOscillator();
-    const oscGain = engine.createGain();
-    oscGain.connect(masterVol);
+    const osc = state.engine.createOscillator();
+    const oscGain = state.engine.createGain();
+    oscGain.connect(state.masterVol);
     osc.type = type;
     osc.frequency.value = freq;
     osc.connect(oscGain);
-    oscGain.gain.setValueAtTime(1, engine.currentTime);
+    oscGain.gain.setValueAtTime(1, state.engine.currentTime);
     osc.start();
     oscGain.gain.exponentialRampToValueAtTime(
       0.001,
-      engine.currentTime + duration / 1000
+      state.engine.currentTime + duration / 1000
     );
     setTimeout(() => {
       osc.stop();
       osc.disconnect(oscGain);
-      oscGain.disconnect(masterVol);
+      oscGain.disconnect(state.masterVol);
     }, duration);
   };
 
