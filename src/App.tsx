@@ -9,20 +9,11 @@ import Scheduler from "./components/Scheduler";
 
 export default function App() {
   const actx = useContext<AudioContextType>(audioCtx);
-  const { masterPlaying, engine, masterVol } = actx.state;
-  const { dispatch, playTone } = actx;
+  const { masterPlaying, masterVol } = actx.state;
+  const { dispatch } = actx;
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
   const [freq, setFreq] = useState(440);
-
-  const handleMasterPlayPause = () => {
-    if (!masterPlaying && engine && masterVol) {
-      dispatch({ type: "TOGGLEMASTERPLAYING" });
-      playTone({ type: "sine", freq: freq, duration: 150 }, engine, masterVol);
-    } else {
-      dispatch({ type: "TOGGLEMASTERPLAYING" });
-    }
-  };
 
   const handleMasterVolChange = (values: {
     position: number;
@@ -60,14 +51,12 @@ export default function App() {
         <h1 className="text-4xl">SEQLR</h1>
         <button
           className="border rounded-md p-2 bg-zinc-700"
-          onClick={() => handleMasterPlayPause()}
+          onClick={() => dispatch({ type: "TOGGLEMASTERPLAYING" })}
         >
           {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
         </button>
         <div className="flex flex-col gap-2">
-          <div className="flex justify-center">
-            {audioCtx && <Scheduler />}
-          </div>
+          <div className="flex justify-center">{audioCtx && <Scheduler />}</div>
 
           <div className="flex justify-between border rounded p-4 bg-zinc-700 border-zinc-600 p">
             <label className="w-32 text-left" htmlFor="masterVolume">

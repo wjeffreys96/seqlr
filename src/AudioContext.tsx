@@ -59,7 +59,6 @@ export const AudioContextProvider = ({
     if (!init) {
       // create the audio engine and master volume channel
       const engine = new AudioContext();
-      console.log("INIT, ", engine);
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
       dispatch({ type: "SETENGINE", payload: engine });
@@ -81,7 +80,6 @@ export const AudioContextProvider = ({
     masterVol: GainNode
   ) => {
     const { type, freq, duration } = oscParams;
-    console.log(oscParams);
     const osc = engine.createOscillator();
     const oscGain = engine.createGain();
     oscGain.connect(masterVol);
