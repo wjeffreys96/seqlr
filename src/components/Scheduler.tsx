@@ -1,11 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
-
-interface Note {
-  note: number;
-  time: number;
-  freq: number;
-}
 
 let timerID: number;
 
@@ -13,14 +7,12 @@ export default function Scheduler({ freq }: { freq: number }) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone } = actx;
   const { masterPlaying, engine } = state;
-  // const [timerID, setTimerId] = useState<number | undefined>(0);
 
   let tempo = 120;
   let currentNote: number = 0;
-  let lookahead = 25.0; // How frequently to call scheduling function (ms)
+  let lookahead = 25; // How frequently to call scheduling function (ms)
   let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
-  let nextNoteTime = 0.0; // When next note is due
-  let notesInQueue: Array<Note> = [];
+  let nextNoteTime: number; // When next note is due
 
   const nextNote = () => {
     // Advance current note and time by a 16th note
@@ -32,20 +24,13 @@ export default function Scheduler({ freq }: { freq: number }) {
     } // wrap to zero
   };
 
-  const scheduleNote = (notes: Note) => {
-    notesInQueue.push(notes);
-    playTone({ type: "sine", freq: notesInQueue[0].freq, duration: 100 });
-    notesInQueue.shift();
+  const scheduleNote = (time: number) => {
+    playTone({ type: "sine", freq, duration: 0.1, time });
   };
 
   const scheduler = () => {
     while (nextNoteTime < engine.currentTime + scheduleAheadTime) {
-      scheduleNote({ note: currentNote, time: nextNoteTime, freq });
-      console.log("scheduled note: ", {
-        note: currentNote,
-        time: nextNoteTime,
-        freq,
-      });
+      scheduleNote(nextNoteTime);
       nextNote();
     }
     timerID = setTimeout(scheduler, lookahead);

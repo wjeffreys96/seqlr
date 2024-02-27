@@ -1,9 +1,10 @@
 import { createContext, useReducer, useEffect } from "react";
 
 export interface OscParams {
-  type: OscillatorType;
-  freq: number;
-  duration: number;
+  type: OscillatorType; // "sine", "square", "sawtooth", "triangle", "custom"
+  freq: number; // Hz
+  duration: number; // seconds
+  time: number; // seconds
 }
 
 export interface AudioContextType {
@@ -13,6 +14,7 @@ export interface AudioContextType {
   state: any;
   dispatch: React.Dispatch<any>;
   playTone: ({ type, freq, duration }: OscParams) => void;
+  toggleMasterPlayPause: () => void;
 }
 
 let init: boolean;
@@ -24,6 +26,7 @@ const initialState = {
   state: null,
   dispatch: () => {},
   playTone: () => {},
+  toggleMasterPlayPause: () => {},
 };
 
 const reducer = (state: any, action: any) => {
@@ -53,10 +56,12 @@ export const AudioContextProvider = ({
 
   useEffect(() => {
     if (!init) {
-      // create the audio engine and master volume channel
+      console.log("Initializing engine...");
+      // create the audio engine and master volume channel and save them to
       const engine = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
+
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
@@ -70,30 +75,27 @@ export const AudioContextProvider = ({
     }
   }, []);
 
-  const playTone = (oscParams: OscParams) => {
-    const { type, freq, duration } = oscParams;
+  const playTone = ({ type, freq, duration, time }: OscParams) => {
     const osc = state.engine.createOscillator();
-    const oscGain = state.engine.createGain();
-    oscGain.connect(state.masterVol);
+    osc.connect(state.engine.destination);
     osc.type = type;
     osc.frequency.value = freq;
-    osc.connect(oscGain);
-    oscGain.gain.setValueAtTime(1, state.engine.currentTime);
-    osc.start();
-    oscGain.gain.exponentialRampToValueAtTime(
-      0.001,
-      state.engine.currentTime + duration / 1000
-    );
-    setTimeout(() => {
-      osc.stop();
-      osc.disconnect(oscGain);
-      oscGain.disconnect(state.masterVol);
-    }, duration);
+    osc.start(time);
+    osc.stop(time + duration);
+  };
+
+  const toggleMasterPlayPause = async () => {
+    // first time user presses play we check if the engine is suspended (autoplay policy) and resume if necessary
+    if (state.engine.state === "suspended") {
+      await state.engine.resume();
+    }
+    dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 
   const actxVal = {
     dispatch,
     playTone,
+    toggleMasterPlayPause,
     state,
   };
 

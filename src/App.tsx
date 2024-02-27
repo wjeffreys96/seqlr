@@ -10,10 +10,10 @@ import Scheduler from "./components/Scheduler";
 let freqVal: number = 440;
 
 export default function App() {
-  console.log("rendered");
+  console.log("Rendered App()");
   const actx = useContext<AudioContextType>(audioCtx);
-  const { masterPlaying, masterVol } = actx.state;
-  const { dispatch } = actx;
+  const { masterPlaying, masterVol, engine } = actx.state;
+  const { toggleMasterPlayPause } = actx;
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
 
@@ -49,27 +49,26 @@ export default function App() {
 
   return (
     <>
-      {audioCtx ? (
+      {actx ? (
         <main className="min-h-screen font-sans bg-zinc-800 text-white flex flex-col gap-4 justify-center items-center">
           <h1 className="text-4xl">SEQLR</h1>
+          {engine && <Scheduler freq={freqVal} />}
           <button
             className="border rounded-md p-2 bg-zinc-700"
-            onClick={() => dispatch({ type: "TOGGLEMASTERPLAYING" })}
+            onClick={toggleMasterPlayPause}
           >
             {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
           </button>
           <div className="flex flex-col gap-2">
-            <div className="flex justify-center">
-              <Scheduler freq={freqVal} />
-            </div>
-            <div className="flex justify-between border rounded p-4 bg-zinc-700 border-zinc-600 p">
-              <label className="w-32 text-left" htmlFor="masterVolume">
+            <div className="flex justify-between gap-2 border rounded p-4 bg-zinc-700 border-zinc-600">
+              <label className="text-left text-" htmlFor="masterVolume">
                 Master Volume:
               </label>
               <LogSlider options={MasterVolSliderOpts} />
             </div>
-            <div className="flex justify-evenly gap-4 border rounded p-4 bg-zinc-700 border-zinc-600 p">
-              <label className="w-32 text-left" htmlFor="frequency">
+
+            <div className="flex justify-between gap-2 border rounded p-4 bg-zinc-700 border-zinc-600">
+              <label className="text-left text-" htmlFor="frequency">
                 Frequency:
               </label>
               <LogSlider options={FreqSliderOpts} />

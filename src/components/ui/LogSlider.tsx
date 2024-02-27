@@ -51,6 +51,7 @@ const LogSlider = forwardRef(function LogSlider(
     if (value < 10) return value;
     return Math.round(value);
   };
+  const [value, setValue] = useState(calculateValue(defaultValue));
 
   const handleInput = (e: any) => {
     const newPos = e.target.value;
@@ -60,7 +61,7 @@ const LogSlider = forwardRef(function LogSlider(
       position: newPos,
       value: calculateValue(newPos),
     };
-
+    setValue(newValues.value);
     if (onInput) {
       onInput(newValues);
     } else if (onChange) {
@@ -71,16 +72,19 @@ const LogSlider = forwardRef(function LogSlider(
   };
 
   return (
-    <input
-      id={labelFor}
-      ref={ref}
-      type="range"
-      min={minpos}
-      max={maxpos}
-      onInput={handleInput}
-      value={position}
-      step={maxpos / 1000}
-    />
+    <div className="flex justify-evenly w-48">
+      <div className="text-center">({Math.floor(value)})</div>
+      <input
+        id={labelFor}
+        ref={ref}
+        type="range"
+        min={minpos}
+        max={maxpos}
+        onInput={handleInput}
+        value={position}
+        step={maxpos / 1000}
+      />
+    </div>
   );
 });
 
