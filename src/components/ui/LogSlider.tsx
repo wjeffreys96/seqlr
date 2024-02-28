@@ -72,8 +72,7 @@ const LogSlider = forwardRef(function LogSlider(
   };
 
   return (
-    <div className="flex justify-evenly w-48">
-      <div className="text-center">({Math.floor(value)})</div>
+    <div className="flex justify-between min-w-56 gap-4">
       <input
         id={labelFor}
         ref={ref}
@@ -84,6 +83,9 @@ const LogSlider = forwardRef(function LogSlider(
         value={position}
         step={maxpos / 1000}
       />
+      <div className="rounded-full bg-zinc-800 py-1 text-cyan-300 text-center px-4 w-24 text-sm">
+        {Math.floor(value)}
+      </div>
     </div>
   );
 });
