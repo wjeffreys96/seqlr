@@ -58,6 +58,7 @@ const LogSlider = forwardRef(function LogSlider(
   const [sliderNumVal, setSliderNumVal] = useState<number>(value);
 
   const handleInput = (e: any) => {
+    e.preventDefault();
     const newPos = e.target.value;
     setPosition(newPos);
 

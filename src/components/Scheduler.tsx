@@ -1,22 +1,9 @@
-import {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
 
 let timerID: number;
 
-export default function Scheduler({
-  freqVal,
-  setFreqVal,
-}: {
-  freqVal: number;
-  setFreqVal: Dispatch<SetStateAction<number>>;
-}) {
+export default function Scheduler({ freqVal }: { freqVal: number }) {
   console.log("Rendering Scheduler...");
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone } = actx;
@@ -31,11 +18,16 @@ export default function Scheduler({
 
   const [tempo, setTempo] = useState<number>(120);
 
+  const loopRef = useRef<{ tempo: number; freq: number }>({
+    tempo,
+    freq: freqVal,
+  });
+
   console.log(freqVal, tempo);
 
   const nextNote = () => {
     // Advance current note and time by a 16th note
-    const secondsPerBeat = 60.0 / tempo;
+    const secondsPerBeat = 60.0 / loopRef.current.tempo;
     nextNoteTime += secondsPerBeat;
     currentNote++; // increment beat counter
     if (currentNote === 16) {
@@ -44,11 +36,12 @@ export default function Scheduler({
   };
 
   const scheduleNote = (time: number) => {
-    playTone({ type: "sine", freq: freqVal, duration: 0.1, time });
+    playTone({ type: "sine", freq: loopRef.current.freq, duration: 0.1, time });
   };
 
   const scheduler = () => {
     while (nextNoteTime < engine.currentTime + scheduleAheadTime) {
+      console.log("inside loop: ", freqVal, tempo);
       scheduleNote(nextNoteTime);
       nextNote();
     }
@@ -68,6 +61,10 @@ export default function Scheduler({
       clearTimeout(timerID);
     }
   }, [masterPlaying]);
+
+  useEffect(() => {
+    loopRef.current = { tempo, freq: freqVal };
+  }, [tempo, freqVal]);
 
   return (
     <form
@@ -94,6 +91,7 @@ export default function Scheduler({
         value={tempo}
         step="1"
         onChange={(e) => {
+          e.preventDefault();
           setTempo(Number(e.target.value));
         }}
         ref={BpmNumRef}
@@ -103,5 +101,3 @@ export default function Scheduler({
     </form>
   );
 }
-
-// TODO allow changing note params while masterPlaying

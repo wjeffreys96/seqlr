@@ -62,14 +62,14 @@ export default function App() {
               {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
             </button>
             <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
-              <Scheduler setFreqVal={setFreqVal} freqVal={freqVal} />
+              <Scheduler freqVal={freqVal} />
             </div>
           </div>
 
           <div className="flex flex-col gap-4">
             <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800">
               <label
-                className="text-left text-neutral-300"
+                className="text-neutral-300"
                 htmlFor="masterVolume"
               >
                 Master Volume:
@@ -78,7 +78,7 @@ export default function App() {
             </div>
 
             <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
-              <label className="text-left text-neutral-300" htmlFor="frequency">
+              <label className="text-neutral-300" htmlFor="frequency">
                 Frequency:
               </label>
               <LogSlider options={FreqSliderOpts} />
