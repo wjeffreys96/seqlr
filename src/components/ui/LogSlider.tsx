@@ -9,6 +9,7 @@ export interface LogSliderProps {
   minval?: number;
   maxval?: number;
   labelFor: string;
+  unit: string;
   onInput?: (newValues: { position: number; value: number }) => void;
   onChange?: (newValues: { position: number; value: number }) => void;
 }
@@ -31,6 +32,7 @@ const LogSlider = forwardRef(function LogSlider(
     onInput,
     onChange,
     labelFor,
+    unit,
   } = options;
 
   const log = new LogRange({
@@ -92,8 +94,9 @@ const LogSlider = forwardRef(function LogSlider(
         } else {
           console.error("Pass an onChange or onInput prop to LogSlider");
         }
+        sliderNumRef.current!.blur();
       }}
-      className="flex justify-between min-w-56 gap-4"
+      className="flex justify-center min-w-56 gap-4"
     >
       <input
         id={labelFor}
@@ -105,15 +108,18 @@ const LogSlider = forwardRef(function LogSlider(
         value={position}
         step={maxpos / 1000}
       />
-      <input
-        value={sliderNumVal}
-        onChange={(e) => {
-          setSliderNumVal(Number(e.target.value));
-        }}
-        ref={sliderNumRef}
-        type="number"
-        className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm"
-      />
+      <div className="flex justify-center rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm">
+        <input
+          className="bg-inherit max-w-10 text-center"
+          value={sliderNumVal}
+          onChange={(e) => {
+            setSliderNumVal(Number(e.target.value));
+          }}
+          ref={sliderNumRef}
+          type="number"
+        />
+        {unit && <span className="text-sm text-zinc-400 ml-0.5">{unit}</span>}
+      </div>
     </form>
   );
 });

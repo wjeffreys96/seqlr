@@ -34,6 +34,7 @@ export default function App() {
     defaultValue: 100,
     minval: 0,
     maxval: 100,
+    unit: "",
   };
 
   const FreqSliderOpts: LogSliderProps = {
@@ -45,24 +46,32 @@ export default function App() {
     maxpos: 100,
     minval: 20,
     maxval: 20000,
+    unit: "hz",
   };
 
   return (
     <>
       {actx ? (
-        <main className="min-h-screen font-sans bg-neutral-900 text-white flex flex-col gap-4 justify-center items-center">
+        <main className="min-h-screen font-sans bg-neutral-900 text-white flex flex-col gap-3 justify-center items-center">
           <h1 className="text-4xl">SEQLR</h1>
-
-          <button
-            className="border border-neutral-500 rounded-md p-2 bg-neutral-800"
-            onClick={toggleMasterPlayPause}
-          >
-            {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
-          </button>
+          <div className="flex gap-2 h-12 ">
+            <button
+              className="border border-neutral-500 rounded-md px-2 bg-neutral-800 shadow-md shadow-slate-800"
+              onClick={toggleMasterPlayPause}
+            >
+              {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
+            </button>
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+              <Scheduler setFreqVal={setFreqVal} freqVal={freqVal} />
+            </div>
+          </div>
 
           <div className="flex flex-col gap-4">
             <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800">
-              <label className="text-left text-neutral-300" htmlFor="masterVolume">
+              <label
+                className="text-left text-neutral-300"
+                htmlFor="masterVolume"
+              >
                 Master Volume:
               </label>
               <LogSlider options={MasterVolSliderOpts} />
@@ -73,10 +82,6 @@ export default function App() {
                 Frequency:
               </label>
               <LogSlider options={FreqSliderOpts} />
-            </div>
-
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
-              <Scheduler setFreqVal={setFreqVal} freqVal={freqVal} />
             </div>
           </div>
         </main>

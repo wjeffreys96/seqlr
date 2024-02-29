@@ -27,20 +27,11 @@ export default function Scheduler({
   let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
 
-  const BpmRef = useRef<HTMLInputElement>(null);
   const BpmNumRef = useRef<HTMLInputElement>(null);
 
   const [tempo, setTempo] = useState<number>(120);
-  const [tempoNumVal, setTempoNumVal] = useState<number>(120);
 
   console.log(freqVal, tempo);
-
-  const handleBpmChange = () => {
-    if (BpmRef.current) {
-      setTempo(Number(BpmRef.current.value));
-      setTempoNumVal(Number(BpmRef.current.value));
-    }
-  };
 
   const nextNote = () => {
     // Advance current note and time by a 16th note
@@ -80,17 +71,17 @@ export default function Scheduler({
 
   return (
     <form
-      className="flex justify-between gap-4 w-full"
+      className="flex justify-between items-center gap-2 w-full"
       onSubmit={(e) => {
         e.preventDefault();
-        setTempo(Number(tempoNumVal));
+        setTempo(Number(BpmNumRef.current!.value));
+        BpmNumRef.current?.blur();
       }}
     >
-      <label className="text-left text-zinc-300" htmlFor="bpm">
+      <label className="text-left text-zinc-300 text-sm" htmlFor="bpm">
         BPM:
       </label>
-      <div className="flex gap-4">
-        <input
+      {/* <input
           max={300}
           min={1}
           step={1}
@@ -98,18 +89,17 @@ export default function Scheduler({
           value={tempo}
           onInput={handleBpmChange}
           type="range"
-        />
-        <input
-          value={tempoNumVal}
-          step="1"
-          onChange={(e) => {
-            setTempoNumVal(Number(e.target.value));
-          }}
-          ref={BpmNumRef}
-          type="number"
-          className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm"
-        />
-      </div>
+        /> */}
+      <input
+        value={tempo}
+        step="1"
+        onChange={(e) => {
+          setTempo(Number(e.target.value));
+        }}
+        ref={BpmNumRef}
+        type="number"
+        className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-14 text-sm"
+      />
     </form>
   );
 }
