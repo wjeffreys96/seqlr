@@ -1,22 +1,20 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useContext } from "react";
 import { audioCtx, AudioContextType } from "./AudioContext";
-
 import PlayIcon from "./components/ui/icons/PlayIcon";
 import PauseIcon from "./components/ui/icons/PauseIcon";
 import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
 import Scheduler from "./components/Scheduler";
 
-let freqVal: number = 440;
-
 export default function App() {
-  console.log("Rendered App()");
-
+  console.log("Rendering App...");
   const actx = useContext<AudioContextType>(audioCtx);
-  const { masterPlaying, masterVol, engine } = actx.state;
-  const { toggleMasterPlayPause } = actx;
+  const { toggleMasterPlayPause, state } = actx;
+  const { masterPlaying, masterVol } = state;
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
+
+  const [freqVal, setFreqVal] = useState<number>(440);
 
   const handleMasterVolChange = (values: {
     position: number;
@@ -26,7 +24,7 @@ export default function App() {
   };
 
   const handleFreqChange = (input: { position: number; value: number }) => {
-    freqVal = input.value;
+    setFreqVal(input.value);
   };
 
   const MasterVolSliderOpts: LogSliderProps = {
@@ -40,44 +38,45 @@ export default function App() {
 
   const FreqSliderOpts: LogSliderProps = {
     ref: freqRef,
+    defaultValue: 440,
     onInput: handleFreqChange,
     labelFor: "frequency",
     minpos: 0,
     maxpos: 100,
-    minval: 30,
+    minval: 20,
     maxval: 20000,
   };
 
   return (
     <>
       {actx ? (
-        <main className="min-h-screen font-sans bg-zinc-800 text-white flex flex-col gap-4 justify-center items-center">
+        <main className="min-h-screen font-sans bg-neutral-900 text-white flex flex-col gap-4 justify-center items-center">
           <h1 className="text-4xl">SEQLR</h1>
 
           <button
-            className="border rounded-md p-2 bg-zinc-700"
+            className="border border-neutral-500 rounded-md p-2 bg-neutral-800"
             onClick={toggleMasterPlayPause}
           >
             {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
           </button>
 
           <div className="flex flex-col gap-4">
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-zinc-700 border-zinc-600">
-              <label className="text-left" htmlFor="masterVolume">
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800">
+              <label className="text-left text-neutral-300" htmlFor="masterVolume">
                 Master Volume:
               </label>
               <LogSlider options={MasterVolSliderOpts} />
             </div>
 
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-zinc-700 border-zinc-600">
-              <label className="text-left" htmlFor="frequency">
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+              <label className="text-left text-neutral-300" htmlFor="frequency">
                 Frequency:
               </label>
               <LogSlider options={FreqSliderOpts} />
             </div>
 
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-zinc-700 border-zinc-600">
-              {engine && <Scheduler freq={freqVal} />}
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+              <Scheduler setFreqVal={setFreqVal} freqVal={freqVal} />
             </div>
           </div>
         </main>

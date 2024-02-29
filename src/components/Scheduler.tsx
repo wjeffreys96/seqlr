@@ -1,9 +1,23 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
 
 let timerID: number;
 
-export default function Scheduler({ freq }: { freq: number }) {
+export default function Scheduler({
+  freqVal,
+  setFreqVal,
+}: {
+  freqVal: number;
+  setFreqVal: Dispatch<SetStateAction<number>>;
+}) {
+  console.log("Rendering Scheduler...");
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone } = actx;
   const { masterPlaying, engine } = state;
@@ -14,12 +28,17 @@ export default function Scheduler({ freq }: { freq: number }) {
   let nextNoteTime: number; // When next note is due
 
   const BpmRef = useRef<HTMLInputElement>(null);
+  const BpmNumRef = useRef<HTMLInputElement>(null);
 
   const [tempo, setTempo] = useState<number>(120);
+  const [tempoNumVal, setTempoNumVal] = useState<number>(120);
+
+  console.log(freqVal, tempo);
 
   const handleBpmChange = () => {
     if (BpmRef.current) {
       setTempo(Number(BpmRef.current.value));
+      setTempoNumVal(Number(BpmRef.current.value));
     }
   };
 
@@ -34,7 +53,7 @@ export default function Scheduler({ freq }: { freq: number }) {
   };
 
   const scheduleNote = (time: number) => {
-    playTone({ type: "sine", freq, duration: 0.1, time });
+    playTone({ type: "sine", freq: freqVal, duration: 0.1, time });
   };
 
   const scheduler = () => {
@@ -60,11 +79,17 @@ export default function Scheduler({ freq }: { freq: number }) {
   }, [masterPlaying]);
 
   return (
-    <>
-      <label className="text-left" htmlFor="bpm">
+    <form
+      className="flex justify-between gap-4 w-full"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setTempo(Number(tempoNumVal));
+      }}
+    >
+      <label className="text-left text-zinc-300" htmlFor="bpm">
         BPM:
       </label>
-      <div className="flex justify-between gap-4">
+      <div className="flex gap-4">
         <input
           max={300}
           min={1}
@@ -75,13 +100,17 @@ export default function Scheduler({ freq }: { freq: number }) {
           type="range"
         />
         <input
-          value={tempo}
-          onChange={(e) => setTempo(Number(e.target.value))}
+          value={tempoNumVal}
+          step="1"
+          onChange={(e) => {
+            setTempoNumVal(Number(e.target.value));
+          }}
+          ref={BpmNumRef}
           type="number"
-          className="rounded-full bg-zinc-800 py-1 text-cyan-300 text-center px-4 w-24 text-sm"
+          className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm"
         />
       </div>
-    </>
+    </form>
   );
 }
 

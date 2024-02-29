@@ -77,7 +77,7 @@ export const AudioContextProvider = ({
 
   const playTone = ({ type, freq, duration, time }: OscParams) => {
     const osc = state.engine.createOscillator();
-    osc.connect(state.engine.destination);
+    osc.connect(state.masterVol);
     osc.type = type;
     osc.frequency.value = freq;
     osc.start(time);

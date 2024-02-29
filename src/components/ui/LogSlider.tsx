@@ -1,4 +1,4 @@
-import { LegacyRef, forwardRef, useState } from "react";
+import { LegacyRef, forwardRef, useState, useRef } from "react";
 import { LogRange } from "../../utils";
 
 export interface LogSliderProps {
@@ -21,6 +21,7 @@ const LogSlider = forwardRef(function LogSlider(
   },
   ref: LegacyRef<HTMLInputElement>
 ) {
+  const sliderNumRef = useRef<HTMLInputElement>(null);
   const {
     defaultValue = options.defaultValue || 50,
     minpos = options.minpos || 0,
@@ -32,8 +33,6 @@ const LogSlider = forwardRef(function LogSlider(
     labelFor,
   } = options;
 
-  const [position, setPosition] = useState(defaultValue);
-
   const log = new LogRange({
     minpos,
     maxpos,
@@ -41,17 +40,20 @@ const LogSlider = forwardRef(function LogSlider(
     maxval,
   });
 
+  const [position, setPosition] = useState(log.position(defaultValue));
+
   const calculateValue = (position: number) => {
-    if (position === 0) {
+    if (position == 0) {
       return 0;
     }
     const value = log.value(position);
     if (value > 1000) return Math.round(value / 100) * 100;
     if (value > 500) return Math.round(value / 10) * 10;
-    if (value < 10) return value;
     return Math.round(value);
   };
-  const [value, setValue] = useState(calculateValue(defaultValue));
+
+  const [value, setValue] = useState(defaultValue);
+  const [sliderNumVal, setSliderNumVal] = useState<number>(value);
 
   const handleInput = (e: any) => {
     const newPos = e.target.value;
@@ -61,7 +63,9 @@ const LogSlider = forwardRef(function LogSlider(
       position: newPos,
       value: calculateValue(newPos),
     };
+
     setValue(newValues.value);
+    setSliderNumVal(newValues.value);
     if (onInput) {
       onInput(newValues);
     } else if (onChange) {
@@ -72,7 +76,25 @@ const LogSlider = forwardRef(function LogSlider(
   };
 
   return (
-    <div className="flex justify-between min-w-56 gap-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        setValue(Number(sliderNumVal));
+        setPosition(Number(log.position(sliderNumVal)));
+        const newValues = {
+          position: Number(log.position(sliderNumVal)),
+          value: sliderNumVal,
+        };
+        if (onInput) {
+          onInput(newValues);
+        } else if (onChange) {
+          onChange(newValues);
+        } else {
+          console.error("Pass an onChange or onInput prop to LogSlider");
+        }
+      }}
+      className="flex justify-between min-w-56 gap-4"
+    >
       <input
         id={labelFor}
         ref={ref}
@@ -83,10 +105,16 @@ const LogSlider = forwardRef(function LogSlider(
         value={position}
         step={maxpos / 1000}
       />
-      <div className="rounded-full bg-zinc-800 py-1 text-cyan-300 text-center px-4 w-24 text-sm">
-        {Math.floor(value)}
-      </div>
-    </div>
+      <input
+        value={sliderNumVal}
+        onChange={(e) => {
+          setSliderNumVal(Number(e.target.value));
+        }}
+        ref={sliderNumRef}
+        type="number"
+        className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm"
+      />
+    </form>
   );
 });
 
