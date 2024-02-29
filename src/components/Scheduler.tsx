@@ -18,16 +18,15 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
 
   const [tempo, setTempo] = useState<number>(120);
 
-  const loopRef = useRef<{ tempo: number; freq: number }>({
+  // access state via ref while inside loop to avoid stale state.
+  const stateRef = useRef<{ tempo: number; freq: number }>({
     tempo,
     freq: freqVal,
   });
 
-  console.log(freqVal, tempo);
-
   const nextNote = () => {
     // Advance current note and time by a 16th note
-    const secondsPerBeat = 60.0 / loopRef.current.tempo;
+    const secondsPerBeat = 60.0 / stateRef.current.tempo;
     nextNoteTime += secondsPerBeat;
     currentNote++; // increment beat counter
     if (currentNote === 16) {
@@ -36,15 +35,21 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
   };
 
   const scheduleNote = (time: number) => {
-    playTone({ type: "sine", freq: loopRef.current.freq, duration: 0.1, time });
+    playTone({
+      type: "sine",
+      freq: stateRef.current.freq,
+      duration: 0.1,
+      time,
+    });
   };
 
   const scheduler = () => {
+    // if theres a note to be played in the future schedule it and move on to the next note
     while (nextNoteTime < engine.currentTime + scheduleAheadTime) {
-      console.log("inside loop: ", freqVal, tempo);
       scheduleNote(nextNoteTime);
       nextNote();
     }
+    // check for notes to schedule again in (lookahead) milliseconds
     timerID = setTimeout(scheduler, lookahead);
   };
 
@@ -54,6 +59,7 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
     scheduler();
   };
 
+  // trigger play() when user presses play button or stop when user presses pause
   useEffect(() => {
     if (masterPlaying) {
       play();
@@ -62,8 +68,9 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
     }
   }, [masterPlaying]);
 
+  // update ref whenever state changes
   useEffect(() => {
-    loopRef.current = { tempo, freq: freqVal };
+    stateRef.current = { tempo, freq: freqVal };
   }, [tempo, freqVal]);
 
   return (
@@ -78,15 +85,6 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
       <label className="text-left text-zinc-300 text-sm" htmlFor="bpm">
         BPM:
       </label>
-      {/* <input
-          max={300}
-          min={1}
-          step={1}
-          ref={BpmRef}
-          value={tempo}
-          onInput={handleBpmChange}
-          type="range"
-        /> */}
       <input
         value={tempo}
         step="1"

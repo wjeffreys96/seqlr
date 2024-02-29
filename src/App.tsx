@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
 import { useContext } from "react";
 import { audioCtx, AudioContextType } from "./AudioContext";
-import PlayIcon from "./components/ui/icons/PlayIcon";
-import PauseIcon from "./components/ui/icons/PauseIcon";
+import { PlayIcon, StopIcon } from "./assets/icons";
 import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
 import Scheduler from "./components/Scheduler";
 
@@ -59,7 +58,7 @@ export default function App() {
               className="border border-neutral-500 rounded-md px-2 bg-neutral-800 shadow-md shadow-slate-800"
               onClick={toggleMasterPlayPause}
             >
-              {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
+              {!masterPlaying ? <PlayIcon /> : <StopIcon />}
             </button>
             <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
               <Scheduler freqVal={freqVal} />
