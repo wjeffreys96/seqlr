@@ -4,7 +4,7 @@ import { audioCtx, AudioContextType } from "../AudioContext";
 let timerID: number;
 
 export default function Scheduler({ freqVal }: { freqVal: number }) {
-  console.log("Rendering Scheduler...");
+  // console.log("Rendering Scheduler...");
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone } = actx;
   const { masterPlaying, engine } = state;
