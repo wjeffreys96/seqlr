@@ -5,14 +5,15 @@ import { PlayIcon, StopIcon } from "./assets/icons";
 import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
 import Scheduler from "./components/Scheduler";
 
+
 export default function App() {
-  console.log("Rendering App...");
+  // console.log("Rendering App...");
+
   const actx = useContext<AudioContextType>(audioCtx);
   const { toggleMasterPlayPause, state } = actx;
   const { masterPlaying, masterVol } = state;
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
-
   const [freqVal, setFreqVal] = useState<number>(440);
 
   const handleMasterVolChange = (values: {
@@ -67,10 +68,7 @@ export default function App() {
 
           <div className="flex flex-col gap-4">
             <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800">
-              <label
-                className="text-neutral-300"
-                htmlFor="masterVolume"
-              >
+              <label className="text-neutral-300" htmlFor="masterVolume">
                 Master Volume:
               </label>
               <LogSlider options={MasterVolSliderOpts} />

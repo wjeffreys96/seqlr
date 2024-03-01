@@ -56,22 +56,7 @@ export const AudioContextProvider = ({
 
   useEffect(() => {
     if (!init) {
-      console.log("Initializing engine...");
-      // create the audio engine and master volume channel and save them to
-      const engine = new AudioContext();
-      const masterVol = engine.createGain();
-      masterVol.connect(engine.destination);
-
-      dispatch({ type: "SETENGINE", payload: engine });
-      dispatch({ type: "SETMASTERVOL", payload: masterVol });
-
-      // play silent buffer to unlock audio - otherwise clicking happens when first pressing play
-      const silentBuffer = engine.createBuffer(1, 1, 22050);
-      const node = engine.createBufferSource();
-      node.buffer = silentBuffer;
-      node.start(0);
-
-      init = true;
+      
     }
   }, []);
 
@@ -85,9 +70,23 @@ export const AudioContextProvider = ({
   };
 
   const toggleMasterPlayPause = async () => {
-    // first time user presses play we check if the engine is suspended (autoplay policy) and resume if necessary
-    if (state.engine.state === "suspended") {
-      await state.engine.resume();
+    // first time user presses play we initialize audio engine and save it to state.
+    if (!init) {
+      // create the audio engine and master volume channel and save them.
+      const engine = new AudioContext();
+      const masterVol = engine.createGain();
+      masterVol.connect(engine.destination);
+
+      dispatch({ type: "SETENGINE", payload: engine });
+      dispatch({ type: "SETMASTERVOL", payload: masterVol });
+
+      // play silent buffer to unlock audio - otherwise clicking happens.
+      const silentBuffer = engine.createBuffer(1, 1, 22050);
+      const node = engine.createBufferSource();
+      node.buffer = silentBuffer;
+      node.start(0);
+
+      init = true;
     }
     dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
