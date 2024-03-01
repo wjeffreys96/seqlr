@@ -1,9 +1,10 @@
 import { createContext, useReducer, useEffect } from "react";
 
 export interface OscParams {
-  type: OscillatorType;
-  freq: number;
-  duration: number;
+  type: OscillatorType; // "sine", "square", "sawtooth", "triangle", "custom"
+  freq: number; // Hz
+  duration: number; // seconds
+  time: number; // seconds
 }
 
 export interface AudioContextType {
@@ -12,11 +13,8 @@ export interface AudioContextType {
   masterVol: GainNode | null;
   state: any;
   dispatch: React.Dispatch<any>;
-  playTone: (
-    { type, freq, duration }: OscParams,
-    engine: AudioContext,
-    masterVol: GainNode
-  ) => void;
+  playTone: ({ type, freq, duration }: OscParams) => void;
+  toggleMasterPlayPause: () => void;
 }
 
 let init: boolean;
@@ -28,6 +26,7 @@ const initialState = {
   state: null,
   dispatch: () => {},
   playTone: () => {},
+  toggleMasterPlayPause: () => {},
 };
 
 const reducer = (state: any, action: any) => {
@@ -48,19 +47,25 @@ const reducer = (state: any, action: any) => {
 export const audioCtx: React.Context<any> =
   createContext<AudioContextType>(initialState);
 
-export const EngineProvider = ({ children }: { children: React.ReactNode }) => {
+export const AudioContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (!init) {
-      // create the audio engine and master volume channel
+      console.log("Initializing engine...");
+      // create the audio engine and master volume channel and save them to
       const engine = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
+
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
-      // play silent buffer to unlock audio - otherwise clicking happens when first pressing play 
+      // play silent buffer to unlock audio - otherwise clicking happens when first pressing play
       const silentBuffer = engine.createBuffer(1, 1, 22050);
       const node = engine.createBufferSource();
       node.buffer = silentBuffer;
@@ -70,35 +75,27 @@ export const EngineProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const playTone = (
-    oscParams: OscParams,
-    engine: AudioContext,
-    masterVol: GainNode
-  ) => {
-    const { type, freq, duration } = oscParams;
-    console.log(oscParams);
-    const osc = engine.createOscillator();
-    const oscGain = engine.createGain();
-    oscGain.connect(masterVol);
+  const playTone = ({ type, freq, duration, time }: OscParams) => {
+    const osc = state.engine.createOscillator();
+    osc.connect(state.masterVol);
     osc.type = type;
     osc.frequency.value = freq;
-    osc.connect(oscGain);
-    oscGain.gain.setValueAtTime(1, engine.currentTime);
-    osc.start();
-    oscGain.gain.exponentialRampToValueAtTime(
-      0.001,
-      engine.currentTime + duration / 1000
-    );
-    setTimeout(() => {
-      osc.stop();
-      osc.disconnect(oscGain);
-      oscGain.disconnect(masterVol);
-    }, duration);
+    osc.start(time);
+    osc.stop(time + duration);
+  };
+
+  const toggleMasterPlayPause = async () => {
+    // first time user presses play we check if the engine is suspended (autoplay policy) and resume if necessary
+    if (state.engine.state === "suspended") {
+      await state.engine.resume();
+    }
+    dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 
   const actxVal = {
     dispatch,
     playTone,
+    toggleMasterPlayPause,
     state,
   };
 

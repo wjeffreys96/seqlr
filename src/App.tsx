@@ -1,37 +1,19 @@
 import { useRef, useState } from "react";
 import { useContext } from "react";
 import { audioCtx, AudioContextType } from "./AudioContext";
-
-import PlayIcon from "./components/ui/icons/PlayIcon";
-import PauseIcon from "./components/ui/icons/PauseIcon";
-import LogSlider from "./components/ui/LogSlider";
+import { PlayIcon, StopIcon } from "./assets/icons";
+import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
+import Scheduler from "./components/Scheduler";
 
 export default function App() {
+  console.log("Rendering App...");
   const actx = useContext<AudioContextType>(audioCtx);
-  const { masterPlaying, engine, masterVol } = actx.state;
-  const { dispatch, playTone } = actx;
+  const { toggleMasterPlayPause, state } = actx;
+  const { masterPlaying, masterVol } = state;
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
-  const [freq, setFreq] = useState(440);
 
-  const handleMasterPlayPause = () => {
-    if (!masterPlaying && engine && masterVol) {
-      dispatch({ type: "TOGGLEMASTERPLAYING" });
-      let delay = 0;
-      for (let i = 0; i < 16; i++) {
-        setTimeout(() => {
-          playTone(
-            { type: "sine", freq: freq, duration: 150 },
-            engine,
-            masterVol
-          );
-        }, delay);
-        delay += 500;
-      }
-    } else {
-      dispatch({ type: "TOGGLEMASTERPLAYING" });
-    }
-  };
+  const [freqVal, setFreqVal] = useState<number>(440);
 
   const handleMasterVolChange = (values: {
     position: number;
@@ -40,55 +22,71 @@ export default function App() {
     masterVol!.gain.value = values.value / 100;
   };
 
-  const handleFreqChange = (values: { position: number; value: number }) => {
-    setFreq(values.value);
+  const handleFreqChange = (input: { position: number; value: number }) => {
+    setFreqVal(input.value);
   };
 
-  const MasterVolSliderOpts = {
+  const MasterVolSliderOpts: LogSliderProps = {
     ref: masterVolRef,
     onInput: handleMasterVolChange,
     labelFor: "masterVolume",
     defaultValue: 100,
     minval: 0,
     maxval: 100,
+    unit: "",
   };
 
-  const FreqSliderOpts = {
+  const FreqSliderOpts: LogSliderProps = {
     ref: freqRef,
+    defaultValue: 440,
     onInput: handleFreqChange,
     labelFor: "frequency",
     minpos: 0,
     maxpos: 100,
-    minval: 1,
+    minval: 20,
     maxval: 20000,
+    unit: "hz",
   };
 
   return (
     <>
-      <main className="min-h-screen font-sans bg-zinc-800 text-white flex flex-col gap-4 justify-center items-center">
-        <h1 className="text-4xl">SEQLR</h1>
-        <button
-          className="border rounded-md p-2 bg-zinc-700"
-          onClick={() => handleMasterPlayPause()}
-        >
-          {!masterPlaying ? <PlayIcon /> : <PauseIcon />}
-        </button>
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between border rounded p-4 bg-zinc-700 border-zinc-600 p">
-            <label className="w-32 text-left" htmlFor="masterVolume">
-              Master Volume:
-            </label>
+      {actx ? (
+        <main className="min-h-screen font-sans bg-neutral-900 text-white flex flex-col gap-3 justify-center items-center">
+          <h1 className="text-4xl">SEQLR</h1>
+          <div className="flex gap-2 h-12 ">
+            <button
+              className="border border-neutral-500 rounded-md px-2 bg-neutral-800 shadow-md shadow-slate-800"
+              onClick={toggleMasterPlayPause}
+            >
+              {!masterPlaying ? <PlayIcon /> : <StopIcon />}
+            </button>
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+              <Scheduler freqVal={freqVal} />
+            </div>
+          </div>
 
-            <LogSlider options={MasterVolSliderOpts} />
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800">
+              <label
+                className="text-neutral-300"
+                htmlFor="masterVolume"
+              >
+                Master Volume:
+              </label>
+              <LogSlider options={MasterVolSliderOpts} />
+            </div>
+
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+              <label className="text-neutral-300" htmlFor="frequency">
+                Frequency:
+              </label>
+              <LogSlider options={FreqSliderOpts} />
+            </div>
           </div>
-          <div className="flex justify-evenly gap-4 border rounded p-4 bg-zinc-700 border-zinc-600 p">
-            <label className="w-32 text-left" htmlFor="frequency">
-              Frequency:
-            </label>
-            <LogSlider options={FreqSliderOpts} />
-          </div>
-        </div>
-      </main>
+        </main>
+      ) : (
+        <h1 className="text-4xl">Loading...</h1>
+      )}
     </>
   );
 }
