@@ -8,6 +8,7 @@ import Sequencer from "./components/Sequencer";
 import { cn } from "./utils/cn";
 import { Button } from "./components/ui/MovingBorder";
 
+
 export default function App() {
   // console.log("Rendering App...");
 
@@ -18,6 +19,7 @@ export default function App() {
   const freqRef = useRef<HTMLInputElement>(null);
   const [freqVal, setFreqVal] = useState<number>(440);
   const [selectedBoxes, setSelectedBoxes] = useState<any>([]); // TODO set type
+  const [currentNote, setCurrentNote] = useState<number>(0);
 
   const handleMasterVolChange = (values: {
     position: number;
@@ -83,7 +85,12 @@ export default function App() {
               {!masterPlaying ? <PlayIcon /> : <StopIcon />}
             </Button>
             <div className={schedulerStyles}>
-              <Scheduler freqVal={freqVal} />
+              <Scheduler
+                currentNote={currentNote}
+                setCurrentNote={setCurrentNote}
+                selectedBoxes={selectedBoxes}
+                freqVal={freqVal}
+              />
             </div>
           </div>
 
@@ -102,7 +109,11 @@ export default function App() {
               <LogSlider options={FreqSliderOpts} />
             </div>
           </div>
-          <Sequencer selectedBoxes={selectedBoxes} setSelectedBoxes={setSelectedBoxes} />
+          <Sequencer
+            currentNote={currentNote}
+            selectedBoxes={selectedBoxes}
+            setSelectedBoxes={setSelectedBoxes}
+          />
         </main>
       ) : (
         <h1 className="text-4xl">Loading...</h1>

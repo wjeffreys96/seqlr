@@ -1,15 +1,32 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
 
 let timerID: number;
 
-export default function Scheduler({ freqVal }: { freqVal: number }) {
+export default function Scheduler({
+  freqVal,
+  selectedBoxes,
+  currentNote,
+  setCurrentNote,
+}: {
+  freqVal: number;
+  selectedBoxes: [{ id: number }];
+  currentNote: number;
+  setCurrentNote: Dispatch<SetStateAction<number>>;
+}) {
   // console.log("Rendering Scheduler...");
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone } = actx;
   const { masterPlaying, engine } = state;
 
-  let currentNote: number = 0;
+  // let currentNote: number = 0;
   let lookahead = 25; // How frequently to call scheduling function (ms)
   let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
@@ -28,19 +45,26 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
     // Advance current note and time by a 16th note
     const secondsPerBeat = 60.0 / stateRef.current.tempo;
     nextNoteTime += secondsPerBeat;
-    currentNote++; // increment beat counter
+    setCurrentNote(currentNote++); // increment beat counter
     if (currentNote === 16) {
       currentNote = 0;
     } // wrap to zero
   };
 
   const scheduleNote = (time: number) => {
-    playTone({
-      type: "sine",
-      freq: stateRef.current.freq,
-      duration: 0.1,
-      time,
+    // Check if the current note is selected to be played by the sequencer
+    const isSelectedInSequencer = selectedBoxes.find((objs) => {
+      return objs.id === currentNote;
     });
+
+    if (isSelectedInSequencer) {
+      playTone({
+        type: "sine",
+        freq: stateRef.current.freq,
+        duration: 0.1,
+        time,
+      });
+    }
   };
 
   const scheduler = () => {
@@ -54,7 +78,7 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
   };
 
   const play = () => {
-    currentNote = 0;
+    setCurrentNote(0);
     nextNoteTime = engine.currentTime;
     scheduler();
   };
@@ -72,6 +96,10 @@ export default function Scheduler({ freqVal }: { freqVal: number }) {
   useEffect(() => {
     stateRef.current = { tempo, freq: freqVal };
   }, [tempo, freqVal]);
+
+  useEffect(() => {
+    console.log(selectedBoxes);
+  }, [selectedBoxes]);
 
   return (
     <form
