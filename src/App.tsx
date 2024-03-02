@@ -17,12 +17,15 @@ export default function App() {
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
   const [freqVal, setFreqVal] = useState<number>(440);
+  const [selectedBoxes, setSelectedBoxes] = useState<any>({}); // TODO set type
 
   const handleMasterVolChange = (values: {
     position: number;
     value: number;
   }) => {
-    masterVol!.gain.value = values.value / 100;
+    if (masterVol) {
+      masterVol.gain.value = values.value / 100;
+    }
   };
 
   const handleFreqChange = (input: { position: number; value: number }) => {
@@ -99,7 +102,7 @@ export default function App() {
               <LogSlider options={FreqSliderOpts} />
             </div>
           </div>
-          <Sequencer />
+          <Sequencer setSelectedBoxes={setSelectedBoxes} />
         </main>
       ) : (
         <h1 className="text-4xl">Loading...</h1>
