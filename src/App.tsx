@@ -69,15 +69,16 @@ export default function App() {
         <main className={mainStyles}>
           <h1 className="text-4xl">SEQLR</h1>
           <div className="flex gap-2 h-12 ">
-                <Button
-                borderRadius=".33rem"
-                  className={
-                    "border border-neutral-500 bg-neutral-800 shadow-md shadow-slate-800"
-                  }
-                  onClick={toggleMasterPlayPause}
-                >
-                  {!masterPlaying ? <PlayIcon /> : <StopIcon />}
-                </Button>
+            <Button
+              isDisplay={masterPlaying}
+              borderRadius=".25rem"
+              className={
+                "border border-neutral-500 bg-neutral-800 shadow-md shadow-slate-800"
+              }
+              onClick={toggleMasterPlayPause}
+            >
+              {!masterPlaying ? <PlayIcon /> : <StopIcon />}
+            </Button>
             <div className={schedulerStyles}>
               <Scheduler freqVal={freqVal} />
             </div>

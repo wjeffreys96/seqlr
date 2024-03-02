@@ -15,8 +15,7 @@ export function Button({
   borderClassName,
   duration,
   className,
-  h,
-  w,
+  isDisplay,
   ...otherProps
 }: {
   borderRadius?: string;
@@ -26,12 +25,13 @@ export function Button({
   borderClassName?: string;
   duration?: number;
   className?: string;
+  isDislay?: boolean;
   [key: string]: any;
 }) {
   return (
     <Component
       className={cn(
-        "bg-transparent relative text-xl p-[1px] overflow-hidden w-14",
+        "bg-transparent relative text-xl p-px overflow-hidden w-14",
         containerClassName,
       )}
       style={{
@@ -39,19 +39,19 @@ export function Button({
       }}
       {...otherProps}
     >
-      <div
+      {isDisplay && <div
         className="absolute inset-0"
         style={{ borderRadius: `calc(${borderRadius} * 0.96)` }}
       >
         <MovingBorder duration={duration} rx="30%" ry="30%">
           <div
             className={cn(
-              "w-20 h-20 opacity-[0.8] bg-[radial-gradient(var(--sky-500)_40%,transparent_60%)]",
+              "w-20 h-20 opacity-[0.9] bg-[radial-gradient(var(--sky-200)_40%,transparent_50%)]",
               borderClassName,
             )}
           />
         </MovingBorder>
-      </div>
+      </div>}
 
       <div
         className={cn(
