@@ -1,5 +1,5 @@
 import { LegacyRef, forwardRef, useState, useRef } from "react";
-import { LogRange } from "../../utils";
+import { LogRange } from "../../utils/utils";
 
 export interface LogSliderProps {
   ref: LegacyRef<HTMLInputElement>;

@@ -4,7 +4,9 @@ import { audioCtx, AudioContextType } from "./AudioContext";
 import { PlayIcon, StopIcon } from "./assets/icons";
 import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
 import Scheduler from "./components/Scheduler";
-
+import Sequencer from "./components/Sequencer";
+import { cn } from "./utils/cn";
+import { Button } from "./components/ui/MovingBorder";
 
 export default function App() {
   // console.log("Rendering App...");
@@ -49,38 +51,55 @@ export default function App() {
     unit: "hz",
   };
 
+  const mainStyles = cn(
+    "min-h-screen font-sans bg-neutral-900 text-white flex flex-col gap-3 justify-center items-center"
+  );
+
+  const schedulerStyles = cn(
+    "flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800"
+  );
+
+  const sliderStyles = cn(
+    "flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800"
+  );
+
   return (
     <>
       {actx ? (
-        <main className="min-h-screen font-sans bg-neutral-900 text-white flex flex-col gap-3 justify-center items-center">
+        <main className={mainStyles}>
           <h1 className="text-4xl">SEQLR</h1>
           <div className="flex gap-2 h-12 ">
-            <button
-              className="border border-neutral-500 rounded-md px-2 bg-neutral-800 shadow-md shadow-slate-800"
+            <Button
+              isDisplay={masterPlaying}
+              borderRadius=".25rem"
+              className={
+                "border border-neutral-500 bg-neutral-800 shadow-md shadow-slate-800"
+              }
               onClick={toggleMasterPlayPause}
             >
               {!masterPlaying ? <PlayIcon /> : <StopIcon />}
-            </button>
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+            </Button>
+            <div className={schedulerStyles}>
               <Scheduler freqVal={freqVal} />
             </div>
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800">
+            <div className={sliderStyles}>
               <label className="text-neutral-300" htmlFor="masterVolume">
                 Master Volume:
               </label>
               <LogSlider options={MasterVolSliderOpts} />
             </div>
 
-            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800">
+            <div className={sliderStyles}>
               <label className="text-neutral-300" htmlFor="frequency">
                 Frequency:
               </label>
               <LogSlider options={FreqSliderOpts} />
             </div>
           </div>
+          <Sequencer />
         </main>
       ) : (
         <h1 className="text-4xl">Loading...</h1>
