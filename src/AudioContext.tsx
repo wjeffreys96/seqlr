@@ -23,10 +23,11 @@ const initialState = {
   engine: null,
   masterPlaying: false,
   masterVol: null,
-  state: null,
+  currentNote: 0,
   dispatch: () => {},
   playTone: () => {},
   toggleMasterPlayPause: () => {},
+  state: null,
 };
 
 const reducer = (state: any, action: any) => {
@@ -39,6 +40,10 @@ const reducer = (state: any, action: any) => {
 
     case "SETMASTERVOL":
       return { ...state, masterVol: action.payload };
+
+    case "SETCURRENTNOTE":
+      const cur = action.payload < 16 ? action.payload : 0;
+      return { ...state, currentNote: cur };
 
     default:
       return state;
@@ -53,12 +58,6 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    if (!init) {
-      
-    }
-  }, []);
 
   const playTone = ({ type, freq, duration, time }: OscParams) => {
     const osc = state.engine.createOscillator();
@@ -80,7 +79,7 @@ export const AudioContextProvider = ({
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
-      // play silent buffer to unlock audio - otherwise clicking happens.
+      // play silent buffer to unlock audio - otherwise clicking may happen.
       const silentBuffer = engine.createBuffer(1, 1, 22050);
       const node = engine.createBufferSource();
       node.buffer = silentBuffer;
@@ -88,6 +87,7 @@ export const AudioContextProvider = ({
 
       init = true;
     }
+    dispatch({ type: "SETCURRENTNOTE", payload: 0 });
     dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 

@@ -1,32 +1,19 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
 
 let timerID: number;
 
 export default function Scheduler({
-  freqVal,
+  freq,
   selectedBoxes,
-  currentNote,
-  setCurrentNote,
 }: {
-  freqVal: number;
+  freq: number;
   selectedBoxes: [{ id: number }];
-  currentNote: number;
-  setCurrentNote: Dispatch<SetStateAction<number>>;
 }) {
-  // console.log("Rendering Scheduler...");
   const actx = useContext<AudioContextType>(audioCtx);
-  const { state, playTone } = actx;
-  const { masterPlaying, engine } = state;
+  const { state, playTone, dispatch } = actx;
+  const { masterPlaying, engine, currentNote } = state;
 
-  // let currentNote: number = 0;
   let lookahead = 25; // How frequently to call scheduling function (ms)
   let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
@@ -36,26 +23,36 @@ export default function Scheduler({
   const [tempo, setTempo] = useState<number>(120);
 
   // access state via ref while inside loop to avoid stale state.
-  const stateRef = useRef<{ tempo: number; freq: number }>({
+  const stateRef = useRef<{
+    tempo: number;
+    freq: number;
+    currentNote: number;
+    selectedBoxes: [{ id: number }];
+  }>({
     tempo,
-    freq: freqVal,
+    freq,
+    currentNote,
+    selectedBoxes,
   });
 
   const nextNote = () => {
     // Advance current note and time by a 16th note
     const secondsPerBeat = 60.0 / stateRef.current.tempo;
     nextNoteTime += secondsPerBeat;
-    setCurrentNote(currentNote++); // increment beat counter
-    if (currentNote === 16) {
-      currentNote = 0;
-    } // wrap to zero
+    dispatch({
+      type: "SETCURRENTNOTE",
+      payload: stateRef.current.currentNote + 1,
+    }); // increment beat counter
   };
 
   const scheduleNote = (time: number) => {
     // Check if the current note is selected to be played by the sequencer
-    const isSelectedInSequencer = selectedBoxes.find((objs) => {
-      return objs.id === currentNote;
-    });
+    console.log(stateRef.current.currentNote);
+    const isSelectedInSequencer = stateRef.current.selectedBoxes.find(
+      (objs) => {
+        return objs.id === stateRef.current.currentNote;
+      }
+    );
 
     if (isSelectedInSequencer) {
       playTone({
@@ -78,7 +75,6 @@ export default function Scheduler({
   };
 
   const play = () => {
-    setCurrentNote(0);
     nextNoteTime = engine.currentTime;
     scheduler();
   };
@@ -94,12 +90,8 @@ export default function Scheduler({
 
   // update ref whenever state changes
   useEffect(() => {
-    stateRef.current = { tempo, freq: freqVal };
-  }, [tempo, freqVal]);
-
-  useEffect(() => {
-    console.log(selectedBoxes);
-  }, [selectedBoxes]);
+    stateRef.current = { tempo, freq, currentNote, selectedBoxes };
+  }, [tempo, freq, currentNote, selectedBoxes]);
 
   return (
     <form

@@ -8,18 +8,14 @@ import Sequencer from "./components/Sequencer";
 import { cn } from "./utils/cn";
 import { Button } from "./components/ui/MovingBorder";
 
-
 export default function App() {
-  // console.log("Rendering App...");
-
   const actx = useContext<AudioContextType>(audioCtx);
   const { toggleMasterPlayPause, state } = actx;
   const { masterPlaying, masterVol } = state;
   const masterVolRef = useRef<HTMLInputElement>(null);
   const freqRef = useRef<HTMLInputElement>(null);
-  const [freqVal, setFreqVal] = useState<number>(440);
+  const [freq, setfreq] = useState<number>(440);
   const [selectedBoxes, setSelectedBoxes] = useState<any>([]); // TODO set type
-  const [currentNote, setCurrentNote] = useState<number>(0);
 
   const handleMasterVolChange = (values: {
     position: number;
@@ -31,7 +27,7 @@ export default function App() {
   };
 
   const handleFreqChange = (input: { position: number; value: number }) => {
-    setFreqVal(input.value);
+    setfreq(input.value);
   };
 
   const MasterVolSliderOpts: LogSliderProps = {
@@ -86,10 +82,8 @@ export default function App() {
             </Button>
             <div className={schedulerStyles}>
               <Scheduler
-                currentNote={currentNote}
-                setCurrentNote={setCurrentNote}
                 selectedBoxes={selectedBoxes}
-                freqVal={freqVal}
+                freq={freq}
               />
             </div>
           </div>
@@ -110,7 +104,6 @@ export default function App() {
             </div>
           </div>
           <Sequencer
-            currentNote={currentNote}
             selectedBoxes={selectedBoxes}
             setSelectedBoxes={setSelectedBoxes}
           />
