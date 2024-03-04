@@ -8,7 +8,7 @@ export default function Scheduler({
   selectedBoxes,
 }: {
   freq: number;
-  selectedBoxes: [{ id: number }];
+  selectedBoxes: any;
 }) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
@@ -27,7 +27,7 @@ export default function Scheduler({
     tempo: number;
     freq: number;
     currentNote: number;
-    selectedBoxes: [{ id: number }];
+    selectedBoxes: [{ id: number }?];
   }>({
     tempo,
     freq,
@@ -39,20 +39,18 @@ export default function Scheduler({
     // Advance current note and time by a 16th note
     const secondsPerBeat = 60.0 / stateRef.current.tempo;
     nextNoteTime += secondsPerBeat;
+    console.log(stateRef.current.currentNote + 1);
     dispatch({
       type: "SETCURRENTNOTE",
       payload: stateRef.current.currentNote + 1,
-    }); // increment beat counter
+    });
   };
 
   const scheduleNote = (time: number) => {
     // Check if the current note is selected to be played by the sequencer
-    console.log(stateRef.current.currentNote);
-    const isSelectedInSequencer = stateRef.current.selectedBoxes.find(
-      (objs) => {
-        return objs.id === stateRef.current.currentNote;
-      }
-    );
+    const isSelectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
+      return obj!.id === stateRef.current.currentNote;
+    });
 
     if (isSelectedInSequencer) {
       playTone({
@@ -102,20 +100,23 @@ export default function Scheduler({
         BpmNumRef.current?.blur();
       }}
     >
-      <label className="text-left text-zinc-300 text-sm" htmlFor="bpm">
+      <label className="flex items-center justify-center gap-2 text-left text-zinc-300 text-sm">
         BPM:
+        <div>
+          <input
+            value={tempo}
+            name="bpm"
+            step="1"
+            onChange={(e) => {
+              e.preventDefault();
+              setTempo(Number(e.target.value));
+            }}
+            ref={BpmNumRef}
+            type="number"
+            className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-14 text-sm"
+          />
+        </div>
       </label>
-      <input
-        value={tempo}
-        step="1"
-        onChange={(e) => {
-          e.preventDefault();
-          setTempo(Number(e.target.value));
-        }}
-        ref={BpmNumRef}
-        type="number"
-        className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-14 text-sm"
-      />
     </form>
   );
 }

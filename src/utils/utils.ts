@@ -33,8 +33,6 @@ export class LogRange {
   }
 }
 
-// ============================================================ //
-
 // ========= Note Frequency Chart ========== //
 
 // Frequency values of notes. Each array item is a different octave.
@@ -54,8 +52,6 @@ export const noteFreqs = {
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 };
 
-// ============================================================ //
-
 // ========= Note Getter by Semitone ========== //
 
 // Returns a frequency value based on the frequency parameter adjusted by the semitone parameter.
@@ -71,18 +67,14 @@ export const getAdjustedFrequencyBySemitone = (
   if (lower) {
     let lowerFreq = prevFreq;
     for (let index = 0; index < Math.abs(semitone); index++) {
-      lowerFreq = lowerFreq / multiplier;
+      lowerFreq /= multiplier;
     }
     return lowerFreq;
   } else if (higher) {
     let higherFreq = prevFreq;
     for (let index = 0; index < semitone; index++) {
-      higherFreq = higherFreq * multiplier;
+      higherFreq *= multiplier;
     }
     return higherFreq;
-  } else {
-    console.error("Problem processing frequency adjustment");
   }
 };
-
-// ============================================================ //

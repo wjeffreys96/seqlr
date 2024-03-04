@@ -6,50 +6,50 @@ export default function Sequencer({
   selectedBoxes,
   setSelectedBoxes,
 }: {
-  selectedBoxes: [];
+  selectedBoxes: any;
   setSelectedBoxes: Dispatch<SetStateAction<any>>;
 }) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state } = actx;
-  const { currentNote } = state;
+  const { currentNote, masterPlaying } = state;
   const inputsArr: { id: number }[] = [];
 
   for (let index = 0; index < 16; index++) {
     inputsArr.push({ id: index });
   }
 
-  const handleSelectBox = (obj: { id: number }) => {
+  const handleChangeBox = (obj: { id: number }) => {
     // TODO set type
-    const objExists = selectedBoxes.find((el: { id: number }) => {
+    const isSelected = selectedBoxes.find((el: { id: number }) => {
       return el.id === obj.id;
     });
-    if (!objExists) {
+    if (!isSelected) {
       setSelectedBoxes([...selectedBoxes, obj]);
     } else {
-      selectedBoxes.splice(selectedBoxes.indexOf(objExists), 1);
+      selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
     }
   };
 
   const containerStyles = cn("flex gap-2");
-  const checkboxStyles = cn("flex text-center text-blue-300 flex-col");
+  const checkboxStyles = cn("flex text-center text-blue-300 flex-col w-6");
 
   return (
     <div className={containerStyles}>
       {inputsArr.map(function (obj: { id: number }) {
         return (
           <div key={obj.id} className={checkboxStyles}>
-            {obj.id === currentNote ? (
-              <span>|{obj.id}|</span>
+            {(masterPlaying && obj.id === currentNote - 1) ||
+            (masterPlaying && currentNote === 0 && obj.id === 15) ? (
+              <span>|{obj.id + 1}|</span>
             ) : (
-              <span>{obj.id}</span>
+              <span>{obj.id + 1}</span>
             )}
-            <div>
-              <input
-                id={String(obj.id)}
-                onChange={() => handleSelectBox(obj)}
-                type="checkbox"
-              />
-            </div>
+            <input
+              className="mt-2"
+              id={String(obj.id)}
+              onChange={() => handleChangeBox(obj)}
+              type="checkbox"
+            />
           </div>
         );
       })}

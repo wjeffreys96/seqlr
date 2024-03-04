@@ -97,21 +97,25 @@ const LogSlider = forwardRef(function LogSlider(
         }
         sliderNumRef.current!.blur();
       }}
-      className="flex justify-center min-w-56 gap-4"
+      className="flex justify-center w-full gap-4"
     >
-      <input
-        id={labelFor}
-        ref={ref}
-        type="range"
-        min={minpos}
-        max={maxpos}
-        onInput={handleInput}
-        value={position}
-        step={maxpos / 1000}
-      />
+      <label className="text-neutral-300 flex items-center justify-center gap-2 w-full">
+        {labelFor}
+        <input
+          id={labelFor}
+          ref={ref}
+          type="range"
+          min={minpos}
+          max={maxpos}
+          onInput={handleInput}
+          value={position}
+          step={maxpos / 1000}
+        />
+      </label>
       <div className="flex justify-center rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm">
         <input
           className="bg-inherit max-w-10 text-center"
+          name={labelFor}
           value={sliderNumVal}
           onChange={(e) => {
             setSliderNumVal(Number(e.target.value));

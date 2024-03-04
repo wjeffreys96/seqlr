@@ -33,7 +33,7 @@ export default function App() {
   const MasterVolSliderOpts: LogSliderProps = {
     ref: masterVolRef,
     onInput: handleMasterVolChange,
-    labelFor: "masterVolume",
+    labelFor: "Master Volume:",
     defaultValue: 100,
     minval: 0,
     maxval: 100,
@@ -44,7 +44,7 @@ export default function App() {
     ref: freqRef,
     defaultValue: 440,
     onInput: handleFreqChange,
-    labelFor: "frequency",
+    labelFor: "Frequency:",
     minpos: 0,
     maxpos: 100,
     minval: 20,
@@ -81,25 +81,16 @@ export default function App() {
               {!masterPlaying ? <PlayIcon /> : <StopIcon />}
             </Button>
             <div className={schedulerStyles}>
-              <Scheduler
-                selectedBoxes={selectedBoxes}
-                freq={freq}
-              />
+              <Scheduler selectedBoxes={selectedBoxes} freq={freq} />
             </div>
           </div>
 
           <div className="flex flex-col gap-4">
             <div className={sliderStyles}>
-              <label className="text-neutral-300" htmlFor="masterVolume">
-                Master Volume:
-              </label>
               <LogSlider options={MasterVolSliderOpts} />
             </div>
 
             <div className={sliderStyles}>
-              <label className="text-neutral-300" htmlFor="frequency">
-                Frequency:
-              </label>
               <LogSlider options={FreqSliderOpts} />
             </div>
           </div>

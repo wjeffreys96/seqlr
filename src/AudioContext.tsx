@@ -42,8 +42,10 @@ const reducer = (state: any, action: any) => {
       return { ...state, masterVol: action.payload };
 
     case "SETCURRENTNOTE":
-      const cur = action.payload < 16 ? action.payload : 0;
-      return { ...state, currentNote: cur };
+      return {
+        ...state,
+        currentNote: action.payload < 16 ? action.payload : 0,
+      };
 
     default:
       return state;
