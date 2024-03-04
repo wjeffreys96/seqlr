@@ -37,7 +37,7 @@ export default function Sequencer({
     <div className={containerStyles}>
       {inputsArr.map(function (obj: { id: number }) {
         return (
-          <div key={obj.id} className={checkboxStyles}>
+          <div key={"cbk" + obj.id} className={checkboxStyles}>
             {(masterPlaying && obj.id === currentNote - 1) ||
             (masterPlaying && currentNote === 0 && obj.id === 15) ? (
               <span>|{obj.id + 1}|</span>
@@ -46,7 +46,7 @@ export default function Sequencer({
             )}
             <input
               className="mt-2"
-              id={String(obj.id)}
+              id={String("cbi" + obj.id)}
               onChange={() => handleChangeBox(obj)}
               type="checkbox"
             />
