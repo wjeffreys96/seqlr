@@ -11,6 +11,7 @@ export interface AudioContextType {
   engine: AudioContext | null;
   masterPlaying: boolean;
   masterVol: GainNode | null;
+  rhythm: number;
   state: any;
   dispatch: React.Dispatch<any>;
   playTone: ({ type, freq, duration }: OscParams) => void;
@@ -24,6 +25,7 @@ const initialState = {
   masterPlaying: false,
   masterVol: null,
   currentNote: 0,
+  rhythm: 4,
   dispatch: () => {},
   playTone: () => {},
   toggleMasterPlayPause: () => {},
@@ -45,6 +47,12 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         currentNote: action.payload < 16 ? action.payload : 0,
+      };
+
+    case "SETRHYTHM":
+      return {
+        state,
+        rhythm: action.payload,
       };
 
     default:
