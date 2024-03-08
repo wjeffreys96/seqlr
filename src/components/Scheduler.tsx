@@ -12,7 +12,7 @@ export default function Scheduler({
 }) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
-  const { masterPlaying, engine, currentNote, rhythm } = state;
+  const { masterPlaying, engine, currentNote, rhythmResolution } = state;
 
   let lookahead = 25; // How frequently to call scheduling function (ms)
   let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
@@ -28,19 +28,19 @@ export default function Scheduler({
     freq: number;
     currentNote: number;
     selectedBoxes: [{ id: number }?];
-    rhythm: number;
+    rhythmResolution: number;
   }>({
     tempo,
     freq,
     currentNote,
     selectedBoxes,
-    rhythm,
+    rhythmResolution,
   });
 
   const nextNote = () => {
     // Advance current note and time by a 16th note
     const secondsPerBeat =
-      60.0 / stateRef.current.tempo / stateRef.current.rhythm;
+      60.0 / stateRef.current.tempo / stateRef.current.rhythmResolution;
     nextNoteTime += secondsPerBeat;
     dispatch({
       type: "SETCURRENTNOTE",
@@ -90,8 +90,14 @@ export default function Scheduler({
 
   // update ref whenever state changes
   useEffect(() => {
-    stateRef.current = { tempo, freq, currentNote, selectedBoxes, rhythm };
-  }, [tempo, freq, currentNote, selectedBoxes, rhythm]);
+    stateRef.current = {
+      tempo,
+      freq,
+      currentNote,
+      selectedBoxes,
+      rhythmResolution,
+    };
+  }, [tempo, freq, currentNote, selectedBoxes, rhythmResolution]);
 
   return (
     <form

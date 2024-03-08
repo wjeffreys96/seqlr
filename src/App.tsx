@@ -5,6 +5,7 @@ import { PlayIcon, StopIcon } from "./assets/icons";
 import LogSlider, { LogSliderProps } from "./components/ui/LogSlider";
 import Scheduler from "./components/Scheduler";
 import Sequencer from "./components/Sequencer";
+import RootSelecter from "./components/RootSelecter";
 import { cn } from "./utils/cn";
 import { Button } from "./components/ui/MovingBorder";
 
@@ -73,13 +74,16 @@ export default function App() {
             <Button
               isDisplay={masterPlaying}
               borderRadius=".25rem"
-              className={"border border-neutral-500 bg-neutral-800"}
+              className="border border-neutral-500 bg-neutral-800"
               onClick={toggleMasterPlayPause}
             >
               {!masterPlaying ? <PlayIcon /> : <StopIcon />}
             </Button>
             <div className={schedulerStyles}>
               <Scheduler selectedBoxes={selectedBoxes} freq={freq} />
+            </div>
+            <div className="flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500">
+              <RootSelecter />
             </div>
           </div>
 

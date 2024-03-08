@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect } from "react";
+import { createContext, useReducer } from "react";
 
 export interface OscParams {
   type: OscillatorType; // "sine", "square", "sawtooth", "triangle", "custom"
@@ -11,7 +11,8 @@ export interface AudioContextType {
   engine: AudioContext | null;
   masterPlaying: boolean;
   masterVol: GainNode | null;
-  rhythm: number;
+  rhythmResolution: number;
+  currentRoot: String;
   state: any;
   dispatch: React.Dispatch<any>;
   playTone: ({ type, freq, duration }: OscParams) => void;
@@ -25,7 +26,8 @@ const initialState = {
   masterPlaying: false,
   masterVol: null,
   currentNote: 0,
-  rhythm: 4,
+  rhythmResolution: 4,
+  currentRoot: "C",
   dispatch: () => {},
   playTone: () => {},
   toggleMasterPlayPause: () => {},
@@ -49,10 +51,10 @@ const reducer = (state: any, action: any) => {
         currentNote: action.payload < 16 ? action.payload : 0,
       };
 
-    case "SETRHYTHM":
+    case "SETrhythmResolution":
       return {
         state,
-        rhythm: action.payload,
+        rhythmResolution: action.payload,
       };
 
     default:
