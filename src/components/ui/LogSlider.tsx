@@ -93,9 +93,10 @@ const LogSlider = forwardRef(function LogSlider(
       }}
       className="flex justify-center w-full gap-4"
     >
-      <label className="text-neutral-300 flex items-center justify-center gap-2 w-full">
-        {labelFor}
+      <label className="text-neutral-300 flex items-center justify-between gap-2 w-full">
+        <span>{labelFor}</span>
         <input
+          className="h-1"
           id={labelFor}
           ref={ref}
           type="range"
@@ -106,9 +107,9 @@ const LogSlider = forwardRef(function LogSlider(
           step={maxpos / 1000}
         />
       </label>
-      <div className="flex justify-center rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm">
+      <div className="flex justify-center rounded-full bg-neutral-900 text-cyan-200 text-center px-4 min-w-14 max-w-16 text-sm">
         <input
-          className="bg-inherit max-w-10 text-center"
+          className="bg-inherit min-w-10 text-center"
           name={labelFor}
           value={sliderNumVal}
           onChange={(e) => {

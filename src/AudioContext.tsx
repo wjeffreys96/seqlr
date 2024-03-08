@@ -26,7 +26,7 @@ const initialState = {
   masterPlaying: false,
   masterVol: null,
   currentNote: 0,
-  rhythmResolution: 4,
+  rhythmResolution: 1,
   currentRoot: "C",
   dispatch: () => {},
   playTone: () => {},
@@ -51,10 +51,16 @@ const reducer = (state: any, action: any) => {
         currentNote: action.payload < 16 ? action.payload : 0,
       };
 
-    case "SETrhythmResolution":
+    case "SETRHYTHMRESOLUTION":
       return {
         state,
         rhythmResolution: action.payload,
+      };
+
+    case "SETCURRENTROOT":
+      return {
+        ...state,
+        currentRoot: action.payload,
       };
 
     default:

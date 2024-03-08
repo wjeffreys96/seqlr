@@ -1,18 +1,14 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
+import { noteFreqs } from "../utils/utils";
 
 let timerID: number;
 
-export default function Scheduler({
-  freq,
-  selectedBoxes,
-}: {
-  freq: number;
-  selectedBoxes: any;
-}) {
+export default function Scheduler({ selectedBoxes }: { selectedBoxes: any }) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
-  const { masterPlaying, engine, currentNote, rhythmResolution } = state;
+  const { masterPlaying, engine, currentNote, rhythmResolution, currentRoot } =
+    state;
 
   let lookahead = 25; // How frequently to call scheduling function (ms)
   let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
@@ -25,16 +21,16 @@ export default function Scheduler({
   // access state via ref while inside loop to avoid stale state.
   const stateRef = useRef<{
     tempo: number;
-    freq: number;
     currentNote: number;
+    currentRoot: string;
     selectedBoxes: [{ id: number }?];
     rhythmResolution: number;
   }>({
     tempo,
-    freq,
     currentNote,
     selectedBoxes,
     rhythmResolution,
+    currentRoot,
   });
 
   const nextNote = () => {
@@ -57,7 +53,7 @@ export default function Scheduler({
     if (isSelectedInSequencer) {
       playTone({
         type: "sine",
-        freq: stateRef.current.freq,
+        freq: noteFreqs[stateRef.current.currentRoot][3],
         duration: 0.1,
         time,
       });
@@ -92,12 +88,12 @@ export default function Scheduler({
   useEffect(() => {
     stateRef.current = {
       tempo,
-      freq,
       currentNote,
       selectedBoxes,
       rhythmResolution,
+      currentRoot,
     };
-  }, [tempo, freq, currentNote, selectedBoxes, rhythmResolution]);
+  }, [tempo, currentNote, selectedBoxes, rhythmResolution, currentRoot]);
 
   return (
     <form
