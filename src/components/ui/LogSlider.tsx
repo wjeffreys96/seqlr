@@ -10,7 +10,6 @@ export interface LogSliderProps {
   maxval?: number;
   labelFor: string;
   unit: string;
-  onInput?: (newValues: { position: number; value: number }) => void;
   onChange?: (newValues: { position: number; value: number }) => void;
 }
 
@@ -29,7 +28,6 @@ const LogSlider = forwardRef(function LogSlider(
     maxpos = options.maxpos || 100,
     minval = options.minval || 5,
     maxval = options.maxval || 20000,
-    onInput,
     onChange,
     labelFor,
     unit,
@@ -69,12 +67,10 @@ const LogSlider = forwardRef(function LogSlider(
 
     setValue(newValues.value);
     setSliderNumVal(newValues.value);
-    if (onInput) {
-      onInput(newValues);
-    } else if (onChange) {
+    if (onChange) {
       onChange(newValues);
     } else {
-      console.error("Pass an onChange or onInput prop to LogSlider");
+      console.error("Pass an onChange prop to LogSlider");
     }
   };
 
@@ -88,12 +84,10 @@ const LogSlider = forwardRef(function LogSlider(
           position: Number(log.position(sliderNumVal)),
           value: sliderNumVal,
         };
-        if (onInput) {
-          onInput(newValues);
-        } else if (onChange) {
+        if (onChange) {
           onChange(newValues);
         } else {
-          console.error("Pass an onChange or onInput prop to LogSlider");
+          console.error("Pass an onChange or onChange prop to LogSlider");
         }
         sliderNumRef.current!.blur();
       }}
@@ -107,7 +101,7 @@ const LogSlider = forwardRef(function LogSlider(
           type="range"
           min={minpos}
           max={maxpos}
-          onInput={handleInput}
+          onChange={handleInput}
           value={position}
           step={maxpos / 1000}
         />

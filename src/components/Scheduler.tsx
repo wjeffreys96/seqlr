@@ -39,7 +39,6 @@ export default function Scheduler({
     // Advance current note and time by a 16th note
     const secondsPerBeat = 60.0 / stateRef.current.tempo;
     nextNoteTime += secondsPerBeat;
-    console.log(stateRef.current.currentNote + 1);
     dispatch({
       type: "SETCURRENTNOTE",
       payload: stateRef.current.currentNote + 1,

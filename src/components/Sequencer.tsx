@@ -30,14 +30,14 @@ export default function Sequencer({
     }
   };
 
-  const containerStyles = cn("flex gap-2");
-  const checkboxStyles = cn("flex text-center text-blue-300 flex-col w-6");
+  const wrapperStyles = cn("flex gap-2");
+  const columnStyles = cn("flex text-center text-blue-300 flex-col w-6");
 
   return (
-    <div className={containerStyles}>
+    <div className={wrapperStyles}>
       {inputsArr.map(function (obj: { id: number }) {
         return (
-          <div key={"cbk" + obj.id} className={checkboxStyles}>
+          <div key={String("cbk" + obj.id)} className={columnStyles}>
             {(masterPlaying && obj.id === currentNote - 1) ||
             (masterPlaying && currentNote === 0 && obj.id === 15) ? (
               <span>|{obj.id + 1}|</span>

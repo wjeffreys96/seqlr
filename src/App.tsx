@@ -32,7 +32,7 @@ export default function App() {
 
   const MasterVolSliderOpts: LogSliderProps = {
     ref: masterVolRef,
-    onInput: handleMasterVolChange,
+    onChange: handleMasterVolChange,
     labelFor: "Master Volume:",
     defaultValue: 100,
     minval: 0,
@@ -43,7 +43,7 @@ export default function App() {
   const FreqSliderOpts: LogSliderProps = {
     ref: freqRef,
     defaultValue: 440,
-    onInput: handleFreqChange,
+    onChange: handleFreqChange,
     labelFor: "Frequency:",
     minpos: 0,
     maxpos: 100,
@@ -57,11 +57,11 @@ export default function App() {
   );
 
   const schedulerStyles = cn(
-    "flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500 shadow-md shadow-slate-800"
+    "flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800  border-neutral-500"
   );
 
   const sliderStyles = cn(
-    "flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500 shadow-md shadow-slate-800"
+    "flex justify-between gap-4 border rounded p-2 py-4 bg-neutral-800 border-neutral-500"
   );
 
   return (
@@ -69,13 +69,11 @@ export default function App() {
       {actx ? (
         <main className={mainStyles}>
           <h1 className="text-4xl">SEQLR</h1>
-          <div className="flex gap-2 h-12 ">
+          <div className="flex gap-2 h-12">
             <Button
               isDisplay={masterPlaying}
               borderRadius=".25rem"
-              className={
-                "border border-neutral-500 bg-neutral-800 shadow-md shadow-slate-800"
-              }
+              className={"border border-neutral-500 bg-neutral-800"}
               onClick={toggleMasterPlayPause}
             >
               {!masterPlaying ? <PlayIcon /> : <StopIcon />}
