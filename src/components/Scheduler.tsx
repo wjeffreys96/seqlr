@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { audioCtx, AudioContextType } from "../AudioContext";
-import { noteFreqs } from "../utils/utils";
+import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 
 let timerID: number;
 
@@ -23,7 +23,7 @@ export default function Scheduler({ selectedBoxes }: { selectedBoxes: any }) {
     tempo: number;
     currentNote: number;
     currentRoot: string;
-    selectedBoxes: [{ id: number }?];
+    selectedBoxes: [{ id: number; offset: number }?];
     rhythmResolution: number;
   }>({
     tempo,
@@ -46,17 +46,25 @@ export default function Scheduler({ selectedBoxes }: { selectedBoxes: any }) {
 
   const scheduleNote = (time: number) => {
     // Check if the current note is selected to be played by the sequencer
-    const isSelectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
+    const selectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
       return obj!.id === stateRef.current.currentNote;
     });
 
-    if (isSelectedInSequencer) {
-      playTone({
-        type: "sine",
-        freq: noteFreqs[stateRef.current.currentRoot][3],
-        duration: 0.1,
-        time,
-      });
+    if (selectedInSequencer) {
+      const currentNoteFreq = getAdjustedFrequencyBySemitone(
+        selectedInSequencer.offset,
+        noteFreqs[stateRef.current.currentRoot][3]
+      );
+      if (currentNoteFreq) {
+        playTone({
+          type: "sine",
+          freq: currentNoteFreq,
+          duration: 0.3,
+          time,
+        });
+      } else {
+        console.error("currentNoteFreq is undefined");
+      }
     }
   };
 

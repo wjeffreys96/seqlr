@@ -13,10 +13,11 @@ export interface AudioContextType {
   masterVol: GainNode | null;
   rhythmResolution: number;
   currentRoot: String;
-  state: any;
+  currentNote: number;
   dispatch: React.Dispatch<any>;
   playTone: ({ type, freq, duration }: OscParams) => void;
   toggleMasterPlayPause: () => void;
+  state: any;
 }
 
 let init: boolean;
@@ -26,7 +27,7 @@ const initialState = {
   masterPlaying: false,
   masterVol: null,
   currentNote: 0,
-  rhythmResolution: 1,
+  rhythmResolution: 2,
   currentRoot: "C",
   dispatch: () => {},
   playTone: () => {},
@@ -78,11 +79,16 @@ export const AudioContextProvider = ({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const playTone = ({ type, freq, duration, time }: OscParams) => {
-    const osc = state.engine.createOscillator();
-    osc.connect(state.masterVol);
+    const eng: AudioContext = state.engine;
+    const osc: OscillatorNode = eng.createOscillator();
+    const gain: GainNode = eng.createGain();
+    gain.connect(state.masterVol);
+    gain.gain.setValueAtTime(1, eng.currentTime);
+    osc.connect(gain);
     osc.type = type;
     osc.frequency.value = freq;
     osc.start(time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
     osc.stop(time + duration);
   };
 

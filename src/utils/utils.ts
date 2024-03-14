@@ -60,21 +60,25 @@ export const getAdjustedFrequencyBySemitone = (
   semitone: number,
   prevFreq: number
 ) => {
-  const lower = Math.sign(semitone) === -1;
-  const higher = Math.sign(semitone) === 1;
-  const multiplier = 2 ** (1 / 12);
+  if (semitone !== 0) {
+    const lower = Math.sign(semitone) === -1;
+    const higher = Math.sign(semitone) === 1;
+    const multiplier = 2 ** (1 / 12);
 
-  if (lower) {
-    let lowerFreq = prevFreq;
-    for (let i = 0; i < Math.abs(semitone); i++) {
-      lowerFreq /= multiplier;
+    if (lower) {
+      let lowerFreq = prevFreq;
+      for (let i = 0; i < Math.abs(semitone); i++) {
+        lowerFreq /= multiplier;
+      }
+      return lowerFreq;
+    } else if (higher) {
+      let higherFreq = prevFreq;
+      for (let i = 0; i < semitone; i++) {
+        higherFreq *= multiplier;
+      }
+      return higherFreq;
     }
-    return lowerFreq;
-  } else if (higher) {
-    let higherFreq = prevFreq;
-    for (let i = 0; i < semitone; i++) {
-      higherFreq *= multiplier;
-    }
-    return higherFreq;
+  } else {
+    return prevFreq;
   }
 };
