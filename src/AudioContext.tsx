@@ -1,5 +1,5 @@
 import { createContext, useReducer } from "react";
-import { OscParams, AudioContextType } from "./@types/AudioContext";
+import { OscParams, AudioContextType, NoteObject } from "./@types/AudioContext";
 
 let init: boolean;
 
@@ -10,9 +10,11 @@ const initialState = {
   currentNote: 0,
   rhythmResolution: 2,
   currentRoot: "C",
+  selectedBoxes: [],
   dispatch: () => {},
   playTone: () => {},
   toggleMasterPlayPause: () => {},
+  spliceSelectedBoxes: () => {},
   state: null,
 };
 
@@ -35,7 +37,7 @@ const reducer = (state: any, action: any) => {
 
     case "SETRHYTHMRESOLUTION":
       return {
-        state,
+        ...state,
         rhythmResolution: action.payload,
       };
 
@@ -43,6 +45,13 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         currentRoot: action.payload,
+      };
+
+    case "SETSELECTEDBOXES":
+      const newBoxes: NoteObject[] = action.payload;
+      return {
+        ...state,
+        selectedBoxes: [...state.selectedBoxes, newBoxes],
       };
 
     default:
@@ -63,8 +72,8 @@ export const AudioContextProvider = ({
     const eng: AudioContext = state.engine;
     const osc: OscillatorNode = eng.createOscillator();
     const gain: GainNode = eng.createGain();
+    gain.gain.setValueAtTime(1, time);
     gain.connect(state.masterVol);
-    gain.gain.setValueAtTime(1, eng.currentTime);
     osc.connect(gain);
     osc.type = type;
     osc.frequency.value = freq;
@@ -96,10 +105,17 @@ export const AudioContextProvider = ({
     dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 
+  const spliceSelectedBoxes = (index: number) => {
+    const boxes = state.selectedBoxes;
+    boxes.splice(index, 1);
+    dispatch({ type: "SETSELECTEDBOXES", payload: boxes });
+  };
+
   const actxVal = {
     dispatch,
     playTone,
     toggleMasterPlayPause,
+    spliceSelectedBoxes,
     state,
   };
 

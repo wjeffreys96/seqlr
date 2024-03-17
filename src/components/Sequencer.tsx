@@ -1,20 +1,14 @@
-import { Dispatch, SetStateAction, useContext } from "react";
+import { useContext } from "react";
 import { cn } from "../utils/cn";
 import { audioCtx } from "../AudioContext";
 import { AudioContextType } from "../@types/AudioContext";
-import { NoteObject } from "../@types/Sequencer";
+import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
 
-export default function Sequencer({
-  selectedBoxes,
-  setSelectedBoxes,
-}: {
-  selectedBoxes: NoteObject[];
-  setSelectedBoxes: Dispatch<SetStateAction<any>>;
-}) {
+export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
-  const { state } = actx;
-  const { currentNote, masterPlaying } = state;
+  const { state, dispatch, spliceSelectedBoxes } = actx;
+  const { currentNote, masterPlaying, selectedBoxes } = state;
   const inputsArr: NoteObject[] = [];
 
   for (let index = 0; index < 16; index++) {
@@ -26,9 +20,11 @@ export default function Sequencer({
       return el.id === obj.id;
     });
     if (!isSelected) {
-      setSelectedBoxes([...selectedBoxes, obj]);
+      // setSelectedBoxes([...selectedBoxes, obj]);
+      dispatch({ type: "SETSELECTEDBOXES", payload: obj });
     } else {
-      selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
+      // selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
+      spliceSelectedBoxes(selectedBoxes.indexOf(isSelected));
     }
   };
 
@@ -37,30 +33,27 @@ export default function Sequencer({
       return el.id === obj.id;
     });
     if (isSelected) {
-      selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
-      setSelectedBoxes([...selectedBoxes, { id: obj.id, offset: obj.offset }]);
+      // selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
+      // setSelectedBoxes([...selectedBoxes, { id: obj.id, offset: obj.offset }]);
+      spliceSelectedBoxes(selectedBoxes.indexOf(isSelected));
+      dispatch({
+        type: "SETSELECTEDBOXES",
+        payload: { id: obj.id, offset: obj.offset },
+      });
     }
   };
 
-  const wrapperStyles = cn("flex gap-2");
-
   return (
-    <div className={wrapperStyles}>
+    <div className="flex gap-2">
       {inputsArr.map(function (obj: NoteObject) {
         const columnIsPlaying =
           (masterPlaying && obj.id === currentNote - 1) ||
           (masterPlaying && currentNote === 0 && obj.id === 15);
-        const columnStyles = cn(
-          "cursor-pointer flex lg:w-14 md:w-10 w-6 text-center text-blue-300 flex-col pb-2 pt-1 px-1 border rounded ease-in-out transition-all",
-          columnIsPlaying
-            ? "bg-blue-900 border-neutral-200"
-            : "bg-neutral-800 border-neutral-500 hover:bg-neutral-700 hover:border-neutral-200"
-        );
         return (
           <SequencerNode
             key={"snk" + obj.id}
             obj={obj}
-            columnStyles={columnStyles}
+            columnIsPlaying={columnIsPlaying}
             handleChangeCheckbox={handleChangeCheckbox}
             handleChangeOffset={handleChangeOffset}
           />

@@ -1,5 +1,4 @@
 import { LogSliderProps } from "../../@types/LogSlider";
-import { NoteObject } from "../../@types/Sequencer";
 import { useRef, useContext } from "react";
 import { audioCtx } from "../../AudioContext";
 import { AudioContextType } from "../../@types/AudioContext";
@@ -10,14 +9,10 @@ import LogSlider from "./LogSlider";
 import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
 
-export default function Nav({
-  selectedBoxes,
-}: {
-  selectedBoxes: NoteObject[];
-}) {
+export default function Nav() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { masterVol, toggleMasterPlayPause, state } = actx;
-  const { masterPlaying } = state;
+  const { masterPlaying, selectedBoxes } = state;
   const masterVolRef = useRef<HTMLInputElement>(null);
 
   const handleMasterVolChange = (values: {
