@@ -1,17 +1,6 @@
 import { LegacyRef, forwardRef, useState, useRef } from "react";
 import { LogRange } from "../../utils/utils";
-
-export interface LogSliderProps {
-  ref: LegacyRef<HTMLInputElement>;
-  defaultValue?: number;
-  minpos?: number;
-  maxpos?: number;
-  minval?: number;
-  maxval?: number;
-  labelFor: string;
-  unit: string;
-  onChange?: (newValues: { position: number; value: number }) => void;
-}
+import { LogSliderProps } from "../../@types/LogSlider";
 
 const LogSlider = forwardRef(function LogSlider(
   {

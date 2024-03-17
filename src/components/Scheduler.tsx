@@ -1,6 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { audioCtx, AudioContextType } from "../AudioContext";
+import { audioCtx } from "../AudioContext";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
+import { AudioContextType } from "../@types/AudioContext";
+import { NoteObject } from "../@types/Sequencer";
 
 let timerID: number;
 
@@ -23,7 +25,7 @@ export default function Scheduler({ selectedBoxes }: { selectedBoxes: any }) {
     tempo: number;
     currentNote: number;
     currentRoot: string;
-    selectedBoxes: [{ id: number; offset: number }?];
+    selectedBoxes: [NoteObject];
     rhythmResolution: number;
   }>({
     tempo,

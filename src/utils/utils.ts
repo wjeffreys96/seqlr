@@ -1,13 +1,9 @@
+import { LogRangeOptionsTypes } from "../@types/LogSlider";
+
 // ========= Logarithmic Range Input Class ========== //
 
 // Generates values on a logarithmic scale from a range input element's position.
 
-export interface LogRangeOptionsTypes {
-  minpos: number;
-  maxpos: number;
-  minval: number;
-  maxval: number;
-}
 
 export class LogRange {
   minpos: number;

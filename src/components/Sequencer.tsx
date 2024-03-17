@@ -1,6 +1,9 @@
 import { Dispatch, SetStateAction, useContext } from "react";
 import { cn } from "../utils/cn";
-import { AudioContextType, audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext";
+import { AudioContextType } from "../@types/AudioContext";
+import { NoteObject } from "../@types/Sequencer";
+import SequencerNode from "./SequencerNode";
 
 export default function Sequencer({
   selectedBoxes,
@@ -12,19 +15,17 @@ export default function Sequencer({
   const actx = useContext<AudioContextType>(audioCtx);
   const { state } = actx;
   const { currentNote, masterPlaying } = state;
-  const inputsArr: { id: number; offset: number }[] = [];
+  const inputsArr: NoteObject[] = [];
 
   for (let index = 0; index < 16; index++) {
     inputsArr.push({ id: index, offset: 0 });
   }
 
-  const handleChangeCheckbox = (obj: { id: number; offset: number }) => {
+  const handleChangeCheckbox = (obj: NoteObject) => {
     // TODO set type
-    const isSelected = selectedBoxes.find(
-      (el: { id: number; offset: number }) => {
-        return el.id === obj.id;
-      }
-    );
+    const isSelected = selectedBoxes.find((el: NoteObject) => {
+      return el.id === obj.id;
+    });
     if (!isSelected) {
       setSelectedBoxes([...selectedBoxes, obj]);
     } else {
@@ -32,13 +33,11 @@ export default function Sequencer({
     }
   };
 
-  const handleChangeOffset = (obj: { id: number; offset: number }) => {
+  const handleChangeOffset = (obj: NoteObject) => {
     // TODO set type
-    const isSelected = selectedBoxes.find(
-      (el: { id: number; offset: number }) => {
-        return el.id === obj.id;
-      }
-    );
+    const isSelected = selectedBoxes.find((el: NoteObject) => {
+      return el.id === obj.id;
+    });
     if (isSelected) {
       selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
       setSelectedBoxes([...selectedBoxes, { id: obj.id, offset: obj.offset }]);
@@ -49,43 +48,23 @@ export default function Sequencer({
 
   return (
     <div className={wrapperStyles}>
-      {inputsArr.map(function (obj: { id: number; offset: number }) {
+      {inputsArr.map(function (obj: NoteObject) {
         const columnIsPlaying =
           (masterPlaying && obj.id === currentNote - 1) ||
           (masterPlaying && currentNote === 0 && obj.id === 15);
         const columnStyles = cn(
-          "flex lg:w-14 md:w-10 w-6 text-center text-blue-300 flex-col pb-2 pt-1 px-1 border rounded",
+          "cursor-pointer flex lg:w-14 md:w-10 w-6 text-center text-blue-300 flex-col pb-2 pt-1 px-1 border rounded ease-in-out transition-all",
           columnIsPlaying
             ? "bg-blue-900 border-neutral-200"
             : "bg-neutral-800 border-neutral-500 hover:bg-neutral-700 hover:border-neutral-200"
         );
         return (
-          <label
-            htmlFor={String("cbi" + obj.id)}
-            key={String("cbk" + obj.id)}
-            className={columnStyles}
-          >
-            {<span className="text-white">{obj.id + 1}</span>}
-            <input
-              className="my-2"
-              id={String("cbi" + obj.id)}
-              onChange={() => handleChangeCheckbox(obj)}
-              type="checkbox"
-            />
-            <input
-              type="number"
-              onChange={(e) =>
-                handleChangeOffset({
-                  id: obj.id,
-                  offset: Number(e.target.value),
-                })
-              }
-              placeholder="0"
-              min="-12"
-              max="12"
-              className="text-cyan-200 text-center rounded-full bg-neutral-900 text-sm py-0.5"
-            />
-          </label>
+          <SequencerNode
+            obj={obj}
+            columnStyles={columnStyles}
+            handleChangeCheckbox={handleChangeCheckbox}
+            handleChangeOffset={handleChangeOffset}
+          />
         );
       })}
     </div>
