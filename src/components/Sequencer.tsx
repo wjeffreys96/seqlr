@@ -9,7 +9,7 @@ export default function Sequencer({
   selectedBoxes,
   setSelectedBoxes,
 }: {
-  selectedBoxes: any[]; // TODO type
+  selectedBoxes: NoteObject[];
   setSelectedBoxes: Dispatch<SetStateAction<any>>;
 }) {
   const actx = useContext<AudioContextType>(audioCtx);
@@ -22,7 +22,6 @@ export default function Sequencer({
   }
 
   const handleChangeCheckbox = (obj: NoteObject) => {
-    // TODO set type
     const isSelected = selectedBoxes.find((el: NoteObject) => {
       return el.id === obj.id;
     });
@@ -34,7 +33,6 @@ export default function Sequencer({
   };
 
   const handleChangeOffset = (obj: NoteObject) => {
-    // TODO set type
     const isSelected = selectedBoxes.find((el: NoteObject) => {
       return el.id === obj.id;
     });
@@ -60,6 +58,7 @@ export default function Sequencer({
         );
         return (
           <SequencerNode
+            key={"snk" + obj.id}
             obj={obj}
             columnStyles={columnStyles}
             handleChangeCheckbox={handleChangeCheckbox}
