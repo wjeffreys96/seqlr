@@ -1,11 +1,12 @@
 import { useRef, useContext } from "react";
-import { AudioContextType, audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext";
 import { noteFreqs } from "../utils/utils";
+import { AudioContextType } from "../@types/AudioContext.d.ts";
 
 export default function RootSelecter() {
   const notes = Object.keys(noteFreqs);
   const selectRef = useRef<HTMLSelectElement>(null);
-  const actx = useContext<AudioContextType>(audioCtx);
+  const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { dispatch } = actx;
 
   return (

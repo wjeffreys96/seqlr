@@ -3,7 +3,7 @@ import { OscParams, AudioContextType, NoteObject } from "./@types/AudioContext";
 
 let init: boolean;
 
-const initialState = {
+const initialState: AudioContextType = {
   engine: null,
   masterPlaying: false,
   masterVol: null,
@@ -11,14 +11,19 @@ const initialState = {
   rhythmResolution: 2,
   currentRoot: "C",
   selectedBoxes: [],
-  dispatch: () => {},
-  playTone: () => {},
-  toggleMasterPlayPause: () => {},
-  spliceSelectedBoxes: () => {},
+  dispatch: () => undefined,
+  playTone: () => undefined,
+  toggleMasterPlayPause: () => undefined,
+  spliceSelectedBoxes: () => undefined,
   state: null,
 };
 
-const reducer = (state: any, action: any) => {
+interface Action {
+  type: string;
+  payload: unknown;
+}
+
+const reducer = (state: AudioContextType, action: Action): AudioContextType => {
   switch (action.type) {
     case "TOGGLEMASTERPLAYING":
       return { ...state, masterPlaying: !state.masterPlaying };
@@ -47,18 +52,18 @@ const reducer = (state: any, action: any) => {
         currentRoot: action.payload,
       };
 
-    case "SETSELECTEDBOXES":
+    case "SETSELECTEDBOXES": {
       const newBoxes: NoteObject[] = action.payload;
       return {
         ...state,
         selectedBoxes: [...state.selectedBoxes, newBoxes],
       };
-
+    }
     default:
       return state;
   }
 };
-export const audioCtx: React.Context<any> =
+export const audioCtx: React.Context<AudioContextType> =
   createContext<AudioContextType>(initialState);
 
 export const AudioContextProvider = ({
@@ -82,7 +87,7 @@ export const AudioContextProvider = ({
     osc.stop(time + duration);
   };
 
-  const toggleMasterPlayPause = async () => {
+  const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine and save it to state.
     if (!init) {
       // create the audio engine and master volume channel and save them.

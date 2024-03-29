@@ -1,22 +1,35 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { audioCtx } from "../AudioContext";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
-import { AudioContextType } from "../@types/AudioContext";
+import { AudioContextType } from "../@types/AudioContext.d.ts";
 import { NoteObject } from "../@types/Sequencer";
 
 let timerID: number;
 
-export default function Scheduler({ selectedBoxes }: { selectedBoxes: any }) {
-  const actx = useContext<AudioContextType>(audioCtx);
-  const { state, playTone, dispatch } = actx;
+export default function Scheduler({
+  selectedBoxes,
+}: {
+  selectedBoxes: unknown;
+}) {
+  const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
+  const { state, playTone, dispatch } = actx as {
+    state: AudioContextType;
+    playTone: () => void;
+    dispatch: () => void;
+  };
   const { masterPlaying, engine, currentNote, rhythmResolution, currentRoot } =
     state;
 
-  let lookahead = 25; // How frequently to call scheduling function (ms)
-  let scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
+  const lookahead = 25; // How frequently to call scheduling function (ms)
+  const scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
 
   const BpmNumRef = useRef<HTMLInputElement>(null);
+  const { state, playTone, dispatch } = actx as {
+    state: AudioContextType;
+    playTone: () => void;
+    dispatch: () => void;
+  };
 
   const [tempo, setTempo] = useState<number>(120);
 
@@ -55,7 +68,7 @@ export default function Scheduler({ selectedBoxes }: { selectedBoxes: any }) {
     if (selectedInSequencer) {
       const currentNoteFreq = getAdjustedFrequencyBySemitone(
         selectedInSequencer.offset,
-        noteFreqs[stateRef.current.currentRoot][3]
+        noteFreqs[stateRef.current.currentRoot][3],
       );
       if (currentNoteFreq) {
         playTone({
