@@ -25,11 +25,6 @@ export default function Scheduler({
   let nextNoteTime: number; // When next note is due
 
   const BpmNumRef = useRef<HTMLInputElement>(null);
-  const { state, playTone, dispatch } = actx as {
-    state: AudioContextType;
-    playTone: () => void;
-    dispatch: () => void;
-  };
 
   const [tempo, setTempo] = useState<number>(120);
 
