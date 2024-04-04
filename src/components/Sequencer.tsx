@@ -1,14 +1,21 @@
 import { useContext } from "react";
-import { cn } from "../utils/cn";
 import { audioCtx } from "../AudioContext";
-import { AudioContextType } from "../@types/AudioContext";
+import type { AudioContextType } from "../@types/AudioContext";
 import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, dispatch, spliceSelectedBoxes } = actx;
-  const { currentNote, masterPlaying, selectedBoxes } = state;
+  const {
+    currentNote,
+    masterPlaying,
+    selectedBoxes,
+  }: {
+    currentNote: number;
+    masterPlaying: boolean;
+    selectedBoxes: NoteObject[];
+  } = state;
   const inputsArr: NoteObject[] = [];
 
   for (let index = 0; index < 16; index++) {
@@ -45,7 +52,7 @@ export default function Sequencer() {
 
   return (
     <div className="flex gap-2">
-      {inputsArr.map(function (obj: NoteObject) {
+      {inputsArr.map(function(obj: NoteObject) {
         const columnIsPlaying =
           (masterPlaying && obj.id === currentNote - 1) ||
           (masterPlaying && currentNote === 0 && obj.id === 15);

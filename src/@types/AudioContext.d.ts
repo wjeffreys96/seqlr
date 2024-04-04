@@ -10,17 +10,20 @@ export interface OscParams {
   time: number; // seconds
 }
 
-export interface AudioContextType {
+export interface ActxStateType {
   engine: AudioContext | null;
   masterPlaying: boolean;
   masterVol: GainNode | null;
   rhythmResolution: number;
-  currentRoot: String;
+  currentRoot: string;
   currentNote: number;
   selectedBoxes: NoteObject[] | null[];
-  dispatch: React.Dispatch<any>;
+}
+
+export interface AudioContextType {
+  dispatch: React.Dispatch<unknown>;
   playTone: ({ type, freq, duration }: OscParams) => void;
   toggleMasterPlayPause: () => void;
   spliceSelectedBoxes: (index: number) => void;
-  state: any;
+  state: ActxStateType;
 }

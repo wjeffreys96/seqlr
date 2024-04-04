@@ -1,8 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { audioCtx } from "../AudioContext";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
-import { AudioContextType } from "../@types/AudioContext.d.ts";
-import { NoteObject } from "../@types/Sequencer";
+import type { AudioContextType, NoteObject } from "../@types/AudioContext.d.ts";
 
 let timerID: number;
 
@@ -12,11 +11,7 @@ export default function Scheduler({
   selectedBoxes: unknown;
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
-  const { state, playTone, dispatch } = actx as {
-    state: AudioContextType;
-    playTone: () => void;
-    dispatch: () => void;
-  };
+  const { state, playTone, dispatch } = actx;
   const { masterPlaying, engine, currentNote, rhythmResolution, currentRoot } =
     state;
 
@@ -28,14 +23,15 @@ export default function Scheduler({
 
   const [tempo, setTempo] = useState<number>(120);
 
-  // access state via ref while inside loop to avoid stale state.
-  const stateRef = useRef<{
+  interface StateRef {
     tempo: number;
     currentNote: number;
     currentRoot: string;
     selectedBoxes: [NoteObject];
     rhythmResolution: number;
-  }>({
+  }
+  // access state via ref while inside loop to avoid stale state.
+  const stateRef = useRef<StateRef>({
     tempo,
     currentNote,
     selectedBoxes,
@@ -100,7 +96,7 @@ export default function Scheduler({
     } else {
       clearTimeout(timerID);
     }
-  }, [masterPlaying]);
+  }, [masterPlaying]); // eslint-disable-line
 
   // update ref whenever state changes
   useEffect(() => {

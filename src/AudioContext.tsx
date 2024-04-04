@@ -1,9 +1,14 @@
 import { createContext, useReducer } from "react";
-import { OscParams, AudioContextType, NoteObject } from "./@types/AudioContext";
+import {
+  OscParams,
+  AudioContextType,
+  NoteObject,
+  ActxStateType,
+} from "./@types/AudioContext";
 
 let init: boolean;
 
-const initialState: AudioContextType = {
+const initialState: ActxStateType = {
   engine: null,
   masterPlaying: false,
   masterVol: null,
@@ -11,16 +16,11 @@ const initialState: AudioContextType = {
   rhythmResolution: 2,
   currentRoot: "C",
   selectedBoxes: [],
-  dispatch: () => undefined,
-  playTone: () => undefined,
-  toggleMasterPlayPause: () => undefined,
-  spliceSelectedBoxes: () => undefined,
-  state: null,
 };
 
 interface Action {
   type: string;
-  payload: unknown;
+  payload?: unknown;
 }
 
 const reducer = (state: AudioContextType, action: Action): AudioContextType => {
@@ -74,17 +74,21 @@ export const AudioContextProvider = ({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const playTone = ({ type, freq, duration, time }: OscParams) => {
-    const eng: AudioContext = state.engine;
-    const osc: OscillatorNode = eng.createOscillator();
-    const gain: GainNode = eng.createGain();
-    gain.gain.setValueAtTime(1, time);
-    gain.connect(state.masterVol);
-    osc.connect(gain);
-    osc.type = type;
-    osc.frequency.value = freq;
-    osc.start(time);
-    gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
-    osc.stop(time + duration);
+    if (state.engine && state.masterVol) {
+      const eng: AudioContext = state.engine;
+      const osc: OscillatorNode = eng.createOscillator();
+      const gain: GainNode = eng.createGain();
+      gain.gain.setValueAtTime(1, time);
+      gain.connect(state.masterVol);
+      osc.connect(gain);
+      osc.type = type;
+      osc.frequency.value = freq;
+      osc.start(time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
+      osc.stop(time + duration);
+    } else {
+      throw new Error("State not initialized");
+    }
   };
 
   const toggleMasterPlayPause = () => {
