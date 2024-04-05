@@ -8,15 +8,15 @@ const LogSlider = forwardRef(function LogSlider(
   }: {
     options: LogSliderProps;
   },
-  ref: LegacyRef<HTMLInputElement>
+  ref: LegacyRef<HTMLInputElement>,
 ) {
   const sliderNumRef = useRef<HTMLInputElement>(null);
   const {
-    defaultValue = options.defaultValue || 50,
-    minpos = options.minpos || 0,
-    maxpos = options.maxpos || 100,
-    minval = options.minval || 5,
-    maxval = options.maxval || 20000,
+    defaultValue = options.defaultValue ?? 50,
+    minpos = options.minpos ?? 0,
+    maxpos = options.maxpos ?? 100,
+    minval = options.minval ?? 5,
+    maxval = options.maxval ?? 20000,
     onChange,
     labelFor,
     unit,
@@ -44,9 +44,9 @@ const LogSlider = forwardRef(function LogSlider(
   const [value, setValue] = useState(defaultValue);
   const [sliderNumVal, setSliderNumVal] = useState<number>(value);
 
-  const handleInput = (e: any) => {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const newPos = e.target.value;
+    const newPos = Number(e.target.value);
     setPosition(newPos);
 
     const newValues = {

@@ -9,7 +9,6 @@ export interface OscParams {
   duration: number; // seconds
   time: number; // seconds
 }
-
 export interface ActxStateType {
   engine: AudioContext | null;
   masterPlaying: boolean;
@@ -17,13 +16,13 @@ export interface ActxStateType {
   rhythmResolution: number;
   currentRoot: string;
   currentNote: number;
-  selectedBoxes: NoteObject[] | null[];
+  selectedBoxes: NoteObject[] | [];
 }
 
 export interface AudioContextType {
-  dispatch: React.Dispatch<unknown>;
-  playTone: ({ type, freq, duration }: OscParams) => void;
-  toggleMasterPlayPause: () => void;
-  spliceSelectedBoxes: (index: number) => void;
-  state: ActxStateType;
+  dispatch?: React.Dispatch<Action>;
+  playTone?: ({ type, freq, duration }: OscParams) => void;
+  toggleMasterPlayPause?: () => void;
+  spliceSelectedBoxes?: (index: number) => void;
+  state?: ActxStateType;
 }

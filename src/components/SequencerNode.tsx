@@ -1,5 +1,5 @@
 import { NoteObject } from "../@types/AudioContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "../utils/cn";
 export default function SequencerNode({
   obj,
@@ -14,10 +14,6 @@ export default function SequencerNode({
 }) {
   const [selected, setSelected] = useState<boolean>(false);
 
-  useEffect(() => {
-    console.log(selected + " " + (obj.id + 1));
-  }, [selected]);
-
   return (
     <label
       htmlFor={String("cbi" + obj.id)}
@@ -27,7 +23,7 @@ export default function SequencerNode({
         columnIsPlaying
           ? "bg-blue-900 mt-0"
           : "bg-neutral-800 hover:bg-neutral-600",
-        selected && !columnIsPlaying && "bg-neutral-700"
+        selected && !columnIsPlaying && "bg-neutral-700",
       )}
     >
       {<span className="text-white mb-2">{obj.id + 1}</span>}

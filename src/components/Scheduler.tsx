@@ -1,37 +1,50 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { audioCtx } from "../AudioContext";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
-import type { AudioContextType, NoteObject } from "../@types/AudioContext.d.ts";
+import type {
+  ActxStateType,
+  AudioContextType,
+  NoteObject,
+} from "../@types/AudioContext.d.ts";
+
+interface StateRef {
+  tempo: number;
+  currentNote: number;
+  currentRoot: string;
+  selectedBoxes: NoteObject[] | [];
+  rhythmResolution: number;
+}
 
 let timerID: number;
 
 export default function Scheduler({
   selectedBoxes,
 }: {
-  selectedBoxes: unknown;
+  selectedBoxes: NoteObject[];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
-  const { masterPlaying, engine, currentNote, rhythmResolution, currentRoot } =
-    state;
-
+  const {
+    masterPlaying,
+    engine,
+    currentNote,
+    rhythmResolution,
+    currentRoot,
+  }: ActxStateType = state!;
+  const BpmNumRef = useRef<HTMLInputElement>(null);
+  const [tempo, setTempo] = useState<number>(120);
   const lookahead = 25; // How frequently to call scheduling function (ms)
   const scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
 
-  const BpmNumRef = useRef<HTMLInputElement>(null);
-
-  const [tempo, setTempo] = useState<number>(120);
-
-  interface StateRef {
-    tempo: number;
-    currentNote: number;
-    currentRoot: string;
-    selectedBoxes: [NoteObject];
-    rhythmResolution: number;
-  }
   // access state via ref while inside loop to avoid stale state.
-  const stateRef = useRef<StateRef>({
+  const stateRef: MutableRefObject<StateRef> = useRef<StateRef>({
     tempo,
     currentNote,
     selectedBoxes,
@@ -40,53 +53,60 @@ export default function Scheduler({
   });
 
   const nextNote = () => {
-    // Advance current note and time by a 16th note
-    const secondsPerBeat =
-      60.0 / stateRef.current.tempo / stateRef.current.rhythmResolution;
-    nextNoteTime += secondsPerBeat;
-    dispatch({
-      type: "SETCURRENTNOTE",
-      payload: stateRef.current.currentNote + 1,
-    });
+    if (dispatch) {
+      // Advance current note and time by a 16th note
+      const secondsPerBeat =
+        60.0 / stateRef.current.tempo / stateRef.current.rhythmResolution;
+      nextNoteTime += secondsPerBeat;
+      dispatch({
+        type: "SETCURRENTNOTE",
+        payload: stateRef.current.currentNote + 1,
+      });
+    }
   };
 
   const scheduleNote = (time: number) => {
-    // Check if the current note is selected to be played by the sequencer
-    const selectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
-      return obj!.id === stateRef.current.currentNote;
-    });
-
-    if (selectedInSequencer) {
-      const currentNoteFreq = getAdjustedFrequencyBySemitone(
-        selectedInSequencer.offset,
-        noteFreqs[stateRef.current.currentRoot][3],
-      );
-      if (currentNoteFreq) {
-        playTone({
-          type: "sine",
-          freq: currentNoteFreq,
-          duration: 0.3,
-          time,
-        });
-      } else {
-        console.error("currentNoteFreq is undefined");
+    if (playTone) {
+      // Check if the current note is selected to be played by the sequencer
+      const selectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
+        return obj.id === stateRef.current.currentNote;
+      });
+      if (selectedInSequencer) {
+        const currentNoteFreq = getAdjustedFrequencyBySemitone(
+          selectedInSequencer.offset,
+          noteFreqs[stateRef.current.currentRoot][3],
+        );
+        if (currentNoteFreq) {
+          playTone({
+            type: "sine",
+            freq: currentNoteFreq,
+            duration: 0.3,
+            time,
+          });
+        } else {
+          console.error("currentNoteFreq is undefined");
+        }
       }
     }
   };
 
   const scheduler = () => {
-    // if theres a note to be played in the future schedule it and move on to the next note
-    while (nextNoteTime < engine.currentTime + scheduleAheadTime) {
-      scheduleNote(nextNoteTime);
-      nextNote();
+    // if theres a note to be played in the future, schedule it and move on to the next note
+    if (engine) {
+      while (nextNoteTime < engine.currentTime + scheduleAheadTime) {
+        scheduleNote(nextNoteTime);
+        nextNote();
+      }
+      // check for notes to schedule again in (lookahead) milliseconds
+      timerID = setTimeout(scheduler, lookahead);
     }
-    // check for notes to schedule again in (lookahead) milliseconds
-    timerID = setTimeout(scheduler, lookahead);
   };
 
   const play = () => {
-    nextNoteTime = engine.currentTime;
-    scheduler();
+    if (engine) {
+      nextNoteTime = engine.currentTime;
+      scheduler();
+    }
   };
 
   // trigger play() when user presses play button or stop when user presses pause

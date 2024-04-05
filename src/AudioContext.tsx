@@ -2,8 +2,8 @@ import { createContext, useReducer } from "react";
 import {
   OscParams,
   AudioContextType,
-  NoteObject,
   ActxStateType,
+  NoteObject,
 } from "./@types/AudioContext";
 
 let init: boolean;
@@ -23,48 +23,73 @@ interface Action {
   payload?: unknown;
 }
 
-const reducer = (state: AudioContextType, action: Action): AudioContextType => {
+const reducer = (state: ActxStateType, action: Action): ActxStateType => {
   switch (action.type) {
     case "TOGGLEMASTERPLAYING":
       return { ...state, masterPlaying: !state.masterPlaying };
 
     case "SETENGINE":
-      return { ...state, engine: action.payload };
+      if (action.payload instanceof AudioContext) {
+        return { ...state, engine: action.payload };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
 
     case "SETMASTERVOL":
-      return { ...state, masterVol: action.payload };
+      if (action.payload instanceof GainNode) {
+        return { ...state, masterVol: action.payload };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
 
     case "SETCURRENTNOTE":
-      return {
-        ...state,
-        currentNote: action.payload < 16 ? action.payload : 0,
-      };
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          currentNote: action.payload < 16 ? action.payload : 0,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
 
     case "SETRHYTHMRESOLUTION":
-      return {
-        ...state,
-        rhythmResolution: action.payload,
-      };
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          rhythmResolution: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
 
     case "SETCURRENTROOT":
-      return {
-        ...state,
-        currentRoot: action.payload,
-      };
+      if (typeof action.payload === "string") {
+        return {
+          ...state,
+          currentRoot: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
 
     case "SETSELECTEDBOXES": {
-      const newBoxes: NoteObject[] = action.payload;
-      return {
-        ...state,
-        selectedBoxes: [...state.selectedBoxes, newBoxes],
-      };
+      if (action.payload) {
+        const newBoxes = action.payload as NoteObject;
+        return {
+          ...state,
+          selectedBoxes: [...state.selectedBoxes, newBoxes],
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
     }
     default:
       return state;
   }
 };
-export const audioCtx: React.Context<AudioContextType> =
-  createContext<AudioContextType>(initialState);
+export const audioCtx: React.Context<AudioContextType | object> = createContext<
+  AudioContextType | object
+>({});
 
 export const AudioContextProvider = ({
   children,
@@ -87,7 +112,7 @@ export const AudioContextProvider = ({
       gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
       osc.stop(time + duration);
     } else {
-      throw new Error("State not initialized");
+      throw new Error("Actx state not initialized");
     }
   };
 
@@ -120,7 +145,7 @@ export const AudioContextProvider = ({
     dispatch({ type: "SETSELECTEDBOXES", payload: boxes });
   };
 
-  const actxVal = {
+  const actxVal: AudioContextType = {
     dispatch,
     playTone,
     toggleMasterPlayPause,
