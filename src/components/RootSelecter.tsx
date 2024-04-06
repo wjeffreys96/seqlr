@@ -41,5 +41,5 @@ export default function RootSelecter() {
         </label>
       </form>
     );
-  } else return <></>;
+  } else throw new Error("actx is undefined");
 }

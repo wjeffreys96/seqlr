@@ -4,7 +4,6 @@ import { LogRangeOptionsTypes } from "../@types/LogSlider";
 
 // Generates values on a logarithmic scale from a range input element's position.
 
-
 export class LogRange {
   minpos: number;
   maxpos: number;
@@ -33,7 +32,7 @@ export class LogRange {
 
 // Frequency values of notes. Each array item is a different octave.
 
-export const noteFreqs: { [key: string]: Array<number> } = {
+export const noteFreqs: Record<string, number[]> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
   D: [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64],
@@ -54,7 +53,7 @@ export const noteFreqs: { [key: string]: Array<number> } = {
 
 export const getAdjustedFrequencyBySemitone = (
   semitone: number,
-  prevFreq: number
+  prevFreq: number,
 ) => {
   if (semitone !== 0) {
     const lower = Math.sign(semitone) === -1;

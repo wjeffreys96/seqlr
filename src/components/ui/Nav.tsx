@@ -63,7 +63,5 @@ export default function Nav() {
         </div>
       </nav>
     );
-  } else {
-    return <></>;
-  }
+  } else throw new Error("state is undefined");
 }

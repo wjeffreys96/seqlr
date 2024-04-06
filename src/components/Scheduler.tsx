@@ -62,6 +62,8 @@ export default function Scheduler({
         type: "SETCURRENTNOTE",
         payload: stateRef.current.currentNote + 1,
       });
+    } else {
+      throw new Error("dispatch is undefined");
     }
   };
 
@@ -84,7 +86,7 @@ export default function Scheduler({
             time,
           });
         } else {
-          console.error("currentNoteFreq is undefined");
+          throw new Error("currentNoteFreq is undefined");
         }
       }
     }
@@ -99,6 +101,8 @@ export default function Scheduler({
       }
       // check for notes to schedule again in (lookahead) milliseconds
       timerID = setTimeout(scheduler, lookahead);
+    } else {
+      throw new Error("engine is undefined");
     }
   };
 
@@ -106,6 +110,8 @@ export default function Scheduler({
     if (engine) {
       nextNoteTime = engine.currentTime;
       scheduler();
+    } else {
+      throw new Error("engine is undefined");
     }
   };
 
@@ -120,14 +126,18 @@ export default function Scheduler({
 
   // update ref whenever state changes
   useEffect(() => {
-    stateRef.current = {
-      tempo,
-      currentNote,
-      selectedBoxes,
-      rhythmResolution,
-      currentRoot,
-    };
-  }, [tempo, currentNote, selectedBoxes, rhythmResolution, currentRoot]);
+    if (state) {
+      stateRef.current = {
+        tempo,
+        currentNote,
+        selectedBoxes,
+        rhythmResolution,
+        currentRoot,
+      };
+    } else {
+      throw new Error("state is undefined");
+    }
+  }, [state, tempo, currentNote, selectedBoxes, rhythmResolution, currentRoot]);
 
   return (
     <form

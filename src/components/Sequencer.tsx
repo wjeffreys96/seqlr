@@ -70,6 +70,6 @@ export default function Sequencer() {
       </div>
     );
   } else {
-    return <></>;
+    throw new Error("actx is undefined");
   }
 }

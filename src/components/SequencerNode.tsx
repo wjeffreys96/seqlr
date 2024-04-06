@@ -19,11 +19,9 @@ export default function SequencerNode({
       htmlFor={String("cbi" + obj.id)}
       key={String("cbk" + obj.id)}
       className={cn(
-        "cursor-pointer flex lg:h-20 lg:w-16 md:w-12 w-8 justify-center text-center text-blue-300 flex-col pb-2 pt-1 px-1 rounded ease-in-out transition-all mt-1",
-        columnIsPlaying
-          ? "bg-blue-900 mt-0"
-          : "bg-neutral-800 hover:bg-neutral-600",
-        selected && !columnIsPlaying && "bg-neutral-700",
+        "bg-teal-950 border-teal-700 cursor-pointer flex lg:h-20 lg:w-16 md:w-12 w-8 justify-center text-center text-blue-300 flex-col pb-2 pt-1 px-1 rounded ease-in-out transition-transform mt-1",
+        columnIsPlaying ? "-translate-y-1 border" : "hover:bg-teal-600",
+        selected && "bg-teal-800",
       )}
     >
       {<span className="text-white mb-2">{obj.id + 1}</span>}
@@ -38,6 +36,7 @@ export default function SequencerNode({
       />
       <input
         type="number"
+        disabled={!selected}
         onChange={(e) =>
           handleChangeOffset({
             id: obj.id,
