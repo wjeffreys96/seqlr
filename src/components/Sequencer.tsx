@@ -50,9 +50,9 @@ export default function Sequencer() {
     };
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-neutral-800 p-4 rounded-lg border border-neutral-700">
         <AdsrModule />
-        <div className="flex gap-2">
+        <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
           {inputsArr.map(function(obj: NoteObject) {
             const columnIsPlaying =
               (masterPlaying && obj.id === currentNote - 1) ||

@@ -37,16 +37,16 @@ export default function Nav() {
     };
 
     const commonStyles = cn(
-      "flex justify-between gap-4 border rounded p-2 bg-neutral-800 border-neutral-500",
+      "flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600",
     );
 
     return (
       <nav className="flex items-center justify-center w-full h-16">
-        <div className="flex gap-2 h-12">
+        <div className="flex gap-[1px] h-12">
           <Button
             isDisplay={masterPlaying}
             borderRadius=".25rem"
-            className="border border-neutral-500 bg-neutral-800 h-full"
+            className="border border-neutral-600 bg-neutral-800 h-full"
             onClick={toggleMasterPlayPause}
           >
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}

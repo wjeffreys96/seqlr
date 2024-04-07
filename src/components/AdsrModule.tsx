@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { audioCtx } from "../AudioContext";
 import { AudioContextType } from "../@types/AudioContext";
+import LogSlider from "./ui/LogSlider";
+import type { LogSliderProps } from "../@types/LogSlider";
 
 export default function AdsrModule() {
   const actx: AudioContextType = useContext(audioCtx);
@@ -29,16 +31,15 @@ export default function AdsrModule() {
     return (
       <div className="flex gap-2 items-center">
         {knobArr.map((obj) => {
+          // const sliderOpts: LogSliderProps = {}
           return (
             <div
               key={"kdk" + obj.id}
-              className="rounded-lg bg-neutral-800 px-2 border-zinc-500 border"
+              className="rounded-lg bg-sky-950 px-2 border-neutral-600 border shadow-neutral-700 shadow-sm"
             >
               <label key={"klk" + obj.id}>
-                <span>{obj.name}</span>
-                <div>
-                  <input type="range" />
-                </div>
+                <span>{obj.name}:</span>
+                <div>{/* <LogSlider /> */}</div>
               </label>
             </div>
           );
