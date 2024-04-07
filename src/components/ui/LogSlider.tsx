@@ -1,18 +1,6 @@
 import { LegacyRef, forwardRef, useState, useRef } from "react";
-import { LogRange } from "../../utils";
-
-export interface LogSliderProps {
-  ref: LegacyRef<HTMLInputElement>;
-  defaultValue?: number;
-  minpos?: number;
-  maxpos?: number;
-  minval?: number;
-  maxval?: number;
-  labelFor: string;
-  unit: string;
-  onInput?: (newValues: { position: number; value: number }) => void;
-  onChange?: (newValues: { position: number; value: number }) => void;
-}
+import { LogRange } from "../../utils/utils";
+import { LogSliderProps } from "../../@types/LogSlider";
 
 const LogSlider = forwardRef(function LogSlider(
   {
@@ -20,16 +8,15 @@ const LogSlider = forwardRef(function LogSlider(
   }: {
     options: LogSliderProps;
   },
-  ref: LegacyRef<HTMLInputElement>
+  ref: LegacyRef<HTMLInputElement>,
 ) {
   const sliderNumRef = useRef<HTMLInputElement>(null);
   const {
-    defaultValue = options.defaultValue || 50,
-    minpos = options.minpos || 0,
-    maxpos = options.maxpos || 100,
-    minval = options.minval || 5,
-    maxval = options.maxval || 20000,
-    onInput,
+    defaultValue = options.defaultValue ?? 50,
+    minpos = options.minpos ?? 0,
+    maxpos = options.maxpos ?? 100,
+    minval = options.minval ?? 5,
+    maxval = options.maxval ?? 20000,
     onChange,
     labelFor,
     unit,
@@ -57,9 +44,9 @@ const LogSlider = forwardRef(function LogSlider(
   const [value, setValue] = useState(defaultValue);
   const [sliderNumVal, setSliderNumVal] = useState<number>(value);
 
-  const handleInput = (e: any) => {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const newPos = e.target.value;
+    const newPos = Number(e.target.value);
     setPosition(newPos);
 
     const newValues = {
@@ -69,12 +56,10 @@ const LogSlider = forwardRef(function LogSlider(
 
     setValue(newValues.value);
     setSliderNumVal(newValues.value);
-    if (onInput) {
-      onInput(newValues);
-    } else if (onChange) {
+    if (onChange) {
       onChange(newValues);
     } else {
-      console.error("Pass an onChange or onInput prop to LogSlider");
+      console.error("Pass an onChange prop to LogSlider");
     }
   };
 
@@ -88,30 +73,33 @@ const LogSlider = forwardRef(function LogSlider(
           position: Number(log.position(sliderNumVal)),
           value: sliderNumVal,
         };
-        if (onInput) {
-          onInput(newValues);
-        } else if (onChange) {
+        if (onChange) {
           onChange(newValues);
         } else {
-          console.error("Pass an onChange or onInput prop to LogSlider");
+          console.error("Pass an onChange or onChange prop to LogSlider");
         }
         sliderNumRef.current!.blur();
       }}
-      className="flex justify-center min-w-56 gap-4"
+      className="flex justify-center w-full gap-4"
     >
-      <input
-        id={labelFor}
-        ref={ref}
-        type="range"
-        min={minpos}
-        max={maxpos}
-        onInput={handleInput}
-        value={position}
-        step={maxpos / 1000}
-      />
-      <div className="flex justify-center rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-24 text-sm">
+      <label className="text-neutral-300 flex items-center justify-between gap-2 w-full">
+        <span>{labelFor}</span>
         <input
-          className="bg-inherit max-w-10 text-center"
+          className="h-1"
+          id={labelFor}
+          ref={ref}
+          type="range"
+          min={minpos}
+          max={maxpos}
+          onChange={handleInput}
+          value={position}
+          step={maxpos / 1000}
+        />
+      </label>
+      <div className="flex justify-center rounded-full bg-neutral-900 text-cyan-200 text-center px-4 min-w-14 max-w-16 text-sm">
+        <input
+          className="bg-inherit min-w-10 text-center"
+          name={labelFor}
           value={sliderNumVal}
           onChange={(e) => {
             setSliderNumVal(Number(e.target.value));

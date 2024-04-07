@@ -1,13 +1,8 @@
+import { LogRangeOptionsTypes } from "../@types/LogSlider";
+
 // ========= Logarithmic Range Input Class ========== //
 
 // Generates values on a logarithmic scale from a range input element's position.
-
-export interface LogRangeOptionsTypes {
-  minpos: number;
-  maxpos: number;
-  minval: number;
-  maxval: number;
-}
 
 export class LogRange {
   minpos: number;
@@ -33,13 +28,11 @@ export class LogRange {
   }
 }
 
-// ============================================================ //
-
 // ========= Note Frequency Chart ========== //
 
 // Frequency values of notes. Each array item is a different octave.
 
-export const noteFreqs = {
+export const noteFreqs: Record<string, number[]> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
   D: [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64],
@@ -54,35 +47,33 @@ export const noteFreqs = {
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 };
 
-// ============================================================ //
-
 // ========= Note Getter by Semitone ========== //
 
-// Returns a frequency value based on the frequency parameter adjusted by the semitone parameter.
+// Returns a frequency value based on the prevFreq parameter adjusted by the semitone parameter.
 
 export const getAdjustedFrequencyBySemitone = (
   semitone: number,
-  prevFreq: number
+  prevFreq: number,
 ) => {
-  const lower = Math.sign(semitone) === -1;
-  const higher = Math.sign(semitone) === 1;
-  const multiplier = 2 ** (1 / 12);
+  if (semitone !== 0) {
+    const lower = Math.sign(semitone) === -1;
+    const higher = Math.sign(semitone) === 1;
+    const multiplier = 2 ** (1 / 12);
 
-  if (lower) {
-    let lowerFreq = prevFreq;
-    for (let index = 0; index < Math.abs(semitone); index++) {
-      lowerFreq = lowerFreq / multiplier;
+    if (lower) {
+      let lowerFreq = prevFreq;
+      for (let i = 0; i < Math.abs(semitone); i++) {
+        lowerFreq /= multiplier;
+      }
+      return lowerFreq;
+    } else if (higher) {
+      let higherFreq = prevFreq;
+      for (let i = 0; i < semitone; i++) {
+        higherFreq *= multiplier;
+      }
+      return higherFreq;
     }
-    return lowerFreq;
-  } else if (higher) {
-    let higherFreq = prevFreq;
-    for (let index = 0; index < semitone; index++) {
-      higherFreq = higherFreq * multiplier;
-    }
-    return higherFreq;
   } else {
-    console.error("Problem processing frequency adjustment");
+    return prevFreq;
   }
 };
-
-// ============================================================ //

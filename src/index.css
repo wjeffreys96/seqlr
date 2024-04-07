@@ -6,8 +6,14 @@
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"] {
+    appearance: textfield;
     -webkit-appearance: none;
-    margin: 0;
     -moz-appearance: textfield !important;
+  }
+}
+
+@layer utilities {
+  .min-h-custom {
+    min-height: calc(100vh - 4rem);
   }
 }
