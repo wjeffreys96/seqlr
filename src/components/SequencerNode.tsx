@@ -20,7 +20,7 @@ export default function SequencerNode({
       key={String("cbk" + obj.id)}
       className={cn(
         "bg-teal-950 border-teal-700 cursor-pointer flex lg:h-20 lg:w-16 md:w-12 w-8 justify-center text-center text-blue-300 flex-col pb-2 pt-1 px-1 rounded ease-in-out transition-transform mt-1",
-        columnIsPlaying ? "-translate-y-1 border" : "hover:bg-teal-600",
+        columnIsPlaying ? "-translate-y-1 border" : "hover:bg-teal-700",
         selected && "bg-teal-800",
       )}
     >

@@ -3,6 +3,7 @@ import { audioCtx } from "../AudioContext";
 import type { AudioContextType } from "../@types/AudioContext";
 import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
+import AdsrModule from "./AdsrModule";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
@@ -29,7 +30,6 @@ export default function Sequencer() {
         return el.id === obj.id;
       });
       if (!isSelected) {
-        // setSelectedBoxes([...selectedBoxes, obj]);
         dispatch({ type: "SETSELECTEDBOXES", payload: obj });
       } else if (selectedBoxes) {
         spliceSelectedBoxes(selectedBoxes.indexOf(isSelected));
@@ -41,8 +41,6 @@ export default function Sequencer() {
         return el.id === obj.id;
       });
       if (isSelected) {
-        // selectedBoxes.splice(selectedBoxes.indexOf(isSelected), 1);
-        // setSelectedBoxes([...selectedBoxes, { id: obj.id, offset: obj.offset }]);
         spliceSelectedBoxes(selectedBoxes.indexOf(isSelected));
         dispatch({
           type: "SETSELECTEDBOXES",
@@ -52,21 +50,24 @@ export default function Sequencer() {
     };
 
     return (
-      <div className="flex gap-2">
-        {inputsArr.map(function(obj: NoteObject) {
-          const columnIsPlaying =
-            (masterPlaying && obj.id === currentNote - 1) ||
-            (masterPlaying && currentNote === 0 && obj.id === 15);
-          return (
-            <SequencerNode
-              key={"snk" + obj.id}
-              obj={obj}
-              columnIsPlaying={columnIsPlaying}
-              handleChangeCheckbox={handleChangeCheckbox}
-              handleChangeOffset={handleChangeOffset}
-            />
-          );
-        })}
+      <div className="flex flex-col gap-4">
+        <AdsrModule />
+        <div className="flex gap-2">
+          {inputsArr.map(function(obj: NoteObject) {
+            const columnIsPlaying =
+              (masterPlaying && obj.id === currentNote - 1) ||
+              (masterPlaying && currentNote === 0 && obj.id === 15);
+            return (
+              <SequencerNode
+                key={"snk" + obj.id}
+                obj={obj}
+                columnIsPlaying={columnIsPlaying}
+                handleChangeCheckbox={handleChangeCheckbox}
+                handleChangeOffset={handleChangeOffset}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   } else {
