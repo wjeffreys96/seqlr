@@ -4,7 +4,7 @@ import { AudioContextType } from "../@types/AudioContext";
 import LogSlider from "./ui/LogSlider";
 import type { LogSliderProps } from "../@types/LogSlider";
 
-export default function AdsrModule() {
+export default function KnobModule() {
   const actx: AudioContextType = useContext(audioCtx);
   const { state, dispatch } = actx;
 
@@ -15,14 +15,6 @@ export default function AdsrModule() {
     },
     {
       id: 2,
-      name: "Decay",
-    },
-    {
-      id: 3,
-      name: "Sustain",
-    },
-    {
-      id: 4,
       name: "Release",
     },
   ];
@@ -35,10 +27,10 @@ export default function AdsrModule() {
           return (
             <div
               key={"kdk" + obj.id}
-              className="rounded-lg bg-sky-950 px-2 border-neutral-600 border shadow-neutral-700 shadow-sm"
+              className="rounded-lg bg-zinc-900 px-2 border-neutral-600 border shadow-neutral-700 shadow-sm"
             >
               <label key={"klk" + obj.id}>
-                <span>{obj.name}:</span>
+                <span className="text-zinc-200">{obj.name}:</span>
                 <div>{/* <LogSlider /> */}</div>
               </label>
             </div>

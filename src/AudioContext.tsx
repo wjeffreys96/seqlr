@@ -15,6 +15,8 @@ const initialState: ActxStateType = {
   currentNote: 0,
   rhythmResolution: 2,
   currentRoot: "C",
+  attack: 0.2,
+  release: 0.3,
   selectedBoxes: [],
 };
 
@@ -72,6 +74,26 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
+    case "SETATTACK":
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          attack: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETRELEASE":
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          release: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
     case "SETSELECTEDBOXES": {
       if (action.payload) {
         const newBoxes = action.payload as NoteObject;
@@ -103,21 +125,25 @@ export const AudioContextProvider = ({
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
       const gain: GainNode = eng.createGain();
-      gain.gain.setValueAtTime(1, time);
+      gain.gain.setValueAtTime(0.01, time);
+      gain.gain.linearRampToValueAtTime(1, time + state.attack);
       gain.connect(state.masterVol);
       osc.connect(gain);
       osc.type = type;
       osc.frequency.value = freq;
       osc.start(time);
-      gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
-      osc.stop(time + duration);
+      gain.gain.exponentialRampToValueAtTime(
+        0.01,
+        time + duration + state.release,
+      );
+      osc.stop(time + duration + state.release);
     } else {
       throw new Error("Actx state not initialized");
     }
   };
 
   const toggleMasterPlayPause = () => {
-    // first time user presses play we initialize audio engine and save it to state.
+    // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
       // create the audio engine and master volume channel and save them.
       const engine = new AudioContext();
@@ -126,12 +152,6 @@ export const AudioContextProvider = ({
 
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
-
-      // play silent buffer to unlock audio - otherwise clicking may happen.
-      const silentBuffer = engine.createBuffer(1, 1, 22050);
-      const node = engine.createBufferSource();
-      node.buffer = silentBuffer;
-      node.start(0);
 
       init = true;
     }

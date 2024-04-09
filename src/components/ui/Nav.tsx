@@ -30,7 +30,7 @@ export default function Nav() {
       ref: masterVolRef,
       onChange: handleMasterVolChange,
       labelFor: "Master Volume:",
-      defaultValue: 100,
+      defaultValue: 25,
       minval: 0,
       maxval: 100,
       unit: "",

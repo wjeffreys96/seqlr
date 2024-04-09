@@ -3,7 +3,7 @@ import { audioCtx } from "../AudioContext";
 import type { AudioContextType } from "../@types/AudioContext";
 import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
-import AdsrModule from "./AdsrModule";
+import KnobModule from "./KnobModule";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
@@ -51,9 +51,9 @@ export default function Sequencer() {
 
     return (
       <div className="flex flex-col gap-4 bg-neutral-800 p-4 rounded-lg border border-neutral-700">
-        <AdsrModule />
+        <KnobModule />
         <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
-          {inputsArr.map(function(obj: NoteObject) {
+          {inputsArr.map(function (obj: NoteObject) {
             const columnIsPlaying =
               (masterPlaying && obj.id === currentNote - 1) ||
               (masterPlaying && currentNote === 0 && obj.id === 15);

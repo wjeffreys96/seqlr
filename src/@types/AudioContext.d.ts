@@ -15,6 +15,8 @@ export interface ActxStateType {
   masterVol: GainNode | null;
   rhythmResolution: number;
   currentRoot: string;
+  attack: number;
+  release: number;
   currentNote: number;
   selectedBoxes: NoteObject[] | [];
 }

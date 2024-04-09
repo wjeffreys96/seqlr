@@ -148,7 +148,7 @@ export default function Scheduler({
         BpmNumRef.current?.blur();
       }}
     >
-      <label className="flex items-center justify-center gap-2 text-left text-zinc-300 text-sm">
+      <label className="flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
         BPM:
         <div>
           <input

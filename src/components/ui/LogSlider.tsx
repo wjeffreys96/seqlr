@@ -82,7 +82,7 @@ const LogSlider = forwardRef(function LogSlider(
       }}
       className="flex justify-center w-full gap-4"
     >
-      <label className="text-neutral-300 flex items-center justify-between gap-2 w-full">
+      <label className="text-zinc-200 flex items-center justify-between gap-2 w-full">
         <span>{labelFor}</span>
         <input
           className="h-1"
