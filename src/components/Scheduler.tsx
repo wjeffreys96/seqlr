@@ -17,17 +17,13 @@ interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  selectedBoxes: NoteObject[] | [];
+  nodeArr: NoteObject[] | [];
   rhythmResolution: number;
 }
 
 let timerID: number;
 
-export default function Scheduler({
-  selectedBoxes,
-}: {
-  selectedBoxes: NoteObject[];
-}) {
+export default function Scheduler({ nodeArr }: { nodeArr: NoteObject[] }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
   const {
@@ -47,7 +43,7 @@ export default function Scheduler({
   const stateRef: MutableRefObject<StateRef> = useRef<StateRef>({
     tempo,
     currentNote,
-    selectedBoxes,
+    nodeArr,
     rhythmResolution,
     currentRoot,
   });
@@ -70,7 +66,7 @@ export default function Scheduler({
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      const selectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
+      const selectedInSequencer = stateRef.current.nodeArr.find((obj) => {
         return obj.id === stateRef.current.currentNote;
       });
       if (selectedInSequencer) {
@@ -130,14 +126,14 @@ export default function Scheduler({
       stateRef.current = {
         tempo,
         currentNote,
-        selectedBoxes,
+        nodeArr,
         rhythmResolution,
         currentRoot,
       };
     } else {
       throw new Error("state is undefined");
     }
-  }, [state, tempo, currentNote, selectedBoxes, rhythmResolution, currentRoot]);
+  }, [state, tempo, currentNote, nodeArr, rhythmResolution, currentRoot]);
 
   return (
     <form

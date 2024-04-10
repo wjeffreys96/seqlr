@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import {
   OscParams,
   AudioContextType,
@@ -6,7 +6,7 @@ import {
   NoteObject,
 } from "./@types/AudioContext";
 
-let init: boolean;
+let init: boolean, nodeArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -17,7 +17,7 @@ const initialState: ActxStateType = {
   currentRoot: "C",
   attack: 0.2,
   release: 0.3,
-  selectedBoxes: [],
+  nodeArr: [],
 };
 
 interface Action {
@@ -94,15 +94,15 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
-    case "SETSELECTEDBOXES": {
+    case "SETNODEARR": {
       if (action.payload) {
         const newBoxes = action.payload as NoteObject;
         return {
           ...state,
-          selectedBoxes: [...state.selectedBoxes, newBoxes],
+          nodeArr: [...state.nodeArr, newBoxes],
         };
       } else {
-        throw new Error("Incorrect or missing payload");
+        throw new Error("Missing payload");
       }
     }
     default:
@@ -119,6 +119,16 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (!nodeArrInit) {
+      for (let index = 0; index < 16; index++) {
+        dispatch({ type: "SETNODEARR", payload: { id: index, offset: 0 } });
+      }
+      nodeArrInit = true;
+      updateNodeArr();
+    }
+  }, []);
 
   const playTone = ({ type, freq, duration, time }: OscParams) => {
     if (state.engine && state.masterVol) {
@@ -160,9 +170,13 @@ export const AudioContextProvider = ({
   };
 
   const spliceSelectedBoxes = (index: number) => {
-    const boxes = state.selectedBoxes;
+    const boxes = state.nodeArr;
     boxes.splice(index, 1);
-    dispatch({ type: "SETSELECTEDBOXES", payload: boxes });
+    dispatch({ type: "SETNODEARR", payload: boxes });
+  };
+
+  const updateNodeArr = () => {
+    console.log("updated");
   };
 
   const actxVal: AudioContextType = {
@@ -170,6 +184,7 @@ export const AudioContextProvider = ({
     playTone,
     toggleMasterPlayPause,
     spliceSelectedBoxes,
+    updateNodeArr,
     state,
   };
 

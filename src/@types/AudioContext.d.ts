@@ -18,7 +18,7 @@ export interface ActxStateType {
   attack: number;
   release: number;
   currentNote: number;
-  selectedBoxes: NoteObject[] | [];
+  nodeArr: NoteObject[] | [];
 }
 
 export interface AudioContextType {
@@ -26,5 +26,6 @@ export interface AudioContextType {
   playTone?: ({ type, freq, duration }: OscParams) => void;
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
+  updateNodeArr?: () => void;
   state?: ActxStateType;
 }
