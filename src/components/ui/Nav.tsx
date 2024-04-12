@@ -15,7 +15,7 @@ export default function Nav() {
   const { toggleMasterPlayPause, state } = actx;
 
   if (state) {
-    const { masterVol, masterPlaying, nodeArr } = state;
+    const { masterVol, masterPlaying, globNoteArr } = state;
 
     const handleMasterVolChange = (values: {
       position: number;
@@ -52,7 +52,7 @@ export default function Nav() {
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
           <div className={commonStyles}>
-            <Scheduler nodeArr={nodeArr} />
+            <Scheduler globNoteArr={globNoteArr} />
           </div>
           <div className={commonStyles}>
             <RootSelecter />

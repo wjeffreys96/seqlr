@@ -7,7 +7,7 @@ import {
   NoteObject,
 } from "./@types/AudioContext";
 
-let init: boolean, nodeArrInit: boolean;
+let init: boolean, globNoteArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -18,7 +18,7 @@ const initialState: ActxStateType = {
   currentRoot: "C",
   attack: 0.2,
   release: 0.3,
-  nodeArr: [],
+  globNoteArr: [],
 };
 
 interface Action {
@@ -95,12 +95,12 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
-    case "SETNODEARR": {
+    case "SETGLOBNOTEARR": {
       if (action.payload) {
         const newBoxes = action.payload as NoteObject;
         return {
           ...state,
-          nodeArr: [...state.nodeArr, newBoxes],
+          globNoteArr: [...state.globNoteArr, newBoxes],
         };
       } else {
         throw new Error("Missing payload");
@@ -111,10 +111,6 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
   }
 };
 
-// export const audioCtx: React.Context<AudioContextType | object> = createContext<
-//   AudioContextType | object
-// >({});
-
 export const AudioContextProvider = ({
   children,
 }: {
@@ -123,11 +119,11 @@ export const AudioContextProvider = ({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    if (!nodeArrInit) {
+    if (!globNoteArrInit) {
       for (let index = 0; index < 16; index++) {
-        dispatch({ type: "SETNODEARR", payload: { id: index, offset: 0 } });
+        dispatch({ type: "SETGLOBNOTEARR", payload: { id: index, offset: 0 } });
       }
-      nodeArrInit = true;
+      globNoteArrInit = true;
       updateNodeArr();
     }
   }, []);
@@ -154,6 +150,14 @@ export const AudioContextProvider = ({
     }
   };
 
+  const toggleNotePlaying = (obj: NoteObject) => {
+    console.log("setting note to play... " + obj.id);
+  };
+
+  const changeOffset = (obj: NoteObject) => {
+    console.log("changing offset... " + obj.id + " " + obj.offset);
+  };
+
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
@@ -171,12 +175,6 @@ export const AudioContextProvider = ({
     dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 
-  const spliceSelectedBoxes = (index: number) => {
-    const boxes = state.nodeArr;
-    boxes.splice(index, 1);
-    dispatch({ type: "SETNODEARR", payload: boxes });
-  };
-
   const updateNodeArr = () => {
     console.log("updated");
   };
@@ -185,24 +183,11 @@ export const AudioContextProvider = ({
     dispatch,
     playTone,
     toggleMasterPlayPause,
-    spliceSelectedBoxes,
     updateNodeArr,
+    toggleNotePlaying,
+    changeOffset,
     state,
   };
 
-  const actxValIsInit: boolean =
-    actxVal !== null &&
-    actxVal !== undefined &&
-    actxVal.state !== null &&
-    actxVal.dispatch !== null &&
-    actxVal.playTone !== null &&
-    actxVal.updateNodeArr !== null &&
-    actxVal.spliceSelectedBoxes !== null &&
-    actxVal.toggleMasterPlayPause !== null;
-
-  if (actxValIsInit) {
-    return <audioCtx.Provider value={actxVal}>{children}</audioCtx.Provider>;
-  } else {
-    throw new Error("Attempted to access actx before initialization");
-  }
+  return <audioCtx.Provider value={actxVal}>{children}</audioCtx.Provider>;
 };

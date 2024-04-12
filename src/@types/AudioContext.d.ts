@@ -18,7 +18,7 @@ export interface ActxStateType {
   attack: number;
   release: number;
   currentNote: number;
-  nodeArr: NoteObject[] | [];
+  globNoteArr: NoteObject[] | [];
 }
 
 export interface AudioContextType {
@@ -27,5 +27,7 @@ export interface AudioContextType {
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
   updateNodeArr?: () => void;
+  changeOffset?: (obj: NoteObject) => void;
+  toggleNotePlaying?: (obj: NoteObject) => void;
   state?: ActxStateType;
 }

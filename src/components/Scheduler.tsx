@@ -17,13 +17,17 @@ interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  nodeArr: NoteObject[] | [];
+  globNoteArr: NoteObject[] | [];
   rhythmResolution: number;
 }
 
 let timerID: number;
 
-export default function Scheduler({ nodeArr }: { nodeArr: NoteObject[] }) {
+export default function Scheduler({
+  globNoteArr,
+}: {
+  globNoteArr: NoteObject[];
+}) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
   const {
@@ -43,7 +47,7 @@ export default function Scheduler({ nodeArr }: { nodeArr: NoteObject[] }) {
   const stateRef: MutableRefObject<StateRef> = useRef<StateRef>({
     tempo,
     currentNote,
-    nodeArr,
+    globNoteArr,
     rhythmResolution,
     currentRoot,
   });
@@ -66,7 +70,7 @@ export default function Scheduler({ nodeArr }: { nodeArr: NoteObject[] }) {
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      const selectedInSequencer = stateRef.current.nodeArr.find((obj) => {
+      const selectedInSequencer = stateRef.current.globNoteArr.find((obj) => {
         return obj.id === stateRef.current.currentNote;
       });
       if (selectedInSequencer) {
@@ -126,14 +130,14 @@ export default function Scheduler({ nodeArr }: { nodeArr: NoteObject[] }) {
       stateRef.current = {
         tempo,
         currentNote,
-        nodeArr,
+        globNoteArr,
         rhythmResolution,
         currentRoot,
       };
     } else {
       throw new Error("state is undefined");
     }
-  }, [state, tempo, currentNote, nodeArr, rhythmResolution, currentRoot]);
+  }, [state, tempo, currentNote, globNoteArr, rhythmResolution, currentRoot]);
 
   return (
     <form
