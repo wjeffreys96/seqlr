@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import LogSlider from "./ui/LogSlider";
 import type { LogSliderProps } from "../@types/LogSlider";

@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType } from "../@types/AudioContext";
 import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
@@ -8,12 +8,6 @@ import KnobModule from "./KnobModule";
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, dispatch, spliceSelectedBoxes } = actx;
-
-  // useEffect(() => {
-  //   if (state) {
-  //     console.log(state?.nodeArr);
-  //   }
-  // }, []);
 
   if (state && dispatch && spliceSelectedBoxes) {
     const {
@@ -25,11 +19,6 @@ export default function Sequencer() {
       masterPlaying: boolean;
       nodeArr: NoteObject[];
     } = state;
-
-    // const inputsArr: NoteObject[] = [];
-    // for (let index = 0; index < 16; index++) {
-    //   inputsArr.push({ id: index, offset: 0 });
-    // }
 
     const handleChangeCheckbox = (obj: NoteObject) => {
       const isSelected = nodeArr.find((el: NoteObject) => {

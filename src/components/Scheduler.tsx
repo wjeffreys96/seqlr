@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx.tsx";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
   ActxStateType,

@@ -1,4 +1,5 @@
-import { createContext, useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
+import { audioCtx } from "./AudioContext.ctx";
 import {
   OscParams,
   AudioContextType,
@@ -109,9 +110,10 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
       return state;
   }
 };
-export const audioCtx: React.Context<AudioContextType | object> = createContext<
-  AudioContextType | object
->({});
+
+// export const audioCtx: React.Context<AudioContextType | object> = createContext<
+//   AudioContextType | object
+// >({});
 
 export const AudioContextProvider = ({
   children,
@@ -188,5 +190,19 @@ export const AudioContextProvider = ({
     state,
   };
 
-  return <audioCtx.Provider value={actxVal}>{children}</audioCtx.Provider>;
+  const actxValIsInit: boolean =
+    actxVal !== null &&
+    actxVal !== undefined &&
+    actxVal.state !== null &&
+    actxVal.dispatch !== null &&
+    actxVal.playTone !== null &&
+    actxVal.updateNodeArr !== null &&
+    actxVal.spliceSelectedBoxes !== null &&
+    actxVal.toggleMasterPlayPause !== null;
+
+  if (actxValIsInit) {
+    return <audioCtx.Provider value={actxVal}>{children}</audioCtx.Provider>;
+  } else {
+    throw new Error("Attempted to access actx before initialization");
+  }
 };
