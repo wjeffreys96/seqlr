@@ -96,14 +96,13 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
       }
 
     case "SETGLOBNOTEARR": {
-      if (action.payload) {
-        const newBoxes = action.payload as NoteObject;
+      if (Array.isArray(action.payload)) {
         return {
           ...state,
-          globNoteArr: [...state.globNoteArr, newBoxes],
+          globNoteArr: action.payload,
         };
       } else {
-        throw new Error("Missing payload");
+        throw new Error("Missing Payload");
       }
     }
     default:
@@ -120,10 +119,12 @@ export const AudioContextProvider = ({
 
   useEffect(() => {
     if (!globNoteArrInit) {
+      const globArray = [];
       for (let index = 0; index < 16; index++) {
-        dispatch({ type: "SETGLOBNOTEARR", payload: { id: index, offset: 0 } });
+        globArray.push({ id: index, offset: 0, isPlaying: false });
       }
       globNoteArrInit = true;
+      dispatch({ type: "SETGLOBNOTEARR", payload: globArray });
       updateNodeArr();
     }
   }, []);
@@ -150,12 +151,34 @@ export const AudioContextProvider = ({
     }
   };
 
-  const toggleNotePlaying = (obj: NoteObject) => {
-    console.log("setting note to play... " + obj.id);
+  const toggleNotePlaying = (id: number) => {
+    const newArr = state.globNoteArr;
+    const foundNote = newArr.find((obj) => {
+      return obj.id === id;
+    });
+    if (foundNote) {
+      foundNote.isPlaying = !foundNote.isPlaying;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    } else {
+      throw new Error("note not found");
+    }
   };
 
-  const changeOffset = (obj: NoteObject) => {
-    console.log("changing offset... " + obj.id + " " + obj.offset);
+  const changeOffset = (id: number, offset: number) => {
+    const newArr = state.globNoteArr;
+    const foundNote = newArr.find((obj) => {
+      return obj.id === id;
+    });
+    if (foundNote) {
+      foundNote.offset = offset;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    } else {
+      throw new Error("note not found");
+    }
+  };
+
+  const updateNodeArr = () => {
+    return;
   };
 
   const toggleMasterPlayPause = () => {
@@ -173,10 +196,6 @@ export const AudioContextProvider = ({
     }
     dispatch({ type: "SETCURRENTNOTE", payload: 0 });
     dispatch({ type: "TOGGLEMASTERPLAYING" });
-  };
-
-  const updateNodeArr = () => {
-    console.log("updated");
   };
 
   const actxVal: AudioContextType = {

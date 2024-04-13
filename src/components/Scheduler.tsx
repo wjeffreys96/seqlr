@@ -70,12 +70,13 @@ export default function Scheduler({
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      const selectedInSequencer = stateRef.current.globNoteArr.find((obj) => {
+      const currNote = stateRef.current.globNoteArr.find((obj) => {
         return obj.id === stateRef.current.currentNote;
       });
-      if (selectedInSequencer) {
+      console.log(currNote);
+      if (currNote && currNote.isPlaying) {
         const currentNoteFreq = getAdjustedFrequencyBySemitone(
-          selectedInSequencer.offset,
+          currNote.offset,
           noteFreqs[stateRef.current.currentRoot][3],
         );
         if (currentNoteFreq) {

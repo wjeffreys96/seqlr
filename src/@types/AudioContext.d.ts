@@ -1,6 +1,7 @@
 export interface NoteObject {
   id: number;
   offset: number;
+  isPlaying: boolean;
 }
 
 export interface OscParams {
@@ -27,7 +28,7 @@ export interface AudioContextType {
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
   updateNodeArr?: () => void;
-  changeOffset?: (obj: NoteObject) => void;
-  toggleNotePlaying?: (obj: NoteObject) => void;
+  changeOffset?: (id: number, offset: number) => void;
+  toggleNotePlaying?: (id: number) => void;
   state?: ActxStateType;
 }

@@ -32,7 +32,7 @@ export default function SequencerNode({
           className="my-2 hidden"
           id={String("cbi" + obj.id)}
           onChange={() => {
-            toggleNotePlaying(obj);
+            toggleNotePlaying(obj.id);
             setSelected(!selected);
           }}
           type="checkbox"
@@ -40,12 +40,7 @@ export default function SequencerNode({
         <input
           type="number"
           disabled={!selected}
-          onChange={(e) =>
-            changeOffset({
-              id: obj.id,
-              offset: Number(e.target.value),
-            })
-          }
+          onChange={(e) => changeOffset(obj.id, Number(e.target.value))}
           placeholder="0"
           min="-12"
           max="12"
