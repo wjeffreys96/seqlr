@@ -1,5 +1,5 @@
 import { useRef, useContext } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx.tsx";
 import { noteFreqs } from "../utils/utils";
 import type { AudioContextType } from "../@types/AudioContext.d.ts";
 

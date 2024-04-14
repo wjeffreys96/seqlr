@@ -1,6 +1,6 @@
 import { LogSliderProps } from "../../@types/LogSlider";
 import { useRef, useContext } from "react";
-import { audioCtx } from "../../AudioContext";
+import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
 import { Button } from "./MovingBorder";
 import { PlayIcon, StopIcon } from "../../assets/icons";
@@ -15,7 +15,7 @@ export default function Nav() {
   const { toggleMasterPlayPause, state } = actx;
 
   if (state) {
-    const { masterVol, masterPlaying, selectedBoxes } = state;
+    const { masterVol, masterPlaying, globNoteArr } = state;
 
     const handleMasterVolChange = (values: {
       position: number;
@@ -52,7 +52,7 @@ export default function Nav() {
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
           <div className={commonStyles}>
-            <Scheduler selectedBoxes={selectedBoxes} />
+            <Scheduler globNoteArr={globNoteArr} />
           </div>
           <div className={commonStyles}>
             <RootSelecter />

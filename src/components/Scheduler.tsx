@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx.tsx";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
   ActxStateType,
@@ -17,16 +17,16 @@ interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  selectedBoxes: NoteObject[] | [];
+  globNoteArr: NoteObject[] | [];
   rhythmResolution: number;
 }
 
 let timerID: number;
 
 export default function Scheduler({
-  selectedBoxes,
+  globNoteArr,
 }: {
-  selectedBoxes: NoteObject[];
+  globNoteArr: NoteObject[];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
@@ -47,7 +47,7 @@ export default function Scheduler({
   const stateRef: MutableRefObject<StateRef> = useRef<StateRef>({
     tempo,
     currentNote,
-    selectedBoxes,
+    globNoteArr,
     rhythmResolution,
     currentRoot,
   });
@@ -70,12 +70,13 @@ export default function Scheduler({
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      const selectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
+      const currNote = stateRef.current.globNoteArr.find((obj) => {
         return obj.id === stateRef.current.currentNote;
       });
-      if (selectedInSequencer) {
+      console.log(currNote);
+      if (currNote && currNote.isPlaying) {
         const currentNoteFreq = getAdjustedFrequencyBySemitone(
-          selectedInSequencer.offset,
+          currNote.offset,
           noteFreqs[stateRef.current.currentRoot][3],
         );
         if (currentNoteFreq) {
@@ -130,14 +131,14 @@ export default function Scheduler({
       stateRef.current = {
         tempo,
         currentNote,
-        selectedBoxes,
+        globNoteArr,
         rhythmResolution,
         currentRoot,
       };
     } else {
       throw new Error("state is undefined");
     }
-  }, [state, tempo, currentNote, selectedBoxes, rhythmResolution, currentRoot]);
+  }, [state, tempo, currentNote, globNoteArr, rhythmResolution, currentRoot]);
 
   return (
     <form

@@ -1,4 +1,5 @@
-import { createContext, useReducer } from "react";
+import { useEffect, useReducer } from "react";
+import { audioCtx } from "./AudioContext.ctx";
 import {
   OscParams,
   AudioContextType,
@@ -6,7 +7,7 @@ import {
   NoteObject,
 } from "./@types/AudioContext";
 
-let init: boolean;
+let init: boolean, globNoteArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -17,7 +18,7 @@ const initialState: ActxStateType = {
   currentRoot: "C",
   attack: 0.2,
   release: 0.3,
-  selectedBoxes: [],
+  globNoteArr: [],
 };
 
 interface Action {
@@ -94,24 +95,20 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
-    case "SETSELECTEDBOXES": {
-      if (action.payload) {
-        const newBoxes = action.payload as NoteObject;
+    case "SETGLOBNOTEARR": {
+      if (Array.isArray(action.payload)) {
         return {
           ...state,
-          selectedBoxes: [...state.selectedBoxes, newBoxes],
+          globNoteArr: action.payload,
         };
       } else {
-        throw new Error("Incorrect or missing payload");
+        throw new Error("Missing Payload");
       }
     }
     default:
       return state;
   }
 };
-export const audioCtx: React.Context<AudioContextType | object> = createContext<
-  AudioContextType | object
->({});
 
 export const AudioContextProvider = ({
   children,
@@ -119,6 +116,18 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (!globNoteArrInit) {
+      const globArray = [];
+      for (let index = 0; index < 16; index++) {
+        globArray.push({ id: index, offset: 0, isPlaying: false });
+      }
+      globNoteArrInit = true;
+      dispatch({ type: "SETGLOBNOTEARR", payload: globArray });
+      updateNodeArr();
+    }
+  }, []);
 
   const playTone = ({ type, freq, duration, time }: OscParams) => {
     if (state.engine && state.masterVol) {
@@ -142,6 +151,36 @@ export const AudioContextProvider = ({
     }
   };
 
+  const toggleNotePlaying = (id: number) => {
+    const newArr = state.globNoteArr;
+    const foundNote = newArr.find((obj) => {
+      return obj.id === id;
+    });
+    if (foundNote) {
+      foundNote.isPlaying = !foundNote.isPlaying;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    } else {
+      throw new Error("note not found");
+    }
+  };
+
+  const changeOffset = (id: number, offset: number) => {
+    const newArr = state.globNoteArr;
+    const foundNote = newArr.find((obj) => {
+      return obj.id === id;
+    });
+    if (foundNote) {
+      foundNote.offset = offset;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    } else {
+      throw new Error("note not found");
+    }
+  };
+
+  const updateNodeArr = () => {
+    return;
+  };
+
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
@@ -159,17 +198,13 @@ export const AudioContextProvider = ({
     dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 
-  const spliceSelectedBoxes = (index: number) => {
-    const boxes = state.selectedBoxes;
-    boxes.splice(index, 1);
-    dispatch({ type: "SETSELECTEDBOXES", payload: boxes });
-  };
-
   const actxVal: AudioContextType = {
     dispatch,
     playTone,
     toggleMasterPlayPause,
-    spliceSelectedBoxes,
+    updateNodeArr,
+    toggleNotePlaying,
+    changeOffset,
     state,
   };
 
