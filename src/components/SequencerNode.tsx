@@ -39,7 +39,7 @@ export default function SequencerNode({
         />
         <input
           type="number"
-          disabled={!selected}
+          // disabled={!selected}
           onChange={(e) => changeOffset(obj.id, Number(e.target.value))}
           placeholder="0"
           min="-12"
