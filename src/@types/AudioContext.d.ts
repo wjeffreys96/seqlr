@@ -1,6 +1,7 @@
 export interface NoteObject {
   id: number;
   offset: number;
+  isPlaying: boolean;
 }
 
 export interface OscParams {
@@ -9,14 +10,18 @@ export interface OscParams {
   duration: number; // seconds
   time: number; // seconds
 }
+
 export interface ActxStateType {
   engine: AudioContext | null;
   masterPlaying: boolean;
   masterVol: GainNode | null;
   rhythmResolution: number;
   currentRoot: string;
+  attack: number;
+  release: number;
   currentNote: number;
-  selectedBoxes: NoteObject[] | [];
+  tempo: number;
+  globNoteArr: NoteObject[] | [];
 }
 
 export interface AudioContextType {
@@ -24,5 +29,7 @@ export interface AudioContextType {
   playTone?: ({ type, freq, duration }: OscParams) => void;
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
+  changeOffset?: (id: number, offset: number) => void;
+  toggleNotePlaying?: (id: number) => void;
   state?: ActxStateType;
 }

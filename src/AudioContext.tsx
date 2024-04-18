@@ -1,12 +1,12 @@
-import { createContext, useReducer } from "react";
+import { useEffect, useReducer } from "react";
+import { audioCtx } from "./AudioContext.ctx";
 import {
   OscParams,
   AudioContextType,
   ActxStateType,
-  NoteObject,
 } from "./@types/AudioContext";
 
-let init: boolean;
+let init: boolean, globNoteArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -15,7 +15,10 @@ const initialState: ActxStateType = {
   currentNote: 0,
   rhythmResolution: 2,
   currentRoot: "C",
-  selectedBoxes: [],
+  attack: 0.03,
+  release: 0.03,
+  tempo: 120,
+  globNoteArr: [],
 };
 
 interface Action {
@@ -72,24 +75,50 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
-    case "SETSELECTEDBOXES": {
-      if (action.payload) {
-        const newBoxes = action.payload as NoteObject;
+    case "SETATTACK":
+      if (typeof action.payload === "number") {
         return {
           ...state,
-          selectedBoxes: [...state.selectedBoxes, newBoxes],
+          attack: action.payload,
         };
       } else {
         throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETRELEASE":
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          release: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETTEMPO":
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          tempo: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETGLOBNOTEARR": {
+      if (Array.isArray(action.payload)) {
+        return {
+          ...state,
+          globNoteArr: action.payload,
+        };
+      } else {
+        throw new Error("Missing Payload");
       }
     }
     default:
       return state;
   }
 };
-export const audioCtx: React.Context<AudioContextType | object> = createContext<
-  AudioContextType | object
->({});
 
 export const AudioContextProvider = ({
   children,
@@ -98,26 +127,67 @@ export const AudioContextProvider = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    if (!globNoteArrInit) {
+      const newArr = [];
+      for (let index = 0; index < 16; index++) {
+        newArr.push({ id: index, offset: 0, isPlaying: false });
+      }
+      globNoteArrInit = true;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    }
+  }, []);
+
   const playTone = ({ type, freq, duration, time }: OscParams) => {
     if (state.engine && state.masterVol) {
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
       const gain: GainNode = eng.createGain();
-      gain.gain.setValueAtTime(1, time);
+      gain.gain.setValueAtTime(0.01, time);
+      gain.gain.linearRampToValueAtTime(1, time + state.attack);
       gain.connect(state.masterVol);
       osc.connect(gain);
       osc.type = type;
       osc.frequency.value = freq;
       osc.start(time);
-      gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
-      osc.stop(time + duration);
+      gain.gain.exponentialRampToValueAtTime(
+        0.01,
+        time + duration + state.release,
+      );
+      osc.stop(time + duration + state.release);
     } else {
       throw new Error("Actx state not initialized");
     }
   };
 
+  const toggleNotePlaying = (id: number) => {
+    const newArr = state.globNoteArr;
+    const foundNote = newArr.find((obj) => {
+      return obj.id === id;
+    });
+    if (foundNote) {
+      foundNote.isPlaying = !foundNote.isPlaying;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    } else {
+      throw new Error("note not found");
+    }
+  };
+
+  const changeOffset = (id: number, offset: number) => {
+    const newArr = state.globNoteArr;
+    const foundNote = newArr.find((obj) => {
+      return obj.id === id;
+    });
+    if (foundNote) {
+      foundNote.offset = offset;
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+    } else {
+      throw new Error("note not found");
+    }
+  };
+
   const toggleMasterPlayPause = () => {
-    // first time user presses play we initialize audio engine and save it to state.
+    // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
       // create the audio engine and master volume channel and save them.
       const engine = new AudioContext();
@@ -127,29 +197,18 @@ export const AudioContextProvider = ({
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
-      // play silent buffer to unlock audio - otherwise clicking may happen.
-      const silentBuffer = engine.createBuffer(1, 1, 22050);
-      const node = engine.createBufferSource();
-      node.buffer = silentBuffer;
-      node.start(0);
-
       init = true;
     }
     dispatch({ type: "SETCURRENTNOTE", payload: 0 });
     dispatch({ type: "TOGGLEMASTERPLAYING" });
   };
 
-  const spliceSelectedBoxes = (index: number) => {
-    const boxes = state.selectedBoxes;
-    boxes.splice(index, 1);
-    dispatch({ type: "SETSELECTEDBOXES", payload: boxes });
-  };
-
   const actxVal: AudioContextType = {
     dispatch,
     playTone,
     toggleMasterPlayPause,
-    spliceSelectedBoxes,
+    toggleNotePlaying,
+    changeOffset,
     state,
   };
 

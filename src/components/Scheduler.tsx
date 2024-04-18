@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx.tsx";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
   ActxStateType,
@@ -17,16 +17,16 @@ interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  selectedBoxes: NoteObject[] | [];
+  globNoteArr: NoteObject[] | [];
   rhythmResolution: number;
 }
 
 let timerID: number;
 
 export default function Scheduler({
-  selectedBoxes,
+  globNoteArr,
 }: {
-  selectedBoxes: NoteObject[];
+  globNoteArr: NoteObject[];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
@@ -36,9 +36,9 @@ export default function Scheduler({
     currentNote,
     rhythmResolution,
     currentRoot,
+    tempo,
   }: ActxStateType = state!;
   const BpmNumRef = useRef<HTMLInputElement>(null);
-  const [tempo, setTempo] = useState<number>(120);
   const lookahead = 25; // How frequently to call scheduling function (ms)
   const scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
@@ -47,17 +47,18 @@ export default function Scheduler({
   const stateRef: MutableRefObject<StateRef> = useRef<StateRef>({
     tempo,
     currentNote,
-    selectedBoxes,
+    globNoteArr,
     rhythmResolution,
     currentRoot,
   });
 
   const nextNote = () => {
     if (dispatch) {
-      // Advance current note and time by a 16th note
       const secondsPerBeat =
         60.0 / stateRef.current.tempo / stateRef.current.rhythmResolution;
+
       nextNoteTime += secondsPerBeat;
+
       dispatch({
         type: "SETCURRENTNOTE",
         payload: stateRef.current.currentNote + 1,
@@ -70,12 +71,12 @@ export default function Scheduler({
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      const selectedInSequencer = stateRef.current.selectedBoxes.find((obj) => {
+      const currNote = stateRef.current.globNoteArr.find((obj) => {
         return obj.id === stateRef.current.currentNote;
       });
-      if (selectedInSequencer) {
+      if (currNote && currNote.isPlaying) {
         const currentNoteFreq = getAdjustedFrequencyBySemitone(
-          selectedInSequencer.offset,
+          currNote.offset,
           noteFreqs[stateRef.current.currentRoot][3],
         );
         if (currentNoteFreq) {
@@ -130,41 +131,50 @@ export default function Scheduler({
       stateRef.current = {
         tempo,
         currentNote,
-        selectedBoxes,
+        globNoteArr,
         rhythmResolution,
         currentRoot,
       };
     } else {
       throw new Error("state is undefined");
     }
-  }, [state, tempo, currentNote, selectedBoxes, rhythmResolution, currentRoot]);
-
-  return (
-    <form
-      className="flex justify-between items-center gap-2 w-full"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setTempo(Number(BpmNumRef.current!.value));
-        BpmNumRef.current?.blur();
-      }}
-    >
-      <label className="flex items-center justify-center gap-2 text-left text-zinc-300 text-sm">
-        BPM:
-        <div>
-          <input
-            value={tempo}
-            name="bpm"
-            step="1"
-            onChange={(e) => {
-              e.preventDefault();
-              setTempo(Number(e.target.value));
-            }}
-            ref={BpmNumRef}
-            type="number"
-            className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-14 text-sm"
-          />
-        </div>
-      </label>
-    </form>
-  );
+  }, [state, tempo, currentNote, globNoteArr, rhythmResolution, currentRoot]);
+  if (state && dispatch) {
+    return (
+      <form
+        className="flex justify-between items-center gap-2 w-full"
+        onSubmit={(e) => {
+          e.preventDefault();
+          dispatch({
+            type: "SETTEMPO",
+            payload: Number(BpmNumRef.current!.value),
+          });
+          BpmNumRef.current?.blur();
+        }}
+      >
+        <label className="flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
+          BPM:
+          <div>
+            <input
+              value={tempo}
+              name="bpm"
+              step="1"
+              onChange={(e) => {
+                e.preventDefault();
+                dispatch({
+                  type: "SETTEMPO",
+                  payload: Number(BpmNumRef.current!.value),
+                });
+              }}
+              ref={BpmNumRef}
+              type="number"
+              className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-14 text-sm"
+            />
+          </div>
+        </label>
+      </form>
+    );
+  } else {
+    throw new Error("actx not initialized");
+  }
 }

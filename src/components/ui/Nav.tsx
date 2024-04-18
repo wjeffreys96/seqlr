@@ -1,6 +1,6 @@
 import { LogSliderProps } from "../../@types/LogSlider";
 import { useRef, useContext } from "react";
-import { audioCtx } from "../../AudioContext";
+import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
 import { Button } from "./MovingBorder";
 import { PlayIcon, StopIcon } from "../../assets/icons";
@@ -15,7 +15,7 @@ export default function Nav() {
   const { toggleMasterPlayPause, state } = actx;
 
   if (state) {
-    const { masterVol, masterPlaying, selectedBoxes } = state;
+    const { masterVol, masterPlaying, globNoteArr } = state;
 
     const handleMasterVolChange = (values: {
       position: number;
@@ -30,29 +30,29 @@ export default function Nav() {
       ref: masterVolRef,
       onChange: handleMasterVolChange,
       labelFor: "Master Volume:",
-      defaultValue: 100,
+      defaultValue: 25,
       minval: 0,
       maxval: 100,
       unit: "",
     };
 
     const commonStyles = cn(
-      "flex justify-between gap-4 border rounded p-2 bg-neutral-800 border-neutral-500",
+      "flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600",
     );
 
     return (
       <nav className="flex items-center justify-center w-full h-16">
-        <div className="flex gap-2 h-12">
+        <div className="flex gap-[1px] h-12">
           <Button
             isDisplay={masterPlaying}
             borderRadius=".25rem"
-            className="border border-neutral-500 bg-neutral-800 h-full"
+            className="border border-neutral-600 bg-neutral-800 h-full"
             onClick={toggleMasterPlayPause}
           >
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
           <div className={commonStyles}>
-            <Scheduler selectedBoxes={selectedBoxes} />
+            <Scheduler globNoteArr={globNoteArr} />
           </div>
           <div className={commonStyles}>
             <RootSelecter />

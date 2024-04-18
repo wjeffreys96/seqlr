@@ -1,5 +1,5 @@
 import { useRef, useContext } from "react";
-import { audioCtx } from "../AudioContext";
+import { audioCtx } from "../AudioContext.ctx.tsx";
 import { noteFreqs } from "../utils/utils";
 import type { AudioContextType } from "../@types/AudioContext.d.ts";
 
@@ -17,7 +17,7 @@ export default function RootSelecter() {
           e.preventDefault();
         }}
       >
-        <label className="flex items-center justify-center gap-2 text-left text-zinc-300 text-sm">
+        <label className="flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
           Root:
           <div>
             <select

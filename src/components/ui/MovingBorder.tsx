@@ -1,3 +1,5 @@
+// TODO fix type errors - unsafe any, isDisplay props validation
+
 import {
   motion,
   useAnimationFrame,
