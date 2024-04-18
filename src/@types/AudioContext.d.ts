@@ -20,6 +20,7 @@ export interface ActxStateType {
   attack: number;
   release: number;
   currentNote: number;
+  tempo: number;
   globNoteArr: NoteObject[] | [];
 }
 

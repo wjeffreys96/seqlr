@@ -17,6 +17,7 @@ const initialState: ActxStateType = {
   currentRoot: "C",
   attack: 0.03,
   release: 0.03,
+  tempo: 120,
   globNoteArr: [],
 };
 
@@ -89,6 +90,16 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         return {
           ...state,
           release: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETTEMPO":
+      if (typeof action.payload === "number") {
+        return {
+          ...state,
+          tempo: action.payload,
         };
       } else {
         throw new Error("Incorrect or missing payload");
