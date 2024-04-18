@@ -32,17 +32,21 @@ export default function KnobModule() {
     ];
 
     return (
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center justify-center">
         {knobArr.map((obj) => {
           // const sliderOpts: LogSliderProps = {}
           return (
             <div
               key={"kdk" + obj.id}
-              className="rounded-lg bg-zinc-900 px-2 border-neutral-600 border shadow-neutral-700 shadow-sm"
+              className="rounded-lg bg-zinc-900 px-2 py-1 border-neutral-600 border shadow-neutral-700 shadow-sm"
             >
-              <label key={"klk" + obj.id}>
+              <label
+                className="flex flex-row gap-1 items-center justify-center"
+                key={"klk" + obj.id}
+              >
                 <span className="text-zinc-200">{obj.name}:</span>
                 <input
+                  className="h-1"
                   defaultValue="0.03"
                   type="range"
                   min={obj.min}
