@@ -10,6 +10,7 @@ export interface OscParams {
   duration: number; // seconds
   time: number; // seconds
 }
+
 export interface ActxStateType {
   engine: AudioContext | null;
   masterPlaying: boolean;
@@ -27,7 +28,6 @@ export interface AudioContextType {
   playTone?: ({ type, freq, duration }: OscParams) => void;
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
-  updateNoteArr?: () => void;
   changeOffset?: (id: number, offset: number) => void;
   toggleNotePlaying?: (id: number) => void;
   state?: ActxStateType;

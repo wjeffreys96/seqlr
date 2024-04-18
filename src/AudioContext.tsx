@@ -124,7 +124,6 @@ export const AudioContextProvider = ({
       }
       globNoteArrInit = true;
       dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
-      updateNoteArr();
     }
   }, []);
 
@@ -176,10 +175,6 @@ export const AudioContextProvider = ({
     }
   };
 
-  const updateNoteArr = () => {
-    return;
-  };
-
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
@@ -201,7 +196,6 @@ export const AudioContextProvider = ({
     dispatch,
     playTone,
     toggleMasterPlayPause,
-    updateNoteArr,
     toggleNotePlaying,
     changeOffset,
     state,
