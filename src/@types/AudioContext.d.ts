@@ -27,7 +27,7 @@ export interface AudioContextType {
   playTone?: ({ type, freq, duration }: OscParams) => void;
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
-  updateNodeArr?: () => void;
+  updateNoteArr?: () => void;
   changeOffset?: (id: number, offset: number) => void;
   toggleNotePlaying?: (id: number) => void;
   state?: ActxStateType;

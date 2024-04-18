@@ -4,7 +4,6 @@ import {
   OscParams,
   AudioContextType,
   ActxStateType,
-  NoteObject,
 } from "./@types/AudioContext";
 
 let init: boolean, globNoteArrInit: boolean;
@@ -16,8 +15,8 @@ const initialState: ActxStateType = {
   currentNote: 0,
   rhythmResolution: 2,
   currentRoot: "C",
-  attack: 0.2,
-  release: 0.3,
+  attack: 0.01,
+  release: 0.03,
   globNoteArr: [],
 };
 
@@ -119,13 +118,13 @@ export const AudioContextProvider = ({
 
   useEffect(() => {
     if (!globNoteArrInit) {
-      const globArray = [];
+      const newArr = [];
       for (let index = 0; index < 16; index++) {
-        globArray.push({ id: index, offset: 0, isPlaying: false });
+        newArr.push({ id: index, offset: 0, isPlaying: false });
       }
       globNoteArrInit = true;
-      dispatch({ type: "SETGLOBNOTEARR", payload: globArray });
-      updateNodeArr();
+      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+      updateNoteArr();
     }
   }, []);
 
@@ -177,7 +176,7 @@ export const AudioContextProvider = ({
     }
   };
 
-  const updateNodeArr = () => {
+  const updateNoteArr = () => {
     return;
   };
 
@@ -202,7 +201,7 @@ export const AudioContextProvider = ({
     dispatch,
     playTone,
     toggleMasterPlayPause,
-    updateNodeArr,
+    updateNoteArr,
     toggleNotePlaying,
     changeOffset,
     state,
