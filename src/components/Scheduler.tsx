@@ -1,10 +1,4 @@
-import {
-  MutableRefObject,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { MutableRefObject, useContext, useEffect, useRef } from "react";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
