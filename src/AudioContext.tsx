@@ -15,7 +15,7 @@ const initialState: ActxStateType = {
   currentNote: 0,
   rhythmResolution: 2,
   currentRoot: "C",
-  attack: 0.01,
+  attack: 0.03,
   release: 0.03,
   globNoteArr: [],
 };

@@ -38,7 +38,7 @@ export default function Scheduler({
     currentRoot,
   }: ActxStateType = state!;
   const BpmNumRef = useRef<HTMLInputElement>(null);
-  const [tempo, setTempo] = useState<number>(120);
+  const [tempo, setTempo] = useState(120);
   const lookahead = 25; // How frequently to call scheduling function (ms)
   const scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
   let nextNoteTime: number; // When next note is due
@@ -54,10 +54,12 @@ export default function Scheduler({
 
   const nextNote = () => {
     if (dispatch) {
-      // Advance current note and time by a 16th note
+      // Advance current note by 1
       const secondsPerBeat =
         60.0 / stateRef.current.tempo / stateRef.current.rhythmResolution;
+
       nextNoteTime += secondsPerBeat;
+
       dispatch({
         type: "SETCURRENTNOTE",
         payload: stateRef.current.currentNote + 1,
@@ -73,7 +75,6 @@ export default function Scheduler({
       const currNote = stateRef.current.globNoteArr.find((obj) => {
         return obj.id === stateRef.current.currentNote;
       });
-      console.log(currNote);
       if (currNote && currNote.isPlaying) {
         const currentNoteFreq = getAdjustedFrequencyBySemitone(
           currNote.offset,

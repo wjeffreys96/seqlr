@@ -1,4 +1,4 @@
-import { ChangeEvent, SyntheticEvent, useContext } from "react";
+import { useContext } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 
@@ -11,14 +11,23 @@ export default function KnobModule() {
       {
         id: 1,
         name: "Attack",
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-          dispatch({ type: "SETATTACK", payload: e.target.value }),
+        min: "0.01",
+        max: "0.5",
+        step: "0.01",
+        default: "0.03",
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+          dispatch({ type: "SETATTACK", payload: Number(e.target.value) });
+        },
       },
       {
         id: 2,
         name: "Release",
+        min: "0.01",
+        max: "1",
+        step: "0.01",
+        default: "0.03",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-          dispatch({ type: "SETRELEASE", payload: e.target.value }),
+          dispatch({ type: "SETRELEASE", payload: Number(e.target.value) }),
       },
     ];
 
@@ -33,8 +42,14 @@ export default function KnobModule() {
             >
               <label key={"klk" + obj.id}>
                 <span className="text-zinc-200">{obj.name}:</span>
-                <input type="range" onChange={obj.onChange} />
-                <div>{/* <LogSlider /> */}</div>
+                <input
+                  defaultValue="0.03"
+                  type="range"
+                  min={obj.min}
+                  max={obj.max}
+                  step={obj.step}
+                  onChange={obj.onChange}
+                />
               </label>
             </div>
           );
