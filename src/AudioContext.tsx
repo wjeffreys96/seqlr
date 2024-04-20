@@ -130,7 +130,7 @@ export const AudioContextProvider = ({
   useEffect(() => {
     if (!globNoteArrInit) {
       const outerArr = [];
-      for (let index = 0; index < 2; index++) {
+      for (let index = 0; index < 3; index++) {
         const innerArr = [];
         for (let index = 0; index < 16; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
@@ -165,7 +165,6 @@ export const AudioContextProvider = ({
   };
 
   const toggleNotePlaying = (id: number, index: number) => {
-    console.log("id: ", id, ",", "index: ", index);
     const newArr = state.globNoteArr;
     const innerArr = newArr[index];
     const foundNote = innerArr.find((obj) => {
@@ -182,9 +181,10 @@ export const AudioContextProvider = ({
     }
   };
 
-  const changeOffset = (id: number, offset: number) => {
-    const newArr = state.globNoteArr[0];
-    const foundNote = newArr.find((obj) => {
+  const changeOffset = (id: number, offset: number, index: number) => {
+    const newArr = state.globNoteArr;
+    const innerArr = newArr[index];
+    const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
     if (foundNote) {

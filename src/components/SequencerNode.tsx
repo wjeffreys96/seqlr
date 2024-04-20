@@ -17,10 +17,9 @@ export default function SequencerNode({
   const { state, toggleNotePlaying, changeOffset } = actx;
 
   if (state && toggleNotePlaying && changeOffset) {
-    console.log(outerIndex);
     return (
       <label
-        htmlFor={String("cbi" + obj.id)}
+        htmlFor={String("cbi" + obj.id + outerIndex)}
         key={String("cbk" + obj.id)}
         className={cn(
           "bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
@@ -36,13 +35,16 @@ export default function SequencerNode({
           id={String("cbi" + obj.id + outerIndex)}
           onChange={() => {
             toggleNotePlaying(obj.id, outerIndex);
+            console.log(selected);
             setSelected(!selected);
           }}
           type="checkbox"
         />
         <input
           type="number"
-          onChange={(e) => changeOffset(obj.id, Number(e.target.value))}
+          onChange={(e) =>
+            changeOffset(obj.id, Number(e.target.value), outerIndex)
+          }
           placeholder="0"
           min="-12"
           max="12"

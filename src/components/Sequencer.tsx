@@ -21,7 +21,6 @@ export default function Sequencer() {
     } = state;
 
     if (globNoteArr.length > 0) {
-      console.log(globNoteArr);
       return (
         <>
           {globNoteArr.map((arr, outerIndex) => {
@@ -30,7 +29,7 @@ export default function Sequencer() {
                 key={"gnak" + outerIndex}
                 className="flex flex-col gap-4 bg-neutral-800 p-4 rounded-lg border border-neutral-700"
               >
-                {/* <KnobModule /> */}
+                <KnobModule />
                 <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
                   {arr.map((obj: NoteObject) => {
                     const columnIsPlaying =
