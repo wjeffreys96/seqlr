@@ -29,6 +29,16 @@ export default function KnobModule() {
         onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
           dispatch({ type: "SETRELEASE", payload: Number(e.target.value) }),
       },
+      {
+        id: 3,
+        name: "Volume",
+        min: "0.01",
+        max: "1",
+        step: "0.01",
+        default: "0.5",
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          console.log(e.target.value),
+      },
     ];
 
     return (

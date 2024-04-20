@@ -35,7 +35,6 @@ export default function SequencerNode({
           id={String("cbi" + obj.id + outerIndex)}
           onChange={() => {
             toggleNotePlaying(obj.id, outerIndex);
-            console.log(selected);
             setSelected(!selected);
           }}
           type="checkbox"
