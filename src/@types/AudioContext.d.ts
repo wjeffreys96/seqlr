@@ -21,7 +21,7 @@ export interface ActxStateType {
   release: number;
   currentNote: number;
   tempo: number;
-  globNoteArr: NoteObject[] | [];
+  globNoteArr: NoteObject[][] | [];
 }
 
 export interface AudioContextType {
@@ -30,6 +30,6 @@ export interface AudioContextType {
   toggleMasterPlayPause?: () => void;
   spliceSelectedBoxes?: (index: number) => void;
   changeOffset?: (id: number, offset: number) => void;
-  toggleNotePlaying?: (id: number) => void;
+  toggleNotePlaying?: (id: number, index: number) => void;
   state?: ActxStateType;
 }
