@@ -17,28 +17,40 @@ export default function Sequencer() {
     }: {
       currentNote: number;
       masterPlaying: boolean;
-      globNoteArr: NoteObject[];
+      globNoteArr: NoteObject[][];
     } = state;
 
-    return (
-      <div className="flex flex-col gap-4 bg-neutral-800 p-4 rounded-lg border border-neutral-700">
-        <KnobModule />
-        <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
-          {globNoteArr.map(function(obj: NoteObject) {
-            const columnIsPlaying =
-              (masterPlaying && obj.id === currentNote - 1) ||
-              (masterPlaying && currentNote === 0 && obj.id === 15);
+    if (globNoteArr.length > 0) {
+      return (
+        <>
+          {globNoteArr.map((arr, outerIndex) => {
             return (
-              <SequencerNode
-                key={"snk" + obj.id}
-                obj={obj}
-                columnIsPlaying={columnIsPlaying}
-              />
+              <div
+                key={"gnak" + outerIndex}
+                className="flex flex-col gap-4 bg-neutral-800 p-4 rounded-lg border border-neutral-700"
+              >
+                <KnobModule />
+                <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
+                  {arr.map((obj: NoteObject) => {
+                    const columnIsPlaying =
+                      (masterPlaying && obj.id === currentNote - 1) ||
+                      (masterPlaying && currentNote === 0 && obj.id === 15);
+                    return (
+                      <SequencerNode
+                        key={"snk" + obj.id}
+                        obj={obj}
+                        outerIndex={outerIndex}
+                        columnIsPlaying={columnIsPlaying}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
-        </div>
-      </div>
-    );
+        </>
+      );
+    }
   } else {
     throw new Error("actx is undefined");
   }

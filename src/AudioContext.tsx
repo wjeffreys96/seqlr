@@ -129,12 +129,16 @@ export const AudioContextProvider = ({
 
   useEffect(() => {
     if (!globNoteArrInit) {
-      const newArr = [];
-      for (let index = 0; index < 16; index++) {
-        newArr.push({ id: index, offset: 0, isPlaying: false });
+      const outerArr = [];
+      for (let index = 0; index < 3; index++) {
+        const innerArr = [];
+        for (let index = 0; index < 16; index++) {
+          innerArr.push({ id: index, offset: 0, isPlaying: false });
+        }
+        outerArr.push(innerArr);
       }
+      dispatch({ type: "SETGLOBNOTEARR", payload: outerArr });
       globNoteArrInit = true;
-      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
     }
   }, []);
 
@@ -160,22 +164,27 @@ export const AudioContextProvider = ({
     }
   };
 
-  const toggleNotePlaying = (id: number) => {
+  const toggleNotePlaying = (id: number, index: number) => {
     const newArr = state.globNoteArr;
-    const foundNote = newArr.find((obj) => {
+    const innerArr = newArr[index];
+    const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
     if (foundNote) {
       foundNote.isPlaying = !foundNote.isPlaying;
-      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+      dispatch({
+        type: "SETGLOBNOTEARR",
+        payload: newArr,
+      });
     } else {
       throw new Error("note not found");
     }
   };
 
-  const changeOffset = (id: number, offset: number) => {
+  const changeOffset = (id: number, offset: number, index: number) => {
     const newArr = state.globNoteArr;
-    const foundNote = newArr.find((obj) => {
+    const innerArr = newArr[index];
+    const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
     if (foundNote) {

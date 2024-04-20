@@ -1,10 +1,4 @@
-import {
-  MutableRefObject,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { MutableRefObject, useContext, useEffect, useRef } from "react";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
@@ -17,7 +11,7 @@ interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  globNoteArr: NoteObject[] | [];
+  globNoteArr: NoteObject[][] | [];
   rhythmResolution: number;
 }
 
@@ -26,7 +20,7 @@ let timerID: number;
 export default function Scheduler({
   globNoteArr,
 }: {
-  globNoteArr: NoteObject[];
+  globNoteArr: NoteObject[][];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
@@ -71,25 +65,27 @@ export default function Scheduler({
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      const currNote = stateRef.current.globNoteArr.find((obj) => {
-        return obj.id === stateRef.current.currentNote;
-      });
-      if (currNote && currNote.isPlaying) {
-        const currentNoteFreq = getAdjustedFrequencyBySemitone(
-          currNote.offset,
-          noteFreqs[stateRef.current.currentRoot][3],
-        );
-        if (currentNoteFreq) {
-          playTone({
-            type: "sine",
-            freq: currentNoteFreq,
-            duration: 0.3,
-            time,
-          });
-        } else {
-          throw new Error("currentNoteFreq is undefined");
+      stateRef.current.globNoteArr.forEach((element) => {
+        const currNote = element.find((obj) => {
+          return obj.id === stateRef.current.currentNote;
+        });
+        if (currNote && currNote.isPlaying) {
+          const currentNoteFreq = getAdjustedFrequencyBySemitone(
+            currNote.offset,
+            noteFreqs[stateRef.current.currentRoot][3],
+          );
+          if (currentNoteFreq) {
+            playTone({
+              type: "sine",
+              freq: currentNoteFreq,
+              duration: 0.3,
+              time,
+            });
+          } else {
+            throw new Error("currentNoteFreq is undefined");
+          }
         }
-      }
+      });
     }
   };
 

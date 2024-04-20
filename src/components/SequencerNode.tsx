@@ -6,9 +6,11 @@ import { audioCtx } from "../AudioContext.ctx";
 export default function SequencerNode({
   obj,
   columnIsPlaying,
+  outerIndex,
 }: {
   obj: NoteObject;
   columnIsPlaying: boolean;
+  outerIndex: number;
 }) {
   const [selected, setSelected] = useState<boolean>(false);
   const actx: AudioContextType = useContext(audioCtx);
@@ -17,7 +19,7 @@ export default function SequencerNode({
   if (state && toggleNotePlaying && changeOffset) {
     return (
       <label
-        htmlFor={String("cbi" + obj.id)}
+        htmlFor={String("cbi" + obj.id + outerIndex)}
         key={String("cbk" + obj.id)}
         className={cn(
           "bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
@@ -30,17 +32,19 @@ export default function SequencerNode({
         {<span className="text-white mb-2">{obj.id + 1}</span>}
         <input
           className="my-2 hidden"
-          id={String("cbi" + obj.id)}
+          id={String("cbi" + obj.id + outerIndex)}
           onChange={() => {
-            toggleNotePlaying(obj.id);
+            toggleNotePlaying(obj.id, outerIndex);
+            console.log(selected);
             setSelected(!selected);
           }}
           type="checkbox"
         />
         <input
           type="number"
-          // disabled={!selected}
-          onChange={(e) => changeOffset(obj.id, Number(e.target.value))}
+          onChange={(e) =>
+            changeOffset(obj.id, Number(e.target.value), outerIndex)
+          }
           placeholder="0"
           min="-12"
           max="12"
