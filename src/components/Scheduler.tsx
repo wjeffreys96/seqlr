@@ -5,13 +5,14 @@ import type {
   ActxStateType,
   AudioContextType,
   NoteObject,
+  SequencerObject,
 } from "../@types/AudioContext.d.ts";
 
 interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  globNoteArr: NoteObject[][] | [];
+  globNoteArr: SequencerObject[] | [];
   rhythmResolution: number;
 }
 
@@ -20,7 +21,7 @@ let timerID: number;
 export default function Scheduler({
   globNoteArr,
 }: {
-  globNoteArr: NoteObject[][];
+  globNoteArr: SequencerObject[];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
