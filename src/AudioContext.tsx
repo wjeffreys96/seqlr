@@ -127,6 +127,7 @@ export const AudioContextProvider = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // initialize sequencers
   useEffect(() => {
     if (!globNoteArrInit) {
       const outerArr = [];
@@ -135,7 +136,12 @@ export const AudioContextProvider = ({
         for (let index = 0; index < 16; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
         }
-        outerArr.push(innerArr);
+        outerArr.push({
+          attack: 0.03,
+          release: 0.03,
+          gain: null,
+          innerArr,
+        });
       }
       dispatch({ type: "SETGLOBNOTEARR", payload: outerArr });
       globNoteArrInit = true;
@@ -166,7 +172,7 @@ export const AudioContextProvider = ({
 
   const toggleNotePlaying = (id: number, index: number) => {
     const newArr = state.globNoteArr;
-    const innerArr = newArr[index];
+    const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
@@ -183,7 +189,7 @@ export const AudioContextProvider = ({
 
   const changeOffset = (id: number, offset: number, index: number) => {
     const newArr = state.globNoteArr;
-    const innerArr = newArr[index];
+    const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });

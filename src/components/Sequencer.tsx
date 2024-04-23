@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { audioCtx } from "../AudioContext.ctx.tsx";
-import type { AudioContextType } from "../@types/AudioContext";
+import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
 import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
 import KnobModule from "./KnobModule";
@@ -17,7 +17,7 @@ export default function Sequencer() {
     }: {
       currentNote: number;
       masterPlaying: boolean;
-      globNoteArr: NoteObject[][];
+      globNoteArr: SequencerObject[];
     } = state;
 
     if (globNoteArr.length > 0) {
@@ -31,7 +31,7 @@ export default function Sequencer() {
               >
                 <KnobModule />
                 <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
-                  {arr.map((obj: NoteObject) => {
+                  {arr.innerArr.map((obj: NoteObject) => {
                     const columnIsPlaying =
                       (masterPlaying && obj.id === currentNote - 1) ||
                       (masterPlaying && currentNote === 0 && obj.id === 15);

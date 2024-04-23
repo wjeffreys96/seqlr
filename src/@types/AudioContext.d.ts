@@ -4,6 +4,13 @@ export interface NoteObject {
   isPlaying: boolean;
 }
 
+export interface SequencerObject {
+  attack: number;
+  release: number;
+  gain: GainNode | null;
+  innerArr: NoteObject[];
+}
+
 export interface OscParams {
   type: OscillatorType; // "sine", "square", "sawtooth", "triangle", "custom"
   freq: number; // Hz
@@ -21,7 +28,7 @@ export interface ActxStateType {
   release: number;
   currentNote: number;
   tempo: number;
-  globNoteArr: NoteObject[][] | [];
+  globNoteArr: SequencerObject[] | [];
 }
 
 export interface AudioContextType {

@@ -66,7 +66,7 @@ export default function Scheduler({
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
       stateRef.current.globNoteArr.forEach((element) => {
-        const currNote = element.find((obj) => {
+        const currNote = element.innerArr.find((obj) => {
           return obj.id === stateRef.current.currentNote;
         });
         if (currNote && currNote.isPlaying) {
