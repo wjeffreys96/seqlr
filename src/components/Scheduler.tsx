@@ -4,7 +4,6 @@ import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
   ActxStateType,
   AudioContextType,
-  NoteObject,
   SequencerObject,
 } from "../@types/AudioContext.d.ts";
 
