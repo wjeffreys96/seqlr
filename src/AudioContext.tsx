@@ -204,11 +204,20 @@ export const AudioContextProvider = ({
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
-      // create the audio engine and master volume channel and save them.
+      // create the audio engine and master volume channel
       const engine = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
 
+      // create gainNodes for each sequencer
+      const copiedGlobNoteArr = state.globNoteArr;
+      copiedGlobNoteArr.forEach((el) => {
+        el.gain = engine.createGain();
+        el.gain.connect(masterVol);
+      });
+
+      // save to state
+      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
