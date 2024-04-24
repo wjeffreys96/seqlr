@@ -112,7 +112,7 @@ export default function Scheduler({
     }
   };
 
-  // trigger play() when user presses play button or stop when user presses pause
+  // trigger play() when user presses play or stop when user presses pause
   useEffect(() => {
     if (masterPlaying) {
       play();
