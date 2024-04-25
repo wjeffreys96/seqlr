@@ -43,6 +43,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         default: "0.5",
         disabled: knobsDisabled,
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+          console.log(e.target.value);
           const copiedGlobNoteArr = state.globNoteArr;
           const thisArr = copiedGlobNoteArr[outerIndex];
           if (thisArr.gain && state.engine?.currentTime) {
@@ -51,6 +52,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
               Number(e.target.value),
             );
             dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+            console.log(thisArr.gain.gain.value);
           }
         },
       },
