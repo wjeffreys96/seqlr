@@ -127,6 +127,7 @@ export const AudioContextProvider = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // initialize sequencers
   useEffect(() => {
     if (!globNoteArrInit) {
       const outerArr = [];
@@ -135,30 +136,35 @@ export const AudioContextProvider = ({
         for (let index = 0; index < 16; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
         }
-        outerArr.push(innerArr);
+        outerArr.push({
+          attack: 0.03,
+          release: 0.03,
+          gain: null,
+          innerArr,
+        });
       }
       dispatch({ type: "SETGLOBNOTEARR", payload: outerArr });
       globNoteArrInit = true;
     }
   }, []);
 
-  const playTone = ({ type, freq, duration, time }: OscParams) => {
+  const playTone = ({ type, freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
       const gain: GainNode = eng.createGain();
       gain.gain.setValueAtTime(0.01, time);
-      gain.gain.linearRampToValueAtTime(1, time + state.attack);
-      gain.connect(state.masterVol);
+      gain.gain.linearRampToValueAtTime(1, time + seqOpts.attack);
+      gain.connect(seqOpts.volume);
       osc.connect(gain);
       osc.type = type;
       osc.frequency.value = freq;
       osc.start(time);
       gain.gain.exponentialRampToValueAtTime(
         0.01,
-        time + duration + state.release,
+        time + duration + seqOpts.release,
       );
-      osc.stop(time + duration + state.release);
+      osc.stop(time + duration + seqOpts.release);
     } else {
       throw new Error("Actx state not initialized");
     }
@@ -166,7 +172,7 @@ export const AudioContextProvider = ({
 
   const toggleNotePlaying = (id: number, index: number) => {
     const newArr = state.globNoteArr;
-    const innerArr = newArr[index];
+    const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
@@ -183,7 +189,7 @@ export const AudioContextProvider = ({
 
   const changeOffset = (id: number, offset: number, index: number) => {
     const newArr = state.globNoteArr;
-    const innerArr = newArr[index];
+    const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
@@ -198,11 +204,21 @@ export const AudioContextProvider = ({
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
-      // create the audio engine and master volume channel and save them.
-      const engine = new AudioContext();
+      // create the audio engine and master volume channel
+      const engine: AudioContext = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
 
+      // create gainNodes for each sequencer
+      const copiedGlobNoteArr = state.globNoteArr;
+      copiedGlobNoteArr.forEach((el) => {
+        el.gain = engine.createGain();
+        el.gain.gain.value = 0.5;
+        el.gain.connect(masterVol);
+      });
+
+      // save to state
+      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 

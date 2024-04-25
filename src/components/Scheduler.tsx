@@ -4,14 +4,14 @@ import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
   ActxStateType,
   AudioContextType,
-  NoteObject,
+  SequencerObject,
 } from "../@types/AudioContext.d.ts";
 
 interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  globNoteArr: NoteObject[][] | [];
+  globNoteArr: SequencerObject[] | [];
   rhythmResolution: number;
 }
 
@@ -20,7 +20,7 @@ let timerID: number;
 export default function Scheduler({
   globNoteArr,
 }: {
-  globNoteArr: NoteObject[][];
+  globNoteArr: SequencerObject[];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
@@ -66,21 +66,31 @@ export default function Scheduler({
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
       stateRef.current.globNoteArr.forEach((element) => {
-        const currNote = element.find((obj) => {
+        const currNote = element.innerArr.find((obj) => {
           return obj.id === stateRef.current.currentNote;
         });
-        if (currNote && currNote.isPlaying) {
+        if (currNote?.isPlaying) {
           const currentNoteFreq = getAdjustedFrequencyBySemitone(
             currNote.offset,
             noteFreqs[stateRef.current.currentRoot][3],
           );
           if (currentNoteFreq) {
-            playTone({
-              type: "sine",
-              freq: currentNoteFreq,
-              duration: 0.3,
-              time,
-            });
+            if (element.gain) {
+              const seqOpts = {
+                attack: element.attack,
+                release: element.release,
+                volume: element.gain,
+              };
+              playTone({
+                type: "sine",
+                freq: currentNoteFreq,
+                duration: 0.3,
+                time,
+                seqOpts,
+              });
+            } else {
+              throw new Error("cannot access sequencer GainNode");
+            }
           } else {
             throw new Error("currentNoteFreq is undefined");
           }
@@ -112,13 +122,14 @@ export default function Scheduler({
     }
   };
 
-  // trigger play() when user presses play button or stop when user presses pause
+  // toggle playing/stopping on user input
   useEffect(() => {
     if (masterPlaying) {
       play();
     } else {
       clearTimeout(timerID);
     }
+    // adding play to dep array breaks the app !!
   }, [masterPlaying]); // eslint-disable-line
 
   // update ref whenever state changes
