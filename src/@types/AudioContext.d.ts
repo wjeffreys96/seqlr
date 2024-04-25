@@ -16,6 +16,11 @@ export interface OscParams {
   freq: number; // Hz
   duration: number; // seconds
   time: number; // seconds
+  seqOpts: {
+    attack: number;
+    release: number;
+    volume: GainNode;
+  };
 }
 
 export interface ActxStateType {

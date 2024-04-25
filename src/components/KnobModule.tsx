@@ -46,10 +46,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
           const copiedGlobNoteArr = state.globNoteArr;
           const thisArr = copiedGlobNoteArr[outerIndex];
           if (thisArr.gain && state.engine?.currentTime) {
-            thisArr.gain.gain.setValueAtTime(
-              state.engine?.currentTime,
-              Number(e.target.value),
-            );
+            thisArr.gain.gain.value = Number(e.target.value);
             dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
           }
         },

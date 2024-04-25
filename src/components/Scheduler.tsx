@@ -69,18 +69,28 @@ export default function Scheduler({
         const currNote = element.innerArr.find((obj) => {
           return obj.id === stateRef.current.currentNote;
         });
-        if (currNote && currNote.isPlaying) {
+        if (currNote?.isPlaying) {
           const currentNoteFreq = getAdjustedFrequencyBySemitone(
             currNote.offset,
             noteFreqs[stateRef.current.currentRoot][3],
           );
           if (currentNoteFreq) {
-            playTone({
-              type: "sine",
-              freq: currentNoteFreq,
-              duration: 0.3,
-              time,
-            });
+            if (element.gain) {
+              const seqOpts = {
+                attack: element.attack,
+                release: element.release,
+                volume: element.gain,
+              };
+              playTone({
+                type: "sine",
+                freq: currentNoteFreq,
+                duration: 0.3,
+                time,
+                seqOpts,
+              });
+            } else {
+              throw new Error("cannot access sequencer GainNode");
+            }
           } else {
             throw new Error("currentNoteFreq is undefined");
           }
@@ -112,13 +122,14 @@ export default function Scheduler({
     }
   };
 
-  // trigger play() when user presses play or stop when user presses pause
+  // toggle playing/stopping on user input
   useEffect(() => {
     if (masterPlaying) {
       play();
     } else {
       clearTimeout(timerID);
     }
+    // adding play to dep array breaks the app !!
   }, [masterPlaying]); // eslint-disable-line
 
   // update ref whenever state changes

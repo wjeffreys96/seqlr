@@ -148,23 +148,23 @@ export const AudioContextProvider = ({
     }
   }, []);
 
-  const playTone = ({ type, freq, duration, time }: OscParams) => {
+  const playTone = ({ type, freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
       const gain: GainNode = eng.createGain();
       gain.gain.setValueAtTime(0.01, time);
-      gain.gain.linearRampToValueAtTime(1, time + state.attack);
-      gain.connect(state.masterVol);
+      gain.gain.linearRampToValueAtTime(1, time + seqOpts.attack);
+      gain.connect(seqOpts.volume);
       osc.connect(gain);
       osc.type = type;
       osc.frequency.value = freq;
       osc.start(time);
       gain.gain.exponentialRampToValueAtTime(
         0.01,
-        time + duration + state.release,
+        time + duration + seqOpts.release,
       );
-      osc.stop(time + duration + state.release);
+      osc.stop(time + duration + seqOpts.release);
     } else {
       throw new Error("Actx state not initialized");
     }
@@ -205,7 +205,7 @@ export const AudioContextProvider = ({
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!init) {
       // create the audio engine and master volume channel
-      const engine = new AudioContext();
+      const engine: AudioContext = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
 
@@ -213,6 +213,7 @@ export const AudioContextProvider = ({
       const copiedGlobNoteArr = state.globNoteArr;
       copiedGlobNoteArr.forEach((el) => {
         el.gain = engine.createGain();
+        el.gain.gain.value = 0.5;
         el.gain.connect(masterVol);
       });
 
