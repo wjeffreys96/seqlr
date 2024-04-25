@@ -149,7 +149,6 @@ export const AudioContextProvider = ({
   }, []);
 
   const playTone = ({ type, freq, duration, time, seqOpts }: OscParams) => {
-    console.log(seqOpts);
     if (state.engine && state.masterVol) {
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
@@ -213,9 +212,8 @@ export const AudioContextProvider = ({
       // create gainNodes for each sequencer
       const copiedGlobNoteArr = state.globNoteArr;
       copiedGlobNoteArr.forEach((el) => {
-        const time = engine.currentTime;
         el.gain = engine.createGain();
-        el.gain.gain.setValueAtTime(time, 0.5);
+        el.gain.gain.value = 0.5;
         el.gain.connect(masterVol);
       });
 
