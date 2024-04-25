@@ -149,6 +149,7 @@ export const AudioContextProvider = ({
   }, []);
 
   const playTone = ({ type, freq, duration, time, seqOpts }: OscParams) => {
+    console.log(seqOpts);
     if (state.engine && state.masterVol) {
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
