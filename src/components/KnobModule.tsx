@@ -21,7 +21,12 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         step: "0.01",
         default: "0.03",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          dispatch({ type: "SETATTACK", payload: Number(e.target.value) });
+          const copiedGlobNoteArr = state.globNoteArr;
+          const thisArr = copiedGlobNoteArr[outerIndex];
+          if (thisArr.attack) {
+            thisArr.attack = Number(e.target.value);
+            dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+          }
         },
       },
       {
@@ -31,8 +36,14 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "1",
         step: "0.01",
         default: "0.03",
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-          dispatch({ type: "SETRELEASE", payload: Number(e.target.value) }),
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+          const copiedGlobNoteArr = state.globNoteArr;
+          const thisArr = copiedGlobNoteArr[outerIndex];
+          if (thisArr.release) {
+            thisArr.release = Number(e.target.value);
+            dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+          }
+        },
       },
       {
         id: 3,
