@@ -72,7 +72,7 @@ export default function Scheduler({
         if (currNote?.isPlaying) {
           const currentNoteFreq = getAdjustedFrequencyBySemitone(
             currNote.offset,
-            noteFreqs[stateRef.current.currentRoot][3],
+            noteFreqs[stateRef.current.currentRoot][element.octave],
           );
           if (currentNoteFreq) {
             if (element.gain) {

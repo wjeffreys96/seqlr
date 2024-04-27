@@ -7,6 +7,7 @@ export interface NoteObject {
 export interface SequencerObject {
   attack: number;
   release: number;
+  octave: number;
   gain: GainNode | null;
   innerArr: NoteObject[];
 }

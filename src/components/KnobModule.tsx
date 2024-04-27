@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 
@@ -6,6 +6,10 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
   const { state, dispatch } = actx;
   const [knobsDisabled, setKnobsDisabled] = useState(true);
+  const selectRef = useRef<HTMLSelectElement>(null);
+
+  const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
   useEffect(() => {
     if (state?.globNoteArr[0]?.gain) {
       setKnobsDisabled(false);
@@ -23,10 +27,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobNoteArr = state.globNoteArr;
           const thisArr = copiedGlobNoteArr[outerIndex];
-          if (thisArr.attack) {
-            thisArr.attack = Number(e.target.value);
-            dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
-          }
+          thisArr.attack = Number(e.target.value);
+          dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
         },
       },
       {
@@ -39,10 +41,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobNoteArr = state.globNoteArr;
           const thisArr = copiedGlobNoteArr[outerIndex];
-          if (thisArr.release) {
-            thisArr.release = Number(e.target.value);
-            dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
-          }
+          thisArr.release = Number(e.target.value);
+          dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
         },
       },
       {
@@ -63,6 +63,13 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         },
       },
     ];
+
+    const handleOctaveChange = () => {
+      const copiedGlobNoteArr = state.globNoteArr;
+      const thisArr = copiedGlobNoteArr[outerIndex];
+      thisArr.octave = Number(selectRef.current?.value);
+      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+    };
 
     return (
       <div className="flex gap-2 items-center justify-center">
@@ -92,6 +99,31 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             </div>
           );
         })}
+        <form
+          className="rounded-lg bg-neutral-900 px-2 py-1 border-neutral-600 border shadow-neutral-700 shadow-sm"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <label className="flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
+            Oct:
+            <div>
+              <select
+                ref={selectRef}
+                defaultValue="3"
+                onChange={(e) => {
+                  e.preventDefault();
+                  handleOctaveChange();
+                }}
+                className="rounded-full min-w-14 bg-neutral-900 text-cyan-200 text-center text-sm px-0.5 py-[3px]"
+              >
+                {octaves.map((oct) => {
+                  return <option key={"ook" + oct}>{oct}</option>;
+                })}
+              </select>
+            </div>
+          </label>
+        </form>
       </div>
     );
   } else {
