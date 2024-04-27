@@ -140,6 +140,7 @@ export const AudioContextProvider = ({
           attack: 0.03,
           release: 0.03,
           gain: null,
+          octave: 3,
           innerArr,
         });
       }
