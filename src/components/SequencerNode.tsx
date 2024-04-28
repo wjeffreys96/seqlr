@@ -17,9 +17,11 @@ export default function SequencerNode({
   const { state, toggleNotePlaying, changeOffset } = actx;
 
   if (state && toggleNotePlaying && changeOffset) {
+    // ensure no duplicate ids
+    const objId = obj.id !== 0 ? obj.id * 100 : obj.id;
     return (
       <label
-        htmlFor={String("cbi" + obj.id + outerIndex)}
+        htmlFor={String("cbi" + objId + outerIndex)}
         key={String("cbk" + obj.id)}
         className={cn(
           "bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
@@ -32,7 +34,7 @@ export default function SequencerNode({
         {<span className="text-white mb-2">{obj.id + 1}</span>}
         <input
           className="my-2 hidden"
-          id={String("cbi" + obj.id + outerIndex)}
+          id={String("cbi" + objId + outerIndex)}
           onChange={() => {
             toggleNotePlaying(obj.id, outerIndex);
             setSelected(!selected);
