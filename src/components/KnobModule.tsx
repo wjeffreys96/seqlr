@@ -109,6 +109,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             Oct:
             <div>
               <select
+                name="OctaveSelecter"
                 ref={selectRef}
                 defaultValue="3"
                 onChange={(e) => {

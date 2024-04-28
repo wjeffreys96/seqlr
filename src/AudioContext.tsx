@@ -112,7 +112,7 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
           globNoteArr: action.payload,
         };
       } else {
-        throw new Error("Missing Payload");
+        throw new Error("Payload must be an array");
       }
     }
     default:
@@ -155,12 +155,23 @@ export const AudioContextProvider = ({
       const osc: OscillatorNode = eng.createOscillator();
       const gain: GainNode = eng.createGain();
       gain.gain.setValueAtTime(0.01, time);
+
+      // set attack
       gain.gain.linearRampToValueAtTime(1, time + seqOpts.attack);
+
+      // connect to the gainNode on the specified sequencer
       gain.connect(seqOpts.volume);
       osc.connect(gain);
+
+      // set waveform type
       osc.type = type;
+
+      // set pitch
       osc.frequency.value = freq;
+
       osc.start(time);
+
+      // set release
       gain.gain.exponentialRampToValueAtTime(
         0.01,
         time + duration + seqOpts.release,
@@ -210,7 +221,7 @@ export const AudioContextProvider = ({
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
 
-      // create gainNodes for each sequencer
+      // create gainNodes for each sequencer and set volume on each
       const copiedGlobNoteArr = state.globNoteArr;
       copiedGlobNoteArr.forEach((el) => {
         el.gain = engine.createGain();

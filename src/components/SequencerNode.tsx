@@ -42,6 +42,7 @@ export default function SequencerNode({
           type="checkbox"
         />
         <input
+          name={"Node" + objId}
           type="number"
           onChange={(e) =>
             changeOffset(obj.id, Number(e.target.value), outerIndex)
