@@ -8,7 +8,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const [knobsDisabled, setKnobsDisabled] = useState(true);
   const selectRef = useRef<HTMLSelectElement>(null);
 
-  const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
 
   useEffect(() => {
     if (state?.globNoteArr[0]?.gain) {
