@@ -1,0 +1,4 @@
+- [ ] sign on sequencer node offsets
+- [ ] ui for creating more sequencers
+- [ ] ui for changing sequencer waveform
+- [ ] adjust attack/release parameters to more desireable ranges

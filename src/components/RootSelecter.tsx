@@ -21,6 +21,7 @@ export default function RootSelecter() {
           Root:
           <div>
             <select
+              name="RootSelecter"
               ref={selectRef}
               onChange={(e) => {
                 e.preventDefault();

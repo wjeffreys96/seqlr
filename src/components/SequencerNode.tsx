@@ -17,7 +17,7 @@ export default function SequencerNode({
   const { state, toggleNotePlaying, changeOffset } = actx;
 
   if (state && toggleNotePlaying && changeOffset) {
-    // ensure no duplicate ids
+    // hack to ensure no duplicate ids
     const objId = obj.id !== 0 ? obj.id * 100 : obj.id;
     return (
       <label
@@ -42,6 +42,7 @@ export default function SequencerNode({
           type="checkbox"
         />
         <input
+          name={"Node" + objId}
           type="number"
           onChange={(e) =>
             changeOffset(obj.id, Number(e.target.value), outerIndex)
