@@ -13,6 +13,7 @@ export default function SequencerNode({
   outerIndex: number;
 }) {
   const [selected, setSelected] = useState<boolean>(false);
+  const [offsetPositive, setOffsetPositive] = useState<boolean>(false);
   const actx: AudioContextType = useContext(audioCtx);
   const { state, toggleNotePlaying, changeOffset } = actx;
 
@@ -41,17 +42,30 @@ export default function SequencerNode({
           }}
           type="checkbox"
         />
-        <input
-          name={"Node" + objId}
-          type="number"
-          onChange={(e) =>
-            changeOffset(obj.id, Number(e.target.value), outerIndex)
-          }
-          placeholder="0"
-          min="-12"
-          max="12"
-          className="text-cyan-200 text-center rounded-full bg-neutral-900 text-sm py-0.5"
-        />
+        <label className="cursor-text text-cyan-200 text-center rounded-full bg-neutral-900 text-sm py-0.5">
+          <span className={cn("text-xs", offsetPositive && "ml-px mr-[-2px]")}>
+            {offsetPositive ? "+" : ""}
+          </span>
+          <input
+            className={cn(
+              offsetPositive ? "max-w-4" : "",
+              "cursor-text text-center text-inherit bg-transparent",
+            )}
+            name={"Node" + objId}
+            type="number"
+            onChange={(e) => {
+              if (Math.sign(Number(e.target.value)) == 1) {
+                setOffsetPositive(true);
+              } else {
+                setOffsetPositive(false);
+              }
+              changeOffset(obj.id, Number(e.target.value), outerIndex);
+            }}
+            placeholder="0"
+            min="-12"
+            max="12"
+          />
+        </label>
       </label>
     );
   } else {
