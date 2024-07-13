@@ -64,6 +64,21 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       },
     ];
 
+    const waveFormButtonArr = [
+      {
+        id: 1,
+        name: "Sine",
+      },
+      {
+        id: 2,
+        name: "Square",
+      },
+      {
+        id: 3,
+        name: "Saw",
+      },
+    ];
+
     const handleOctaveChange = () => {
       const copiedGlobNoteArr = state.globNoteArr;
       const thisArr = copiedGlobNoteArr[outerIndex];
@@ -125,6 +140,19 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             </div>
           </label>
         </form>
+
+        <div className="min-w-48 flex justify-around items-center rounded-lg border border-red-500">
+          {waveFormButtonArr.map((btn) => {
+            return (
+              <button
+                key={"wfba" + btn.id}
+                className="rounded-full text-xs m-2 p-0.5 border border-red-500"
+              >
+                {btn.name}
+              </button>
+            );
+          })}
+        </div>
       </div>
     );
   } else {
