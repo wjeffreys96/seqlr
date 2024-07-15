@@ -1,4 +1,12 @@
-import { useContext, useEffect, useState, useRef, ReactSVG, ReactSVGElement, ReactElement } from "react";
+import {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  ReactSVG,
+  ReactSVGElement,
+  ReactElement,
+} from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
@@ -14,7 +22,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const { state, dispatch } = actx;
   const [knobsDisabled, setKnobsDisabled] = useState(true);
   const selectRef = useRef<HTMLSelectElement>(null);
-  const [currentSelectedWaveform, setCurrentSelectedWaveform] = useState<OscillatorType>("sine");
+  const [currentSelectedWaveform, setCurrentSelectedWaveform] =
+    useState<OscillatorType>("sine");
 
   const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
 
@@ -84,8 +93,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
     ];
 
     interface waveformBtnType {
-      id: number,
-      type: OscillatorType,
+      id: number;
+      type: OscillatorType;
       icon: ReactElement<SVGElement>;
     }
 
@@ -119,23 +128,22 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
     };
 
-
     return (
-      <div className="flex gap-2 items-center justify-center">
+      <div className="flex h-8 gap-2 items-center justify-center text-sm">
         {knobArr.map((slider) => {
           return (
             <div
               key={"kdk" + slider.id}
-              className="rounded-lg bg-zinc-900 px-2 py-1 border-neutral-600 border shadow-neutral-700 shadow-sm"
+              className="rounded-lg bg-zinc-900 px-2 border-neutral-600 border shadow-neutral-700 shadow-sm"
             >
               <label
-                className="flex flex-row m-0.5 gap-1 items-center justify-center"
+                className="h-8 flex flex-row gap-1 items-center justify-center"
                 key={"klk" + slider.id}
               >
                 <span className="text-zinc-200">{slider.name}:</span>
                 <input
                   disabled={slider.disabled}
-                  className="h-1"
+                  className="h-0.5"
                   defaultValue={slider.default}
                   type="range"
                   min={slider.min}
@@ -147,13 +155,14 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             </div>
           );
         })}
+
         <form
-          className="rounded-lg bg-neutral-900 px-2 py-1 border-neutral-600 border shadow-neutral-700 shadow-sm"
+          className="rounded-lg bg-neutral-900 px-2  border-neutral-600 border shadow-neutral-700 shadow-sm"
           onSubmit={(e) => {
             e.preventDefault();
           }}
         >
-          <label className="flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
+          <label className="h-8 flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
             Oct:
             <div>
               <select
@@ -174,15 +183,22 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
           </label>
         </form>
 
-        <div className="min-w-48 p-1 flex justify-around items-center shadow-neutral-700 shadow-sm rounded-lg bg-neutral-900 border border-neutral-600">
-          <span className="ml-2 text-zinc-200">Waveform:</span>
-          {waveFormButtonArr.map((btn) => {
-            return (
-              <WaveformBtn thisOscType={btn.type} currentSelectedWaveform={currentSelectedWaveform} setCurrentSelectedWaveform={setCurrentSelectedWaveform} key={"wfba" + btn.id}>
-                {btn.icon}
-              </WaveformBtn>
-            );
-          })}
+        <div className="min-w-48 shadow-neutral-700 shadow-sm rounded-lg bg-neutral-900 border border-neutral-600">
+          <div className="flex items-center h-8">
+            <span className="ml-2 text-zinc-200">Waveform:</span>
+            {waveFormButtonArr.map((btn) => {
+              return (
+                <WaveformBtn
+                  thisOscType={btn.type}
+                  currentSelectedWaveform={currentSelectedWaveform}
+                  setCurrentSelectedWaveform={setCurrentSelectedWaveform}
+                  key={"wfba" + btn.id}
+                >
+                  {btn.icon}
+                </WaveformBtn>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
