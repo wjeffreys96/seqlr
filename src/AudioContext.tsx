@@ -141,6 +141,7 @@ export const AudioContextProvider = ({
           release: 0.03,
           gain: null,
           octave: 3,
+          waveform: "sine",
           innerArr,
         });
       }
@@ -149,7 +150,7 @@ export const AudioContextProvider = ({
     }
   }, []);
 
-  const playTone = ({ type, freq, duration, time, seqOpts }: OscParams) => {
+  const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
       const eng: AudioContext = state.engine;
       const osc: OscillatorNode = eng.createOscillator();
@@ -164,7 +165,7 @@ export const AudioContextProvider = ({
       osc.connect(gain);
 
       // set waveform type
-      osc.type = type;
+      osc.type = seqOpts.waveform;
 
       // set pitch
       osc.frequency.value = freq;
