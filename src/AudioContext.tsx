@@ -131,7 +131,7 @@ export const AudioContextProvider = ({
   useEffect(() => {
     if (!globNoteArrInit) {
       const outerArr = [];
-      for (let index = 0; index < 3; index++) {
+      for (let index = 0; index < 4; index++) {
         const innerArr = [];
         for (let index = 0; index < 16; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
