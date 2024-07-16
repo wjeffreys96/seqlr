@@ -1,12 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  ReactSVG,
-  ReactSVGElement,
-  ReactElement,
-} from "react";
+import { useContext, useEffect, useState, useRef, ReactElement } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
