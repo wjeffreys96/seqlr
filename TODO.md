@@ -3,3 +3,4 @@
 - [ ] ui for changing sequencer waveform
 - [ ] adjust attack/release parameters to more desireable ranges
 - [x] check possible issue with incorrect pitch at 5th octave and up
+- [ ] fix volume sliders value scaling (reverse log?)
