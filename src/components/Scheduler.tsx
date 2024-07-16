@@ -69,6 +69,7 @@ export default function Scheduler({
         const currNote = element.innerArr.find((obj) => {
           return obj.id === stateRef.current.currentNote;
         });
+
         if (currNote?.isPlaying) {
           const currentNoteFreq = getAdjustedFrequencyBySemitone(
             currNote.offset,
@@ -80,9 +81,9 @@ export default function Scheduler({
                 attack: element.attack,
                 release: element.release,
                 volume: element.gain,
+                waveform: element.waveform,
               };
               playTone({
-                type: "sine",
                 freq: currentNoteFreq,
                 duration: 0.3,
                 time,

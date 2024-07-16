@@ -7,13 +7,13 @@ export interface NoteObject {
 export interface SequencerObject {
   attack: number;
   release: number;
-  octave: number;
   gain: GainNode | null;
+  octave: number;
+  waveform: OscillatorType;
   innerArr: NoteObject[];
 }
 
 export interface OscParams {
-  type: OscillatorType; // "sine", "square", "sawtooth", "triangle", "custom"
   freq: number; // Hz
   duration: number; // seconds
   time: number; // seconds
@@ -21,6 +21,7 @@ export interface OscParams {
     attack: number;
     release: number;
     volume: GainNode;
+    waveform: OscillatorType; // "sine", "square", "sawtooth", "triangle", "custom"
   };
 }
 
