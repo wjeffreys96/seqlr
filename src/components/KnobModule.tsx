@@ -75,7 +75,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       },
       {
         id: 3,
-        name: "Volume",
+        name: "Gain",
         min: "0.01",
         max: "1",
         step: "0.01",
