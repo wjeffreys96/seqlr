@@ -18,8 +18,8 @@ const initialState: ActxStateType = {
   attack: 0.03,
   release: 0.03,
   tempo: 120,
-  sequencerCount: 8,
-  nodeCount: 32,
+  sequencerCount: 3,
+  nodeCount: 16,
   globNoteArr: [],
 };
 
@@ -51,7 +51,7 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
       if (typeof action.payload === "number") {
         return {
           ...state,
-          currentNote: action.payload < 16 ? action.payload : 0,
+          currentNote: action.payload < state.nodeCount ? action.payload : 0,
         };
       } else {
         throw new Error("Incorrect or missing payload");
@@ -148,14 +148,15 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { sequencerCount, nodeCount } = state;
 
   // initialize sequencers
   useEffect(() => {
     if (!globNoteArrInit) {
       const outerArr = [];
-      for (let index = 0; index < 4; index++) {
+      for (let index = 0; index < sequencerCount; index++) {
         const innerArr = [];
-        for (let index = 0; index < 16; index++) {
+        for (let index = 0; index < nodeCount; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
         }
         outerArr.push({

@@ -135,7 +135,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
                 <span className="text-zinc-200">{slider.name}:</span>
                 <input
                   disabled={slider.disabled}
-                  className="h-0.5"
+                  className="h-0.5 w-24"
                   defaultValue={slider.default}
                   type="range"
                   min={slider.min}
