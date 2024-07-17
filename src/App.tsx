@@ -1,6 +1,5 @@
 import Sequencer from "./components/Sequencer";
 import Nav from "./components/ui/Nav";
-import Wrapper from "./components/Wrapper";
 
 export default function App() {
   return (
@@ -9,11 +8,9 @@ export default function App() {
         SEQLR
       </h1>
       <Nav />
-      <Wrapper>
-        <main className="min-h-custom flex flex-col gap-3 justify-center items-center">
-          <Sequencer />
-        </main>
-      </Wrapper>
+      <main className="mx-auto md:max-w-7xl max-w-2xl min-h-custom scrollbar-thin scrollbar-thumb-neutral-500 ">
+        <Sequencer />
+      </main>
     </div>
   );
 }
