@@ -18,6 +18,8 @@ const initialState: ActxStateType = {
   attack: 0.03,
   release: 0.03,
   tempo: 120,
+  sequencerCount: 8,
+  nodeCount: 32,
   globNoteArr: [],
 };
 
@@ -60,6 +62,26 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         return {
           ...state,
           rhythmResolution: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETSEQUENCERCOUNT":
+      if (typeof action.payload == "number") {
+        return {
+          ...state,
+          sequencerCount: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETNODECOUNT":
+      if (typeof action.payload == "number") {
+        return {
+          ...state,
+          nodeCount: action.payload,
         };
       } else {
         throw new Error("Incorrect or missing payload");

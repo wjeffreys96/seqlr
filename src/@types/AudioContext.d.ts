@@ -35,6 +35,8 @@ export interface ActxStateType {
   release: number;
   currentNote: number;
   tempo: number;
+  sequencerCount: number;
+  nodeCount: number;
   globNoteArr: SequencerObject[] | [];
 }
 
