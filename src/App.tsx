@@ -9,11 +9,9 @@ export default function App() {
         SEQLR
       </h1>
       <Nav />
-      <Wrapper>
-        <main className="min-h-custom flex flex-col gap-3 justify-center items-center">
-          <Sequencer />
-        </main>
-      </Wrapper>
+      <main className="mx-auto md:max-w-7xl max-w-2xl min-h-custom scrollbar-thumb-neutral-500 ">
+        <Sequencer />
+      </main>
     </div>
   );
 }
