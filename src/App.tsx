@@ -1,6 +1,5 @@
 import Sequencer from "./components/Sequencer";
 import Nav from "./components/ui/Nav";
-import Wrapper from "./components/Wrapper";
 
 export default function App() {
   return (
