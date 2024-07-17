@@ -27,10 +27,10 @@ export default function Sequencer() {
             return (
               <div
                 key={"gnak" + outerIndex}
-                className="flex flex-col gap-4 bg-neutral-800 p-4 rounded-lg border border-neutral-700"
+                className="flex flex-col gap-4 justify-center items-center mb-2 bg-neutral-800 p-4 rounded-lg border border-neutral-700"
               >
                 <KnobModule outerIndex={outerIndex} />
-                <div className="flex gap-2 bg-neutral-900 p-5 rounded-xl ">
+                <div className="flex gap-2 w-full scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ">
                   {arr.innerArr.map((obj: NoteObject) => {
                     const columnIsPlaying =
                       (masterPlaying && obj.id === currentNote - 1) ||
