@@ -16,4 +16,7 @@
   .min-h-custom {
     min-height: calc(100vh - 4rem);
   }
+  .max-h-custom {
+    max-height: calc(100vh - 4rem);
+  }
 }

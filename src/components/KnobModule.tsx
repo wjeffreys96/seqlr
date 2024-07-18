@@ -1,12 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  ReactSVG,
-  ReactSVGElement,
-  ReactElement,
-} from "react";
+import { useContext, useEffect, useState, useRef, ReactElement } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
@@ -75,7 +67,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       },
       {
         id: 3,
-        name: "Volume",
+        name: "Gain",
         min: "0.01",
         max: "1",
         step: "0.01",
@@ -143,7 +135,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
                 <span className="text-zinc-200">{slider.name}:</span>
                 <input
                   disabled={slider.disabled}
-                  className="h-0.5"
+                  className="h-0.5 w-24"
                   defaultValue={slider.default}
                   type="range"
                   min={slider.min}

@@ -4,17 +4,19 @@ import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
 import { Button } from "./MovingBorder";
 import { PlayIcon, StopIcon } from "../../assets/icons";
-import { cn } from "../../utils/cn";
 import LogSlider from "./LogSlider";
 import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
+import InputWithLabel from "../InputWithLabel.tsx";
 
 export default function Nav() {
   const masterVolRef = useRef<HTMLInputElement>(null);
+  const seqCountRef = useRef<HTMLInputElement>(null);
+  const nodeCountRef = useRef<HTMLInputElement>(null);
   const actx = useContext<AudioContextType>(audioCtx);
-  const { toggleMasterPlayPause, state } = actx;
+  const { toggleMasterPlayPause, state, dispatch } = actx;
 
-  if (state) {
+  if (state && dispatch) {
     const { masterVol, masterPlaying, globNoteArr } = state;
 
     const handleMasterVolChange = (values: {
@@ -36,12 +38,8 @@ export default function Nav() {
       unit: "",
     };
 
-    const commonStyles = cn(
-      "flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600",
-    );
-
     return (
-      <nav className="flex items-center justify-center w-full h-16">
+      <nav className="flex h-16 bg-zinc-900 shadow-zinc-950 text-black shadow-sm z-40 items-center justify-center">
         <div className="flex gap-[1px] h-12">
           <Button
             isDisplay={masterPlaying}
@@ -51,15 +49,59 @@ export default function Nav() {
           >
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
-          <div className={commonStyles}>
-            <Scheduler globNoteArr={globNoteArr} />
-          </div>
-          <div className={commonStyles}>
-            <RootSelecter />
-          </div>
-          <div className={commonStyles}>
+          <Scheduler globNoteArr={globNoteArr} />
+          <RootSelecter />
+          <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
             <LogSlider options={MasterVolSliderOpts} />
           </div>
+          <InputWithLabel
+            onSubmit={(e) => {
+              e.preventDefault();
+              seqCountRef.current?.blur();
+              dispatch({
+                type: "SETSEQUENCERCOUNT",
+                payload: Number(seqCountRef.current?.value),
+              });
+            }}
+            labelText="Sequencers: "
+          >
+            <input
+              onChange={() => {
+                dispatch({
+                  type: "SETSEQUENCERCOUNT",
+                  payload: Number(seqCountRef.current?.value),
+                });
+              }}
+              defaultValue={4}
+              type="number"
+              ref={seqCountRef}
+              className="rounded-full bg-inherit w-8 text-center"
+            />
+          </InputWithLabel>
+          <InputWithLabel
+            onSubmit={(e) => {
+              e.preventDefault();
+              nodeCountRef.current?.blur();
+              dispatch({
+                type: "SETNODECOUNT",
+                payload: Number(nodeCountRef.current?.value),
+              });
+            }}
+            labelText="Nodes: "
+          >
+            <input
+              onChange={() => {
+                dispatch({
+                  type: "SETNODECOUNT",
+                  payload: Number(nodeCountRef.current?.value),
+                });
+              }}
+              defaultValue={16}
+              type="number"
+              ref={nodeCountRef}
+              className="rounded-full bg-inherit w-8 text-center"
+            />
+          </InputWithLabel>
         </div>
       </nav>
     );

@@ -6,6 +6,7 @@ import type {
   AudioContextType,
   SequencerObject,
 } from "../@types/AudioContext.d.ts";
+import InputWithLabel from "./InputWithLabel.tsx";
 
 interface StateRef {
   tempo: number;
@@ -149,8 +150,8 @@ export default function Scheduler({
   }, [state, tempo, currentNote, globNoteArr, rhythmResolution, currentRoot]);
   if (state && dispatch) {
     return (
-      <form
-        className="flex justify-between items-center gap-2 w-full"
+      <InputWithLabel
+        labelText="BPM:"
         onSubmit={(e) => {
           e.preventDefault();
           dispatch({
@@ -160,27 +161,23 @@ export default function Scheduler({
           BpmNumRef.current?.blur();
         }}
       >
-        <label className="flex items-center justify-center gap-2 text-left text-zinc-200 text-sm">
-          BPM:
-          <div>
-            <input
-              value={tempo}
-              name="bpm"
-              step="1"
-              onChange={(e) => {
-                e.preventDefault();
-                dispatch({
-                  type: "SETTEMPO",
-                  payload: Number(BpmNumRef.current!.value),
-                });
-              }}
-              ref={BpmNumRef}
-              type="number"
-              className="rounded-full bg-neutral-900 py-1 text-cyan-200 text-center px-4 w-14 text-sm"
-            />
-          </div>
-        </label>
-      </form>
+        <input
+          value={tempo}
+          name="bpm"
+          min={1}
+          step="1"
+          onChange={(e) => {
+            e.preventDefault();
+            dispatch({
+              type: "SETTEMPO",
+              payload: Number(BpmNumRef.current!.value),
+            });
+          }}
+          ref={BpmNumRef}
+          type="number"
+          className="w-10 text-center rounded-full bg-inherit"
+        />
+      </InputWithLabel>
     );
   } else {
     throw new Error("actx not initialized");
