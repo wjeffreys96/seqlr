@@ -11,10 +11,12 @@ import InputWithLabel from "../InputWithLabel.tsx";
 
 export default function Nav() {
   const masterVolRef = useRef<HTMLInputElement>(null);
+  const seqCountRef = useRef<HTMLInputElement>(null);
+  const nodeCountRef = useRef<HTMLInputElement>(null);
   const actx = useContext<AudioContextType>(audioCtx);
-  const { toggleMasterPlayPause, state } = actx;
+  const { toggleMasterPlayPause, state, dispatch } = actx;
 
-  if (state) {
+  if (state && dispatch) {
     const { masterVol, masterPlaying, globNoteArr } = state;
 
     const handleMasterVolChange = (values: {
@@ -55,10 +57,50 @@ export default function Nav() {
           <InputWithLabel
             onSubmit={(e) => {
               e.preventDefault();
+              seqCountRef.current?.blur();
+              dispatch({
+                type: "SETSEQUENCERCOUNT",
+                payload: Number(seqCountRef.current?.value),
+              });
             }}
             labelText="Sequencers: "
           >
-            <input type="number" className="bg-inherit w-8 text-center" />
+            <input
+              onChange={() => {
+                dispatch({
+                  type: "SETSEQUENCERCOUNT",
+                  payload: Number(seqCountRef.current?.value),
+                });
+              }}
+              defaultValue={4}
+              type="number"
+              ref={seqCountRef}
+              className="rounded-full bg-inherit w-8 text-center"
+            />
+          </InputWithLabel>
+          <InputWithLabel
+            onSubmit={(e) => {
+              e.preventDefault();
+              nodeCountRef.current?.blur();
+              dispatch({
+                type: "SETNODECOUNT",
+                payload: Number(nodeCountRef.current?.value),
+              });
+            }}
+            labelText="Nodes: "
+          >
+            <input
+              onChange={() => {
+                dispatch({
+                  type: "SETNODECOUNT",
+                  payload: Number(nodeCountRef.current?.value),
+                });
+              }}
+              defaultValue={16}
+              type="number"
+              ref={nodeCountRef}
+              className="rounded-full bg-inherit w-8 text-center"
+            />
           </InputWithLabel>
         </div>
       </nav>
