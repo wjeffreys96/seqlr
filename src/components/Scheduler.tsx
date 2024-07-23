@@ -12,16 +12,16 @@ interface StateRef {
   tempo: number;
   currentNote: number;
   currentRoot: string;
-  globNoteArr: SequencerObject[] | [];
+  globSeqArr: SequencerObject[] | [];
   rhythmResolution: number;
 }
 
 let timerID: number;
 
 export default function Scheduler({
-  globNoteArr,
+  globSeqArr,
 }: {
-  globNoteArr: SequencerObject[];
+  globSeqArr: SequencerObject[];
 }) {
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
@@ -42,7 +42,7 @@ export default function Scheduler({
   const stateRef: MutableRefObject<StateRef> = useRef<StateRef>({
     tempo,
     currentNote,
-    globNoteArr,
+    globSeqArr,
     rhythmResolution,
     currentRoot,
   });
@@ -66,7 +66,7 @@ export default function Scheduler({
   const scheduleNote = (time: number) => {
     if (playTone) {
       // Check if the current note is selected to be played by the sequencer
-      stateRef.current.globNoteArr.forEach((element) => {
+      stateRef.current.globSeqArr.forEach((element) => {
         const currNote = element.innerArr.find((obj) => {
           return obj.id === stateRef.current.currentNote;
         });
@@ -140,14 +140,14 @@ export default function Scheduler({
       stateRef.current = {
         tempo,
         currentNote,
-        globNoteArr,
+        globSeqArr,
         rhythmResolution,
         currentRoot,
       };
     } else {
       throw new Error("state is undefined");
     }
-  }, [state, tempo, currentNote, globNoteArr, rhythmResolution, currentRoot]);
+  }, [state, tempo, currentNote, globSeqArr, rhythmResolution, currentRoot]);
   if (state && dispatch) {
     return (
       <InputWithLabel

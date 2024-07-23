@@ -37,7 +37,7 @@ export interface ActxStateType {
   tempo: number;
   sequencerCount: number;
   nodeCount: number;
-  globNoteArr: SequencerObject[] | [];
+  globSeqArr: SequencerObject[] | [];
 }
 
 export interface AudioContextType {

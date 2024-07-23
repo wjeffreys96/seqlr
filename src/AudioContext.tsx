@@ -6,7 +6,7 @@ import {
   ActxStateType,
 } from "./@types/AudioContext";
 
-let init: boolean, globNoteArrInit: boolean;
+let init: boolean, globSeqArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -20,7 +20,7 @@ const initialState: ActxStateType = {
   tempo: 120,
   sequencerCount: 3,
   nodeCount: 16,
-  globNoteArr: [],
+  globSeqArr: [],
 };
 
 interface Action {
@@ -127,11 +127,11 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
-    case "SETGLOBNOTEARR": {
+    case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
         return {
           ...state,
-          globNoteArr: action.payload,
+          globSeqArr: action.payload,
         };
       } else {
         throw new Error("Payload must be an array");
@@ -152,7 +152,20 @@ export const AudioContextProvider = ({
 
   // initialize sequencers
   useEffect(() => {
-    if (!globNoteArrInit) {
+    if (!globSeqArrInit) {
+      updateGlobSeqArr();
+      globSeqArrInit = true;
+    }
+  }, []);
+
+  // update global note array when nodeCount or sequencerCount changes
+  useEffect(() => {
+    updateGlobSeqArr();
+  }, [state.sequencerCount, state.nodeCount]);
+
+  // Update the global note array
+  const updateGlobSeqArr = () => {
+    if (state.globSeqArr.length === 0) {
       const outerArr = [];
       for (let index = 0; index < sequencerCount; index++) {
         const innerArr = [];
@@ -161,17 +174,18 @@ export const AudioContextProvider = ({
         }
         outerArr.push({
           attack: 0.03,
-          release: 0.03,
+          release: 0.1,
           gain: null,
           octave: 3,
           waveform: "sine",
           innerArr,
         });
       }
-      dispatch({ type: "SETGLOBNOTEARR", payload: outerArr });
-      globNoteArrInit = true;
+      dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
+    } else {
+      console.log("already init");
     }
-  }, []);
+  };
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
@@ -207,7 +221,7 @@ export const AudioContextProvider = ({
   };
 
   const toggleNotePlaying = (id: number, index: number) => {
-    const newArr = state.globNoteArr;
+    const newArr = state.globSeqArr;
     const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
@@ -215,7 +229,7 @@ export const AudioContextProvider = ({
     if (foundNote) {
       foundNote.isPlaying = !foundNote.isPlaying;
       dispatch({
-        type: "SETGLOBNOTEARR",
+        type: "SETGLOBSEQARR",
         payload: newArr,
       });
     } else {
@@ -224,14 +238,14 @@ export const AudioContextProvider = ({
   };
 
   const changeOffset = (id: number, offset: number, index: number) => {
-    const newArr = state.globNoteArr;
+    const newArr = state.globSeqArr;
     const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
     if (foundNote) {
       foundNote.offset = offset;
-      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+      dispatch({ type: "SETGLOBSEQARR", payload: newArr });
     } else {
       throw new Error("note not found");
     }
@@ -246,15 +260,15 @@ export const AudioContextProvider = ({
       masterVol.connect(engine.destination);
 
       // create gainNodes for each sequencer and set volume on each
-      const copiedGlobNoteArr = state.globNoteArr;
-      copiedGlobNoteArr.forEach((el) => {
+      const copiedGlobSeqArr = state.globSeqArr;
+      copiedGlobSeqArr.forEach((el) => {
         el.gain = engine.createGain();
         el.gain.gain.value = 0.5;
         el.gain.connect(masterVol);
       });
 
       // save to state
-      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 

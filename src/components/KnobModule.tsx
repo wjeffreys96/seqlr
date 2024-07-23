@@ -21,7 +21,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
 
   // whenever state changes check if we've initialized audio engine and free controls if so
   useEffect(() => {
-    if (state?.globNoteArr[0]?.gain) {
+    if (state?.globSeqArr[0]?.gain) {
       setKnobsDisabled(false);
     }
   }, [state]);
@@ -29,9 +29,9 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   // whenever user changes waveform type update global state
   useEffect(() => {
     if (state && dispatch) {
-      const copiedGlobNoteArr = state?.globNoteArr;
-      copiedGlobNoteArr[outerIndex].waveform = currentSelectedWaveform;
-      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+      const copiedGlobSeqArr = state?.globSeqArr;
+      copiedGlobSeqArr[outerIndex].waveform = currentSelectedWaveform;
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
     }
   }, [currentSelectedWaveform]);
 
@@ -45,10 +45,10 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         step: "0.01",
         default: "0.03",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobNoteArr = state.globNoteArr;
-          const thisArr = copiedGlobNoteArr[outerIndex];
+          const copiedGlobSeqArr = state.globSeqArr;
+          const thisArr = copiedGlobSeqArr[outerIndex];
           thisArr.attack = Number(e.target.value);
-          dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+          dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
         },
       },
       {
@@ -59,10 +59,10 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         step: "0.01",
         default: "0.03",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobNoteArr = state.globNoteArr;
-          const thisArr = copiedGlobNoteArr[outerIndex];
+          const copiedGlobSeqArr = state.globSeqArr;
+          const thisArr = copiedGlobSeqArr[outerIndex];
           thisArr.release = Number(e.target.value);
-          dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+          dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
         },
       },
       {
@@ -74,11 +74,11 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         default: "0.5",
         disabled: knobsDisabled,
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobNoteArr = state.globNoteArr;
-          const thisArr = copiedGlobNoteArr[outerIndex];
+          const copiedGlobSeqArr = state.globSeqArr;
+          const thisArr = copiedGlobSeqArr[outerIndex];
           if (thisArr.gain && state.engine?.currentTime) {
             thisArr.gain.gain.value = Number(e.target.value);
-            dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+            dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
           }
         },
       },
@@ -114,10 +114,10 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
     ];
 
     const handleOctaveChange = () => {
-      const copiedGlobNoteArr = state.globNoteArr;
-      const thisArr = copiedGlobNoteArr[outerIndex];
+      const copiedGlobSeqArr = state.globSeqArr;
+      const thisArr = copiedGlobSeqArr[outerIndex];
       thisArr.octave = Number(selectRef.current?.value);
-      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
     };
 
     return (

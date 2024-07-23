@@ -17,7 +17,7 @@ export default function Nav() {
   const { toggleMasterPlayPause, state, dispatch } = actx;
 
   if (state && dispatch) {
-    const { masterVol, masterPlaying, globNoteArr } = state;
+    const { masterVol, masterPlaying, globSeqArr } = state;
 
     const handleMasterVolChange = (values: {
       position: number;
@@ -49,7 +49,7 @@ export default function Nav() {
           >
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
-          <Scheduler globNoteArr={globNoteArr} />
+          <Scheduler globSeqArr={globSeqArr} />
           <RootSelecter />
           <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
             <LogSlider options={MasterVolSliderOpts} />
@@ -72,7 +72,7 @@ export default function Nav() {
                   payload: Number(seqCountRef.current?.value),
                 });
               }}
-              defaultValue={4}
+              defaultValue={state.sequencerCount}
               type="number"
               ref={seqCountRef}
               className="rounded-full bg-inherit w-8 text-center"
@@ -96,7 +96,7 @@ export default function Nav() {
                   payload: Number(nodeCountRef.current?.value),
                 });
               }}
-              defaultValue={16}
+              defaultValue={state.nodeCount}
               type="number"
               ref={nodeCountRef}
               className="rounded-full bg-inherit w-8 text-center"

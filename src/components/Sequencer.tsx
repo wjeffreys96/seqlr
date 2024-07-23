@@ -14,19 +14,19 @@ export default function Sequencer() {
     const {
       currentNote,
       masterPlaying,
-      globNoteArr,
+      globSeqArr,
       nodeCount,
     }: {
       currentNote: number;
       masterPlaying: boolean;
-      globNoteArr: SequencerObject[];
+      globSeqArr: SequencerObject[];
       nodeCount: number;
     } = state;
 
-    if (globNoteArr.length > 0) {
+    if (globSeqArr.length > 0) {
       return (
         <>
-          {globNoteArr.map((arr, outerIndex) => {
+          {globSeqArr.map((arr, outerIndex) => {
             return (
               <div
                 key={"gnak" + outerIndex}
