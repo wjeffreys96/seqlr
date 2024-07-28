@@ -173,9 +173,13 @@ export const AudioContextProvider = ({
 
       globSeqArrInit = true;
     } else {
-      if (globSeqArrInit && sequencerCount > globSeqArr.length) {
+      if (sequencerCount > globSeqArr.length) {
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-        for (let index = 0; index < sequencerCount - copiedGlobSeqArr.length; index++) {
+        for (
+          let index = 0;
+          index < sequencerCount - copiedGlobSeqArr.length;
+          index++
+        ) {
           const innerArr = [];
           for (let index = 0; index < nodeCount; index++) {
             innerArr.push({ id: index, offset: 0, isPlaying: false });
@@ -188,11 +192,11 @@ export const AudioContextProvider = ({
               octave: 3,
               waveform: "sine",
               innerArr,
-            }));
+            }),
+          );
         }
 
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-
       } else if (sequencerCount < globSeqArr.length) {
         console.error("Not implemented yet!");
       }
@@ -201,16 +205,25 @@ export const AudioContextProvider = ({
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
+      // grab a ref to the main audio engine
       const eng: AudioContext = state.engine;
+
+      // create the oscillator that will play the tone
       const osc: OscillatorNode = eng.createOscillator();
+
+      // create a gain node to control the tone's envelope
       const gain: GainNode = eng.createGain();
+
+      // we can't actually start at 0 so we start the gain node at the lowest level we can
       gain.gain.setValueAtTime(0.01, time);
 
       // set attack
       gain.gain.linearRampToValueAtTime(1, time + seqOpts.attack);
 
-      // connect to the gainNode on the specified sequencer
+      // connect envelope gainNode to the gainNode on the specified sequencer
       gain.connect(seqOpts.volume);
+
+      // connect the oscillator to the gain node
       osc.connect(gain);
 
       // set waveform type
@@ -219,6 +232,7 @@ export const AudioContextProvider = ({
       // set pitch
       osc.frequency.value = freq;
 
+      // begin playing the note
       osc.start(time);
 
       // set release
@@ -226,6 +240,8 @@ export const AudioContextProvider = ({
         0.01,
         time + duration + seqOpts.release,
       );
+
+      // stop playing the note
       osc.stop(time + duration + seqOpts.release);
     } else {
       throw new Error("Actx state not initialized");
@@ -284,6 +300,7 @@ export const AudioContextProvider = ({
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
+      // we only need to do this the very first time the user hits play
       init = true;
     }
     dispatch({ type: "SETCURRENTNOTE", payload: 0 });
