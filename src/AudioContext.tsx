@@ -4,6 +4,7 @@ import {
   OscParams,
   AudioContextType,
   ActxStateType,
+  SequencerObject,
 } from "./@types/AudioContext";
 
 let init: boolean, globSeqArrInit: boolean;
@@ -148,24 +149,11 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { sequencerCount, nodeCount } = state;
+  const { sequencerCount, nodeCount, globSeqArr } = state;
 
-  // initialize sequencers
   useEffect(() => {
     if (!globSeqArrInit) {
-      updateGlobSeqArr();
-      globSeqArrInit = true;
-    }
-  }, []);
-
-  // update global note array when nodeCount or sequencerCount changes
-  useEffect(() => {
-    updateGlobSeqArr();
-  }, [state.sequencerCount, state.nodeCount]);
-
-  // Update the global note array
-  const updateGlobSeqArr = () => {
-    if (state.globSeqArr.length === 0) {
+      // initialize sequencers
       const outerArr = [];
       for (let index = 0; index < sequencerCount; index++) {
         const innerArr = [];
@@ -182,10 +170,34 @@ export const AudioContextProvider = ({
         });
       }
       dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
+
+      globSeqArrInit = true;
     } else {
-      console.log("already init");
+      if (globSeqArrInit && sequencerCount > globSeqArr.length) {
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+        for (let index = 0; index < sequencerCount - copiedGlobSeqArr.length; index++) {
+          const innerArr = [];
+          for (let index = 0; index < nodeCount; index++) {
+            innerArr.push({ id: index, offset: 0, isPlaying: false });
+          }
+          console.log(
+            copiedGlobSeqArr.push({
+              attack: 0.03,
+              release: 0.1,
+              gain: null,
+              octave: 3,
+              waveform: "sine",
+              innerArr,
+            }));
+        }
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+
+      } else if (sequencerCount < globSeqArr.length) {
+        console.error("Not implemented yet!");
+      }
     }
-  };
+  }, [globSeqArr, sequencerCount, nodeCount]);
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
