@@ -150,6 +150,9 @@ export const AudioContextProvider = ({
   const { sequencerCount, nodeCount, globSeqArr } = state;
   const globSeqArrInitRef = useRef(false);
   const engineInitRef = useRef(false);
+  const globSeqArrLengthRef = useRef(sequencerCount);
+  const nodeCountRef = useRef(nodeCount);
+
 
   useEffect(() => {
     if (!globSeqArrInitRef.current) {
@@ -168,36 +171,44 @@ export const AudioContextProvider = ({
           waveform: "sine",
           innerArr,
         });
+        nodeCountRef.current = innerArr.length;
       }
+      globSeqArrLengthRef.current = outerArr.length;
       dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
-
       globSeqArrInitRef.current = true;
     } else {
-      const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-      if (sequencerCount > copiedGlobSeqArr.length) {
-        for (
-          let index = 0;
-          index < sequencerCount - copiedGlobSeqArr.length;
-          index++
-        ) {
+      if (sequencerCount > globSeqArrLengthRef.current) {
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+        for (let index = 0; index < sequencerCount - globSeqArrLengthRef.current; index++) {
           const innerArr = [];
           for (let index = 0; index < nodeCount; index++) {
             innerArr.push({ id: index, offset: 0, isPlaying: false });
           }
-          console.log(
-            copiedGlobSeqArr.push({
-              attack: 0.03,
-              release: 0.1,
-              gain: null,
-              octave: 3,
-              waveform: "sine",
-              innerArr,
-            }),
-          );
+          copiedGlobSeqArr.push({
+            attack: 0.03,
+            release: 0.1,
+            gain: null,
+            octave: 3,
+            waveform: "sine",
+            innerArr,
+          });
         }
+        globSeqArrLengthRef.current = copiedGlobSeqArr.length;
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-      } else if (sequencerCount < globSeqArr.length) {
-        console.error("Not implemented yet!");
+      } else if (sequencerCount < globSeqArrLengthRef.current) {
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+        for (let index = 0; index < globSeqArrLengthRef.current - sequencerCount; index++) {
+          copiedGlobSeqArr.pop();
+        }
+        globSeqArrLengthRef.current = copiedGlobSeqArr.length;
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+      } else if (nodeCount > nodeCountRef.current) {
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+        copiedGlobSeqArr.forEach((thisSequencer) => {
+          for (let i = 0; i < nodeCount - nodeCountRef.current; i++) {
+            thisSequencer.innerArr.push({ id: i + nodeCountRef.current, offset: 0, isPlaying: false });
+          }
+        })
       }
     }
   }, [globSeqArr, sequencerCount, nodeCount]);

@@ -36,7 +36,6 @@ export default function Sequencer() {
                 <div
                   className={cn(
                     "flex gap-2 scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
-                    nodeCount <= 16 && "justify-center",
                   )}
                 >
                   {arr.innerArr.map((obj: NoteObject) => {
