@@ -35,7 +35,7 @@ export default function Sequencer() {
                 <KnobModule outerIndex={outerIndex} />
                 <div
                   className={cn(
-                    "flex gap-2 scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
+                    "flex scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
                   )}
                 >
                   {arr.innerArr.map((obj: NoteObject) => {
@@ -45,12 +45,19 @@ export default function Sequencer() {
                         currentNote === 0 &&
                         obj.id === nodeCount - 1);
                     return (
-                      <SequencerNode
-                        key={"snk" + obj.id}
-                        obj={obj}
-                        outerIndex={outerIndex}
-                        columnIsPlaying={columnIsPlaying}
-                      />
+                      <>
+                        <SequencerNode
+                          key={"snk" + obj.id}
+                          obj={obj}
+                          outerIndex={outerIndex}
+                          columnIsPlaying={columnIsPlaying}
+                        />
+                        {(obj.id + 1) % 16 === 0 && (
+                          <>
+                            <span className="m-1 my-2 border-l border-neutral-700" />
+                          </>
+                        )}
+                      </>
                     );
                   })}
                 </div>
