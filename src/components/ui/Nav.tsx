@@ -67,7 +67,6 @@ export default function Nav() {
             labelText="Sequencers: "
           >
             <input
-              disabled={state.masterPlaying}
               onChange={() => {
                 dispatch({
                   type: "SETSEQUENCERCOUNT",
@@ -77,10 +76,7 @@ export default function Nav() {
               defaultValue={state.sequencerCount}
               type="number"
               ref={seqCountRef}
-              className={cn(
-                state.masterPlaying && "text-gray-400",
-                "rounded-full bg-inherit w-8 text-center",
-              )}
+              className={cn("rounded-full bg-inherit w-8 text-center")}
             />
           </InputWithLabel>
           <InputWithLabel
@@ -95,7 +91,6 @@ export default function Nav() {
             labelText="Nodes: "
           >
             <input
-              disabled={state.masterPlaying}
               onChange={() => {
                 dispatch({
                   type: "SETNODECOUNT",
@@ -105,10 +100,7 @@ export default function Nav() {
               defaultValue={state.nodeCount}
               type="number"
               ref={nodeCountRef}
-              className={cn(
-                state.masterPlaying && "text-gray-400",
-                "rounded-full bg-inherit w-8 text-center",
-              )}
+              className={cn("rounded-full bg-inherit w-8 text-center")}
             />
           </InputWithLabel>
         </div>
