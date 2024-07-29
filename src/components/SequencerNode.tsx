@@ -25,7 +25,7 @@ export default function SequencerNode({
         htmlFor={String("cbi" + objId + outerIndex)}
         key={String("cbk" + obj.id)}
         className={cn(
-          "min-w-16 bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
+          "mx-1 min-w-16 bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
           "w-8 justify-center text-center text-blue-300 flex-col pb-2 pt-1 px-1 rounded-lg",
           "ease-in-out transition-transform",
           columnIsPlaying ? "-translate-y-1 border" : "hover:bg-cyan-950",
