@@ -128,7 +128,6 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
 
     case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
-        console.log(action.payload);
         return {
           ...state,
           globSeqArr: action.payload,
@@ -148,7 +147,7 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { sequencerCount, nodeCount, globSeqArr } = state;
+  const { masterVol, engine, sequencerCount, nodeCount, globSeqArr } = state;
   const globSeqArrInitRef = useRef(false);
   const engineInitRef = useRef(false);
   const globSeqArrLengthRef = useRef(sequencerCount);
@@ -193,6 +192,16 @@ export const AudioContextProvider = ({
           index < sequencerCount - globSeqArrLengthRef.current;
           index++
         ) {
+          let gainNode: GainNode | null;
+
+          if (engine && masterVol) {
+            gainNode = engine.createGain();
+            gainNode.gain.value = 0.5;
+            gainNode.connect(masterVol);
+          } else {
+            gainNode = null;
+          }
+
           const innerArr = [];
 
           for (let index = 0; index < nodeCount; index++) {
@@ -202,7 +211,7 @@ export const AudioContextProvider = ({
           copiedGlobSeqArr.push({
             attack: 0.03,
             release: 0.1,
-            gain: null,
+            gain: gainNode,
             octave: 3,
             waveform: "sine",
             innerArr,
@@ -256,7 +265,7 @@ export const AudioContextProvider = ({
         nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
       }
     }
-  }, [globSeqArr, sequencerCount, nodeCount]);
+  }, [engine, globSeqArr, sequencerCount, nodeCount]);
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
