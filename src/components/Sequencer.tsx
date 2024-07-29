@@ -14,19 +14,19 @@ export default function Sequencer() {
     const {
       currentNote,
       masterPlaying,
-      globNoteArr,
+      globSeqArr,
       nodeCount,
     }: {
       currentNote: number;
       masterPlaying: boolean;
-      globNoteArr: SequencerObject[];
+      globSeqArr: SequencerObject[];
       nodeCount: number;
     } = state;
 
-    if (globNoteArr.length > 0) {
+    if (globSeqArr.length > 0) {
       return (
         <>
-          {globNoteArr.map((arr, outerIndex) => {
+          {globSeqArr.map((arr, outerIndex) => {
             return (
               <div
                 key={"gnak" + outerIndex}
@@ -36,7 +36,6 @@ export default function Sequencer() {
                 <div
                   className={cn(
                     "flex gap-2 scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
-                    nodeCount <= 16 && "justify-center",
                   )}
                 >
                   {arr.innerArr.map((obj: NoteObject) => {

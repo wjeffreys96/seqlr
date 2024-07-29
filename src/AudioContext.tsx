@@ -1,12 +1,11 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { audioCtx } from "./AudioContext.ctx";
 import {
   OscParams,
   AudioContextType,
   ActxStateType,
+  SequencerObject,
 } from "./@types/AudioContext";
-
-let init: boolean, globNoteArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -20,7 +19,7 @@ const initialState: ActxStateType = {
   tempo: 120,
   sequencerCount: 3,
   nodeCount: 16,
-  globNoteArr: [],
+  globSeqArr: [],
 };
 
 interface Action {
@@ -127,11 +126,12 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
-    case "SETGLOBNOTEARR": {
+    case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
+        console.log(action.payload);
         return {
           ...state,
-          globNoteArr: action.payload,
+          globSeqArr: action.payload,
         };
       } else {
         throw new Error("Payload must be an array");
@@ -148,43 +148,137 @@ export const AudioContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { sequencerCount, nodeCount } = state;
+  const { sequencerCount, nodeCount, globSeqArr } = state;
+  const globSeqArrInitRef = useRef(false);
+  const engineInitRef = useRef(false);
+  const globSeqArrLengthRef = useRef(sequencerCount);
+  const nodeCountRef = useRef(nodeCount);
 
-  // initialize sequencers
   useEffect(() => {
-    if (!globNoteArrInit) {
+    if (!globSeqArrInitRef.current) {
+      // initializing sequencers
       const outerArr = [];
+
       for (let index = 0; index < sequencerCount; index++) {
         const innerArr = [];
+
         for (let index = 0; index < nodeCount; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
         }
+
         outerArr.push({
           attack: 0.03,
-          release: 0.03,
+          release: 0.1,
           gain: null,
           octave: 3,
           waveform: "sine",
           innerArr,
         });
+
+        nodeCountRef.current = innerArr.length;
       }
-      dispatch({ type: "SETGLOBNOTEARR", payload: outerArr });
-      globNoteArrInit = true;
+      globSeqArrLengthRef.current = outerArr.length;
+
+      dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
+
+      globSeqArrInitRef.current = true;
+    } else {
+      // updating sequencers
+      if (sequencerCount > globSeqArrLengthRef.current) {
+        // adding sequencers
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+
+        for (
+          let index = 0;
+          index < sequencerCount - globSeqArrLengthRef.current;
+          index++
+        ) {
+          const innerArr = [];
+
+          for (let index = 0; index < nodeCount; index++) {
+            innerArr.push({ id: index, offset: 0, isPlaying: false });
+          }
+
+          copiedGlobSeqArr.push({
+            attack: 0.03,
+            release: 0.1,
+            gain: null,
+            octave: 3,
+            waveform: "sine",
+            innerArr,
+          });
+        }
+        globSeqArrLengthRef.current = copiedGlobSeqArr.length;
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+      } else if (sequencerCount < globSeqArrLengthRef.current) {
+        // removing sequencers
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+
+        for (
+          let index = 0;
+          index < globSeqArrLengthRef.current - sequencerCount;
+          index++
+        ) {
+          copiedGlobSeqArr.pop();
+        }
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+        globSeqArrLengthRef.current = copiedGlobSeqArr.length;
+      } else if (nodeCount > nodeCountRef.current) {
+        // adding nodes to all sequencers
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+
+        copiedGlobSeqArr.forEach((thisSequencer) => {
+          for (let i = 0; i < nodeCount - nodeCountRef.current; i++) {
+            thisSequencer.innerArr.push({
+              id: i + nodeCountRef.current,
+              offset: 0,
+              isPlaying: false,
+            });
+          }
+        });
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+        nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
+      } else if (nodeCount < nodeCountRef.current) {
+        // removing nodes from each sequencer
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+
+        copiedGlobSeqArr.forEach((thisSequencer) => {
+          for (let i = 0; i < nodeCountRef.current - nodeCount; i++) {
+            thisSequencer.innerArr.pop();
+          }
+        });
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+
+        nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
+      }
     }
-  }, []);
+  }, [globSeqArr, sequencerCount, nodeCount]);
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
+      // grab a ref to the main audio engine
       const eng: AudioContext = state.engine;
+
+      // create the oscillator that will play the tone
       const osc: OscillatorNode = eng.createOscillator();
+
+      // create a gain node to control the tone's envelope
       const gain: GainNode = eng.createGain();
+
+      // we can't actually start at 0 so we start the gain node at the lowest level we can
       gain.gain.setValueAtTime(0.01, time);
 
       // set attack
       gain.gain.linearRampToValueAtTime(1, time + seqOpts.attack);
 
-      // connect to the gainNode on the specified sequencer
+      // connect envelope gainNode to the gainNode on the specified sequencer
       gain.connect(seqOpts.volume);
+
+      // connect the oscillator to the gain node
       osc.connect(gain);
 
       // set waveform type
@@ -193,6 +287,7 @@ export const AudioContextProvider = ({
       // set pitch
       osc.frequency.value = freq;
 
+      // begin playing the note
       osc.start(time);
 
       // set release
@@ -200,6 +295,8 @@ export const AudioContextProvider = ({
         0.01,
         time + duration + seqOpts.release,
       );
+
+      // stop playing the note
       osc.stop(time + duration + seqOpts.release);
     } else {
       throw new Error("Actx state not initialized");
@@ -207,7 +304,7 @@ export const AudioContextProvider = ({
   };
 
   const toggleNotePlaying = (id: number, index: number) => {
-    const newArr = state.globNoteArr;
+    const newArr = state.globSeqArr;
     const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
@@ -215,7 +312,7 @@ export const AudioContextProvider = ({
     if (foundNote) {
       foundNote.isPlaying = !foundNote.isPlaying;
       dispatch({
-        type: "SETGLOBNOTEARR",
+        type: "SETGLOBSEQARR",
         payload: newArr,
       });
     } else {
@@ -224,14 +321,14 @@ export const AudioContextProvider = ({
   };
 
   const changeOffset = (id: number, offset: number, index: number) => {
-    const newArr = state.globNoteArr;
+    const newArr = state.globSeqArr;
     const innerArr = newArr[index].innerArr;
     const foundNote = innerArr.find((obj) => {
       return obj.id === id;
     });
     if (foundNote) {
       foundNote.offset = offset;
-      dispatch({ type: "SETGLOBNOTEARR", payload: newArr });
+      dispatch({ type: "SETGLOBSEQARR", payload: newArr });
     } else {
       throw new Error("note not found");
     }
@@ -239,26 +336,27 @@ export const AudioContextProvider = ({
 
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
-    if (!init) {
+    if (!engineInitRef.current) {
       // create the audio engine and master volume channel
       const engine: AudioContext = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
 
       // create gainNodes for each sequencer and set volume on each
-      const copiedGlobNoteArr = state.globNoteArr;
-      copiedGlobNoteArr.forEach((el) => {
+      const copiedGlobSeqArr = state.globSeqArr;
+      copiedGlobSeqArr.forEach((el) => {
         el.gain = engine.createGain();
         el.gain.gain.value = 0.5;
         el.gain.connect(masterVol);
       });
 
       // save to state
-      dispatch({ type: "SETGLOBNOTEARR", payload: copiedGlobNoteArr });
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
-      init = true;
+      // we only need to do this the very first time the user hits play
+      engineInitRef.current = true;
     }
     dispatch({ type: "SETCURRENTNOTE", payload: 0 });
     dispatch({ type: "TOGGLEMASTERPLAYING" });

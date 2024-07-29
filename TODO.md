@@ -1,5 +1,6 @@
 - [x] sign on sequencer node offsets
-- [ ] ui for creating more sequencers
+- [x] ui for creating more sequencers
 - [x] ui for changing sequencer waveform
 - [ ] adjust attack/release parameters to more desireable ranges
 - [x] check possible issue with incorrect pitch at 5th octave and up
+- [ ] add global node scroll bar
