@@ -1,4 +1,5 @@
 import { LogSliderProps } from "../../@types/LogSlider";
+import { cn } from "../../utils/cn.ts";
 import { useRef, useContext } from "react";
 import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
@@ -66,6 +67,7 @@ export default function Nav() {
             labelText="Sequencers: "
           >
             <input
+              disabled={state.masterPlaying}
               onChange={() => {
                 dispatch({
                   type: "SETSEQUENCERCOUNT",
@@ -75,7 +77,10 @@ export default function Nav() {
               defaultValue={state.sequencerCount}
               type="number"
               ref={seqCountRef}
-              className="rounded-full bg-inherit w-8 text-center"
+              className={cn(
+                state.masterPlaying && "text-gray-400",
+                "rounded-full bg-inherit w-8 text-center",
+              )}
             />
           </InputWithLabel>
           <InputWithLabel
@@ -90,6 +95,7 @@ export default function Nav() {
             labelText="Nodes: "
           >
             <input
+              disabled={state.masterPlaying}
               onChange={() => {
                 dispatch({
                   type: "SETNODECOUNT",
@@ -99,7 +105,10 @@ export default function Nav() {
               defaultValue={state.nodeCount}
               type="number"
               ref={nodeCountRef}
-              className="rounded-full bg-inherit w-8 text-center"
+              className={cn(
+                state.masterPlaying && "text-gray-400",
+                "rounded-full bg-inherit w-8 text-center",
+              )}
             />
           </InputWithLabel>
         </div>
