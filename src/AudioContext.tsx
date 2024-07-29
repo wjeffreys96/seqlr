@@ -128,6 +128,7 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
 
     case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
+        console.log(action.payload);
         return {
           ...state,
           globSeqArr: action.payload,
@@ -153,16 +154,18 @@ export const AudioContextProvider = ({
   const globSeqArrLengthRef = useRef(sequencerCount);
   const nodeCountRef = useRef(nodeCount);
 
-
   useEffect(() => {
     if (!globSeqArrInitRef.current) {
-      // initialize sequencers
+      // initializing sequencers
       const outerArr = [];
+
       for (let index = 0; index < sequencerCount; index++) {
         const innerArr = [];
+
         for (let index = 0; index < nodeCount; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
         }
+
         outerArr.push({
           attack: 0.03,
           release: 0.1,
@@ -171,19 +174,31 @@ export const AudioContextProvider = ({
           waveform: "sine",
           innerArr,
         });
+
         nodeCountRef.current = innerArr.length;
       }
       globSeqArrLengthRef.current = outerArr.length;
+
       dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
+
       globSeqArrInitRef.current = true;
     } else {
+      // updating sequencers
       if (sequencerCount > globSeqArrLengthRef.current) {
+        // adding sequencers
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-        for (let index = 0; index < sequencerCount - globSeqArrLengthRef.current; index++) {
+
+        for (
+          let index = 0;
+          index < sequencerCount - globSeqArrLengthRef.current;
+          index++
+        ) {
           const innerArr = [];
+
           for (let index = 0; index < nodeCount; index++) {
             innerArr.push({ id: index, offset: 0, isPlaying: false });
           }
+
           copiedGlobSeqArr.push({
             attack: 0.03,
             release: 0.1,
@@ -194,21 +209,51 @@ export const AudioContextProvider = ({
           });
         }
         globSeqArrLengthRef.current = copiedGlobSeqArr.length;
+
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
       } else if (sequencerCount < globSeqArrLengthRef.current) {
+        // removing sequencers
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-        for (let index = 0; index < globSeqArrLengthRef.current - sequencerCount; index++) {
+
+        for (
+          let index = 0;
+          index < globSeqArrLengthRef.current - sequencerCount;
+          index++
+        ) {
           copiedGlobSeqArr.pop();
         }
-        globSeqArrLengthRef.current = copiedGlobSeqArr.length;
+
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+        globSeqArrLengthRef.current = copiedGlobSeqArr.length;
       } else if (nodeCount > nodeCountRef.current) {
+        // adding nodes to all sequencers
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+
         copiedGlobSeqArr.forEach((thisSequencer) => {
           for (let i = 0; i < nodeCount - nodeCountRef.current; i++) {
-            thisSequencer.innerArr.push({ id: i + nodeCountRef.current, offset: 0, isPlaying: false });
+            thisSequencer.innerArr.push({
+              id: i + nodeCountRef.current,
+              offset: 0,
+              isPlaying: false,
+            });
           }
-        })
+        });
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+        nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
+      } else if (nodeCount < nodeCountRef.current) {
+        // removing nodes from each sequencer
+        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+
+        copiedGlobSeqArr.forEach((thisSequencer) => {
+          for (let i = 0; i < nodeCountRef.current - nodeCount; i++) {
+            thisSequencer.innerArr.pop();
+          }
+        });
+
+        dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+
+        nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
       }
     }
   }, [globSeqArr, sequencerCount, nodeCount]);
