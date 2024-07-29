@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { audioCtx } from "./AudioContext.ctx";
 import {
   OscParams,
@@ -6,8 +6,6 @@ import {
   ActxStateType,
   SequencerObject,
 } from "./@types/AudioContext";
-
-let init: boolean, globSeqArrInit: boolean;
 
 const initialState: ActxStateType = {
   engine: null,
@@ -150,9 +148,11 @@ export const AudioContextProvider = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { sequencerCount, nodeCount, globSeqArr } = state;
+  const globSeqArrInitRef = useRef(false);
+  const engineInitRef = useRef(false);
 
   useEffect(() => {
-    if (!globSeqArrInit) {
+    if (!globSeqArrInitRef.current) {
       // initialize sequencers
       const outerArr = [];
       for (let index = 0; index < sequencerCount; index++) {
@@ -171,10 +171,10 @@ export const AudioContextProvider = ({
       }
       dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
 
-      globSeqArrInit = true;
+      globSeqArrInitRef.current = true;
     } else {
-      if (sequencerCount > globSeqArr.length) {
-        const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+      const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
+      if (sequencerCount > copiedGlobSeqArr.length) {
         for (
           let index = 0;
           index < sequencerCount - copiedGlobSeqArr.length;
@@ -195,7 +195,6 @@ export const AudioContextProvider = ({
             }),
           );
         }
-
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
       } else if (sequencerCount < globSeqArr.length) {
         console.error("Not implemented yet!");
@@ -281,7 +280,7 @@ export const AudioContextProvider = ({
 
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
-    if (!init) {
+    if (!engineInitRef.current) {
       // create the audio engine and master volume channel
       const engine: AudioContext = new AudioContext();
       const masterVol = engine.createGain();
@@ -301,7 +300,7 @@ export const AudioContextProvider = ({
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
 
       // we only need to do this the very first time the user hits play
-      init = true;
+      engineInitRef.current = true;
     }
     dispatch({ type: "SETCURRENTNOTE", payload: 0 });
     dispatch({ type: "TOGGLEMASTERPLAYING" });
