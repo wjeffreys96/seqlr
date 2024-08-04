@@ -45,7 +45,7 @@ export default function Sequencer() {
                         currentNote === 0 &&
                         obj.id === nodeCount - 1);
                     return (
-                      <>
+                      <div key={"iadk" + obj.id}>
                         <SequencerNode
                           key={"snk" + obj.id}
                           obj={obj}
@@ -57,7 +57,7 @@ export default function Sequencer() {
                             <span className="m-1 my-2 border-l border-neutral-700" />
                           </>
                         )}
-                      </>
+                      </div>
                     );
                   })}
                 </div>
