@@ -45,7 +45,7 @@ export default function Sequencer() {
                         currentNote === 0 &&
                         obj.id === nodeCount - 1);
                     return (
-                      <div key={"iadk" + obj.id}>
+                      <div className="flex" key={"iadk" + obj.id}>
                         <SequencerNode
                           key={"snk" + obj.id}
                           obj={obj}
