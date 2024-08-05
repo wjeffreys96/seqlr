@@ -10,13 +10,14 @@ export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, dispatch } = actx;
   const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
+  const globXScrollRef = useRef<HTMLDivElement | null>(null);
 
-  const handleXScroll = (e: React.SyntheticEvent) => {
+  const handleXScroll = () => {
+    const scrollBar = globXScrollRef.current;
     seqRefArr.current.forEach((el) => {
-      el?.scroll({
-        left: e.currentTarget.scrollLeft,
-        behavior: "auto",
-      });
+      if (el && scrollBar) {
+        el.scrollLeft = scrollBar.scrollLeft;
+      }
     });
   };
 
@@ -37,12 +38,18 @@ export default function Sequencer() {
       return (
         <>
           {seqRefArr.current[0] && (
-            <div
-              onScroll={(e) => handleXScroll(e)}
-              style={{ width: `${seqRefArr.current[0].offsetWidth}px` }}
-              className="overflow-x-scroll scrollbar-thin scroll-thumb-neutral-600 h-5"
-            >
-              <div className="" style={{ width: `${seqRefArr.current[0].scrollWidth}px` }} />
+            <div className="flex mx-1.5 px-4 rounded-lg h-1.5 bg-transparent opacity-70">
+              <div
+                ref={globXScrollRef}
+                onScroll={handleXScroll}
+                style={{ width: `${seqRefArr.current[0].offsetWidth}px` }}
+                className="overflow-x-scroll scrollbar-thin bg-transparent"
+              >
+                <div
+                  className="h-[1px] bg-transparent"
+                  style={{ width: `${seqRefArr.current[0].scrollWidth}px` }}
+                />
+              </div>
             </div>
           )}
           {globSeqArr.map((arr, outerIndex) => {
