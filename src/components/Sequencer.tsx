@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
@@ -10,19 +10,10 @@ export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, dispatch } = actx;
   const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
-  const [scrollWidthVal, setScrollWidthVal] = useState<number>(0);
-
-  useEffect(() => {
-    if (seqRefArr.current[0]) {
-      console.log(seqRefArr.current[0].scrollWidth);
-      setScrollWidthVal(seqRefArr.current[0]?.scrollWidth);
-    }
-    // console.log(scrollWidthVal);
-  }, [state]);
 
   const handleXScroll = (e: React.SyntheticEvent) => {
     seqRefArr.current.forEach((el) => {
-      el?.scrollTo({
+      el?.scroll({
         left: e.currentTarget.scrollLeft,
         behavior: "auto",
       });
@@ -45,9 +36,15 @@ export default function Sequencer() {
     if (globSeqArr.length > 0) {
       return (
         <>
-          <div onScroll={handleXScroll} className="overflow-x-scroll w-72 h-5">
-            <div className="w-[1200px]" />
-          </div>
+          {seqRefArr.current[0] && (
+            <div
+              onScroll={(e) => handleXScroll(e)}
+              style={{ width: `${seqRefArr.current[0].offsetWidth}px` }}
+              className="overflow-x-scroll scrollbar-thin scroll-thumb-neutral-600 h-5"
+            >
+              <div className="" style={{ width: `${seqRefArr.current[0].scrollWidth}px` }} />
+            </div>
+          )}
           {globSeqArr.map((arr, outerIndex) => {
             return (
               <div
@@ -59,7 +56,6 @@ export default function Sequencer() {
                   ref={(el) => {
                     seqRefArr.current[outerIndex] = el;
                   }}
-                  onScroll={(e) => handleXScroll(e)}
                   className={cn(
                     "flex scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
                   )}
