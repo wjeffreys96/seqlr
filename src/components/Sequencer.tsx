@@ -38,15 +38,15 @@ export default function Sequencer() {
       return (
         <>
           {seqRefArr.current[0] && (
-            <div className="flex mx-1.5 px-4 rounded-lg h-1.5 bg-transparent opacity-70">
+            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 h-6 opacity-70 border border-neutral-900 rounded-sm">
               <div
                 ref={globXScrollRef}
                 onScroll={handleXScroll}
                 style={{ width: `${seqRefArr.current[0].offsetWidth}px` }}
-                className="overflow-x-scroll scrollbar-thin bg-transparent"
+                className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full"
               >
                 <div
-                  className="h-[1px] bg-transparent"
+                  className="h-[1px]"
                   style={{ width: `${seqRefArr.current[0].scrollWidth}px` }}
                 />
               </div>
