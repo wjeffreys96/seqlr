@@ -1,14 +1,14 @@
-interface InputWithLabelProps {
+interface InputLabelProps {
   children: React.ReactNode;
   labelText: string;
   onSubmit?: (e: React.SyntheticEvent) => void;
 }
 
-export default function InputWithLabel({
+export default function InputLabel({
   children,
   labelText,
   onSubmit,
-}: InputWithLabelProps) {
+}: InputLabelProps) {
   return (
     <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
       <form

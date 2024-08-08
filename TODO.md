@@ -3,5 +3,7 @@
 - [x] ui for changing sequencer waveform
 - [ ] adjust attack/release parameters to more desireable ranges
 - [x] check possible issue with incorrect pitch at 5th octave and up
-- [ ] add global node scroll bar
+- [x] add global node scroll bar
 - [ ] "save as midi" button
+- [ ] "follow" feature for scrollbar
+- [ ] integrate react window to avoid flooding DOM with nodes

@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
@@ -11,12 +11,28 @@ export default function Sequencer() {
   const { state, dispatch } = actx;
   const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const globXScrollRef = useRef<HTMLDivElement | null>(null);
+  const [scrollWidth, setScrollWidth] = useState<number>(
+    seqRefArr.current[0]?.scrollWidth || 0,
+  );
+  const [scrollContainerWidth, setScrollContainerWidth] = useState<number>(
+    seqRefArr.current[0]?.offsetWidth || 0,
+  );
+
+  useEffect(() => {
+    if (seqRefArr.current[0]) {
+      setScrollWidth(seqRefArr.current[0].scrollWidth);
+      setScrollContainerWidth(seqRefArr.current[0].offsetWidth);
+    }
+  }, [state]);
 
   const handleXScroll = () => {
     const scrollBar = globXScrollRef.current;
     seqRefArr.current.forEach((el) => {
       if (el && scrollBar) {
-        el.scrollLeft = scrollBar.scrollLeft;
+        el.scroll({
+          left: scrollBar.scrollLeft,
+          behavior: "auto",
+        });
       }
     });
   };
@@ -38,16 +54,16 @@ export default function Sequencer() {
       return (
         <>
           {seqRefArr.current[0] && (
-            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 h-6 opacity-70 border border-neutral-900 rounded-sm">
+            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 h-4">
               <div
                 ref={globXScrollRef}
                 onScroll={handleXScroll}
-                style={{ width: `${seqRefArr.current[0].offsetWidth}px` }}
-                className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full"
+                style={{ width: `${scrollContainerWidth}px` }}
+                className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full h-full"
               >
                 <div
                   className="h-[1px]"
-                  style={{ width: `${seqRefArr.current[0].scrollWidth}px` }}
+                  style={{ width: `${scrollWidth}px` }}
                 />
               </div>
             </div>
