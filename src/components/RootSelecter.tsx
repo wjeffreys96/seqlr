@@ -2,7 +2,7 @@ import { useRef, useContext } from "react";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import { noteFreqs } from "../utils/utils";
 import type { AudioContextType } from "../@types/AudioContext.d.ts";
-import InputWithLabel from "./InputWithLabel.tsx";
+import InputLabel from "./InputLabel.tsx";
 
 export default function RootSelecter() {
   const notes = Object.keys(noteFreqs);
@@ -12,7 +12,7 @@ export default function RootSelecter() {
 
   if (actx && dispatch) {
     return (
-      <InputWithLabel labelText="Root:">
+      <InputLabel labelText="Root:">
         <select
           name="RootSelecter"
           className="rounded-full w-10 text-center bg-inherit"
@@ -31,7 +31,7 @@ export default function RootSelecter() {
             return <option key={"nk" + note}>{note}</option>;
           })}
         </select>
-      </InputWithLabel>
+      </InputLabel>
     );
   } else throw new Error("actx is undefined");
 }

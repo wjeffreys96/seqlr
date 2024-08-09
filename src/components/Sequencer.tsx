@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
@@ -9,6 +9,33 @@ import KnobModule from "./KnobModule";
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state, dispatch } = actx;
+  const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
+  const globXScrollRef = useRef<HTMLDivElement | null>(null);
+  const [scrollWidth, setScrollWidth] = useState<number>(
+    seqRefArr.current[0]?.scrollWidth || 0,
+  );
+  const [scrollContainerWidth, setScrollContainerWidth] = useState<number>(
+    seqRefArr.current[0]?.offsetWidth || 0,
+  );
+
+  useEffect(() => {
+    if (seqRefArr.current[0]) {
+      setScrollWidth(seqRefArr.current[0].scrollWidth);
+      setScrollContainerWidth(seqRefArr.current[0].offsetWidth);
+    }
+  }, [state]);
+
+  const handleXScroll = () => {
+    const scrollBar = globXScrollRef.current;
+    seqRefArr.current.forEach((el) => {
+      if (el && scrollBar) {
+        el.scroll({
+          left: scrollBar.scrollLeft,
+          behavior: "auto",
+        });
+      }
+    });
+  };
 
   if (state && dispatch) {
     const {
@@ -26,6 +53,21 @@ export default function Sequencer() {
     if (globSeqArr.length > 0) {
       return (
         <>
+          {seqRefArr.current[0] && (
+            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 lg:h-4 lg:bg-inherit bg-neutral-800 rounded-lg h-8 ">
+              <div
+                ref={globXScrollRef}
+                onScroll={handleXScroll}
+                style={{ maxWidth: `${scrollContainerWidth}px` }}
+                className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full h-full"
+              >
+                <div
+                  className="h-[1px]"
+                  style={{ width: `${scrollWidth}px` }}
+                />
+              </div>
+            </div>
+          )}
           {globSeqArr.map((arr, outerIndex) => {
             return (
               <div
@@ -34,6 +76,9 @@ export default function Sequencer() {
               >
                 <KnobModule outerIndex={outerIndex} />
                 <div
+                  ref={(el) => {
+                    seqRefArr.current[outerIndex] = el;
+                  }}
                   className={cn(
                     "flex scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
                   )}
@@ -45,7 +90,7 @@ export default function Sequencer() {
                         currentNote === 0 &&
                         obj.id === nodeCount - 1);
                     return (
-                      <>
+                      <div className="flex" key={"iadk" + obj.id}>
                         <SequencerNode
                           key={"snk" + obj.id}
                           obj={obj}
@@ -57,7 +102,7 @@ export default function Sequencer() {
                             <span className="m-1 my-2 border-l border-neutral-700" />
                           </>
                         )}
-                      </>
+                      </div>
                     );
                   })}
                 </div>

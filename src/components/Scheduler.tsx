@@ -1,4 +1,11 @@
-import { MutableRefObject, useContext, useEffect, useRef } from "react";
+import {
+  ChangeEvent,
+  MutableRefObject,
+  SyntheticEvent,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import { getAdjustedFrequencyBySemitone, noteFreqs } from "../utils/utils";
 import type {
@@ -6,7 +13,7 @@ import type {
   AudioContextType,
   SequencerObject,
 } from "../@types/AudioContext.d.ts";
-import InputWithLabel from "./InputWithLabel.tsx";
+import InputLabel from "./InputLabel.tsx";
 
 interface StateRef {
   tempo: number;
@@ -150,9 +157,9 @@ export default function Scheduler({
   }, [state, tempo, currentNote, globSeqArr, rhythmResolution, currentRoot]);
   if (state && dispatch) {
     return (
-      <InputWithLabel
+      <InputLabel
         labelText="BPM:"
-        onSubmit={(e) => {
+        onSubmit={(e: SyntheticEvent<Element>) => {
           e.preventDefault();
           dispatch({
             type: "SETTEMPO",
@@ -166,7 +173,7 @@ export default function Scheduler({
           name="bpm"
           min={1}
           step="1"
-          onChange={(e) => {
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
             e.preventDefault();
             dispatch({
               type: "SETTEMPO",
@@ -177,7 +184,7 @@ export default function Scheduler({
           type="number"
           className="w-10 text-center rounded-full bg-inherit"
         />
-      </InputWithLabel>
+      </InputLabel>
     );
   } else {
     throw new Error("actx not initialized");

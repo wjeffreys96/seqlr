@@ -1,6 +1,6 @@
 import { LogSliderProps } from "../../@types/LogSlider";
 import { cn } from "../../utils/cn.ts";
-import { useRef, useContext } from "react";
+import { useRef, useContext, ChangeEvent, SyntheticEvent } from "react";
 import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
 import { Button } from "./MovingBorder";
@@ -8,7 +8,7 @@ import { PlayIcon, StopIcon } from "../../assets/icons";
 import LogSlider from "./LogSlider";
 import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
-import InputWithLabel from "../InputWithLabel.tsx";
+import InputLabel from "../InputLabel.tsx";
 
 export default function Nav() {
   const masterVolRef = useRef<HTMLInputElement>(null);
@@ -55,8 +55,8 @@ export default function Nav() {
           <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
             <LogSlider options={MasterVolSliderOpts} />
           </div>
-          <InputWithLabel
-            onSubmit={(e) => {
+          <InputLabel
+            onSubmit={(e: SyntheticEvent<Element>) => {
               e.preventDefault();
               seqCountRef.current?.blur();
               dispatch({
@@ -67,19 +67,19 @@ export default function Nav() {
             labelText="Sequencers: "
           >
             <input
-              onChange={() => {
+              defaultValue={state.sequencerCount}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 dispatch({
                   type: "SETSEQUENCERCOUNT",
-                  payload: Number(seqCountRef.current?.value),
-                });
-              }}
-              defaultValue={state.sequencerCount}
+                  payload: Number(e.target.value),
+                })
+              }
               type="number"
               ref={seqCountRef}
               className={cn("rounded-full bg-inherit w-8 text-center")}
             />
-          </InputWithLabel>
-          <InputWithLabel
+          </InputLabel>
+          <InputLabel
             onSubmit={(e) => {
               e.preventDefault();
               nodeCountRef.current?.blur();
@@ -91,18 +91,18 @@ export default function Nav() {
             labelText="Nodes: "
           >
             <input
-              onChange={() => {
+              defaultValue={state.nodeCount}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 dispatch({
                   type: "SETNODECOUNT",
-                  payload: Number(nodeCountRef.current?.value),
-                });
-              }}
-              defaultValue={state.nodeCount}
+                  payload: Number(e.target.value),
+                })
+              }
               type="number"
               ref={nodeCountRef}
               className={cn("rounded-full bg-inherit w-8 text-center")}
             />
-          </InputWithLabel>
+          </InputLabel>
         </div>
       </nav>
     );
