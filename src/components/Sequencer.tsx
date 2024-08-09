@@ -54,11 +54,11 @@ export default function Sequencer() {
       return (
         <>
           {seqRefArr.current[0] && (
-            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 h-4">
+            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 lg:h-4 lg:bg-inherit bg-neutral-800 rounded-lg h-8 ">
               <div
                 ref={globXScrollRef}
                 onScroll={handleXScroll}
-                style={{ width: `${scrollContainerWidth}px` }}
+                style={{ maxWidth: `${scrollContainerWidth}px` }}
                 className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full h-full"
               >
                 <div
