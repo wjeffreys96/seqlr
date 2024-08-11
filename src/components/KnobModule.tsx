@@ -41,8 +41,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         id: 1,
         name: "Attack",
         min: "0.01",
-        max: "0.5",
-        step: "0.01",
+        max: "1",
+        step: "0.005",
         default: "0.03",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
@@ -55,8 +55,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         id: 2,
         name: "Release",
         min: "0.01",
-        max: "1",
-        step: "0.01",
+        max: "2",
+        step: "0.005",
         default: "0.03",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
