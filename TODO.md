@@ -1,9 +1,9 @@
 - [x] sign on sequencer node offsets
 - [x] ui for creating more sequencers
 - [x] ui for changing sequencer waveform
-- [ ] adjust attack/release parameters to more desireable ranges
 - [x] check possible issue with incorrect pitch at 5th octave and up
 - [x] add global node scroll bar
-- [ ] "save as midi" button
-- [ ] "follow" feature for scrollbar
+- [ ] adjust attack/release parameters to more desireable ranges
 - [ ] integrate react window to avoid flooding DOM with nodes
+- [ ] "follow" feature for scrollbar
+- [ ] "save as midi" button
