@@ -5,6 +5,7 @@ import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
 import { NoteObject } from "../@types/AudioContext";
 import SequencerNode from "./SequencerNode";
 import KnobModule from "./KnobModule";
+import { FixedSizeList as List } from "react-window";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
@@ -12,10 +13,10 @@ export default function Sequencer() {
   const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const globXScrollRef = useRef<HTMLDivElement | null>(null);
   const [scrollWidth, setScrollWidth] = useState<number>(
-    seqRefArr.current[0]?.scrollWidth || 0,
+    seqRefArr.current[0]?.scrollWidth ?? 0,
   );
   const [scrollContainerWidth, setScrollContainerWidth] = useState<number>(
-    seqRefArr.current[0]?.offsetWidth || 0,
+    seqRefArr.current[0]?.offsetWidth ?? 0,
   );
 
   useEffect(() => {
@@ -69,6 +70,11 @@ export default function Sequencer() {
             </div>
           )}
           {globSeqArr.map((arr, outerIndex) => {
+            const InnerArr = ({ index, styles }: { index: number, styles: React.CSSProperties }) => (
+              <div style={styles}>
+                {arr.innerArr[index].id ? arr.innerArr[index].id : ''}
+              </div>
+            );
             return (
               <div
                 key={"gnak" + outerIndex}
@@ -83,28 +89,31 @@ export default function Sequencer() {
                     "flex scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
                   )}
                 >
-                  {arr.innerArr.map((obj: NoteObject) => {
-                    const columnIsPlaying =
-                      (masterPlaying && obj.id === currentNote - 1) ||
-                      (masterPlaying &&
-                        currentNote === 0 &&
-                        obj.id === nodeCount - 1);
-                    return (
-                      <div className="flex" key={"iadk" + obj.id}>
-                        <SequencerNode
-                          key={"snk" + obj.id}
-                          obj={obj}
-                          outerIndex={outerIndex}
-                          columnIsPlaying={columnIsPlaying}
-                        />
-                        {(obj.id + 1) % 16 === 0 && (
-                          <>
-                            <span className="m-1 my-2 border-l border-neutral-700" />
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
+                  <List>
+                    {InnerArr}
+                  </List>
+                  {/* {arr.innerArr.map((obj: NoteObject) => { */}
+                  {/*   const columnIsPlaying = */}
+                  {/*     (masterPlaying && obj.id === currentNote - 1) || */}
+                  {/*     (masterPlaying && */}
+                  {/*       currentNote === 0 && */}
+                  {/*       obj.id === nodeCount - 1); */}
+                  {/*   return ( */}
+                  {/*     <div className="flex" key={"iadk" + obj.id}> */}
+                  {/*       <SequencerNode */}
+                  {/*         key={"snk" + obj.id} */}
+                  {/*         obj={obj} */}
+                  {/*         outerIndex={outerIndex} */}
+                  {/*         columnIsPlaying={columnIsPlaying} */}
+                  {/*       /> */}
+                  {/*       {(obj.id + 1) % 16 === 0 && ( */}
+                  {/*         <> */}
+                  {/*           <span className="m-1 my-2 border-l border-neutral-700" /> */}
+                  {/*         </> */}
+                  {/*       )} */}
+                  {/*     </div> */}
+                  {/*   ); */}
+                  {/* })} */}
                 </div>
               </div>
             );
