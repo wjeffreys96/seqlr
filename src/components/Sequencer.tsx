@@ -89,7 +89,13 @@ export default function Sequencer() {
                     "flex scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
                   )}
                 >
-                  <List>
+                  <List
+                    layout='vertical'
+                    height={250}
+                    width={300}
+                    itemCount={arr.innerArr.length}
+                    itemSize={50}
+                  >
                     {InnerArr}
                   </List>
                   {/* {arr.innerArr.map((obj: NoteObject) => { */}
