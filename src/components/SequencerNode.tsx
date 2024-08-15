@@ -18,11 +18,9 @@ export default function SequencerNode({
   const { state, toggleNotePlaying, changeOffset } = actx;
 
   if (state && toggleNotePlaying && changeOffset) {
-    // hack to ensure no duplicate ids
     const objId = obj.id !== 0 ? obj.id * 100 : obj.id;
-
-    let offsetPositive =
-      Math.sign(obj.offset) > -1 && obj.offset != 0 ? true : false;
+    const offsetPositive =
+      Math.sign(obj.offset) > -1 && obj.offset !== 0 ? true : false;
 
     return (
       <div style={style} className="flex items-center pb-1">
@@ -56,11 +54,11 @@ export default function SequencerNode({
             <span
               className={cn("text-xs", offsetPositive && "ml-px mr-[-2px]")}
             >
-              {offsetPositive ? "+" : ""}
+              {offsetPositive && "+"}
             </span>
             <input
               className={cn(
-                offsetPositive ? "max-w-4" : "max-w-6",
+                "max-w-4",
                 "cursor-text text-center text-inherit bg-transparent",
               )}
               name={"Node" + objId}
