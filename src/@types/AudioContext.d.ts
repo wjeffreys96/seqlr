@@ -5,6 +5,7 @@ export interface NoteObject {
 }
 
 export interface SequencerObject {
+  id: number;
   attack: number;
   release: number;
   gain: GainNode | null;
@@ -47,5 +48,6 @@ export interface AudioContextType {
   spliceSelectedBoxes?: (index: number) => void;
   changeOffset?: (id: number, offset: number, index: number) => void;
   toggleNotePlaying?: (id: number, index: number) => void;
+  changeWaveform?: (index: number, waveform: OscillatorType) => void;
   state?: ActxStateType;
 }
