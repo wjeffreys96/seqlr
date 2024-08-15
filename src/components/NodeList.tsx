@@ -25,21 +25,20 @@ export default function NodeList({
         (masterPlaying && obj.id === currentNote - 1) ||
         (masterPlaying && currentNote === 0 && obj.id === nodeCount - 1);
       return (
-        <div style={style} className="flex items-center">
-          <SequencerNode
-            obj={obj}
-            outerIndex={outerIndex}
-            columnIsPlaying={columnIsPlaying}
-          />
-        </div>
+        <SequencerNode
+          style={style}
+          obj={obj}
+          outerIndex={outerIndex}
+          columnIsPlaying={columnIsPlaying}
+        />
       );
     },
-    [arr.innerArr, masterPlaying, currentNote, nodeCount, outerIndex],
+    [arr, masterPlaying, currentNote],
   );
 
   const itemKey = useCallback((index: number, data: NoteObject[]) => {
     const item = data[index];
-    return `${item.id}-${item.isPlaying}`;
+    return `snak-${item.id}-${outerIndex}`;
   }, []);
 
   return (
