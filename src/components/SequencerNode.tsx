@@ -15,9 +15,9 @@ export default function SequencerNode({
   style: CSSProperties;
 }) {
   const actx: AudioContextType = useContext(audioCtx);
-  const { state, toggleNotePlaying, changeOffset } = actx;
+  const { toggleNotePlaying, changeOffset } = actx;
 
-  if (state && toggleNotePlaying && changeOffset) {
+  if (toggleNotePlaying && changeOffset) {
     const objId = obj.id !== 0 ? obj.id * 100 : obj.id;
     const offsetPositive =
       Math.sign(obj.offset) > -1 && obj.offset !== 0 ? true : false;
