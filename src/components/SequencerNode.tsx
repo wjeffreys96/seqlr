@@ -1,5 +1,5 @@
 import { AudioContextType, NoteObject } from "../@types/AudioContext";
-import { useState, useContext, CSSProperties, useEffect } from "react";
+import { useContext, CSSProperties } from "react";
 import { cn } from "../utils/cn";
 import { audioCtx } from "../AudioContext.ctx";
 
@@ -14,14 +14,16 @@ export default function SequencerNode({
   outerIndex: number;
   style: CSSProperties;
 }) {
-  const [selected, setSelected] = useState<boolean>(false);
-  const [offsetPositive, setOffsetPositive] = useState<boolean>(false);
   const actx: AudioContextType = useContext(audioCtx);
   const { state, toggleNotePlaying, changeOffset } = actx;
 
   if (state && toggleNotePlaying && changeOffset) {
     // hack to ensure no duplicate ids
     const objId = obj.id !== 0 ? obj.id * 100 : obj.id;
+
+    let offsetPositive =
+      Math.sign(obj.offset) > -1 && obj.offset != 0 ? true : false;
+
     return (
       <div style={style} className="flex items-center pb-1">
         <label
@@ -32,7 +34,7 @@ export default function SequencerNode({
             "w-8 justify-center text-center text-blue-300 flex-col pb-2 pt-1 px-1 rounded-lg",
             "ease-in-out transition-transform",
             columnIsPlaying ? "-translate-y-1 border" : "hover:bg-cyan-950",
-            selected && "bg-cyan-900",
+            obj.isPlaying && "bg-cyan-900",
           )}
         >
           {<span className="text-white mb-2">{obj.id + 1}</span>}
@@ -41,11 +43,16 @@ export default function SequencerNode({
             id={String("cbi" + objId + outerIndex)}
             onChange={() => {
               toggleNotePlaying(obj.id, outerIndex);
-              setSelected(!selected);
             }}
             type="checkbox"
           />
-          <label className="cursor-text text-cyan-200 text-center rounded-full bg-neutral-900 text-sm py-0.5">
+          <label
+            className={cn(
+              "cursor-text",
+              obj.offset != 0 ? "text-cyan-200" : "text-neutral-400",
+              "text-center rounded-full bg-neutral-900 text-sm py-0.5",
+            )}
+          >
             <span
               className={cn("text-xs", offsetPositive && "ml-px mr-[-2px]")}
             >
@@ -59,14 +66,9 @@ export default function SequencerNode({
               name={"Node" + objId}
               type="number"
               onChange={(e) => {
-                if (Math.sign(Number(e.target.value)) == 1) {
-                  setOffsetPositive(true);
-                } else {
-                  setOffsetPositive(false);
-                }
                 changeOffset(obj.id, Number(e.target.value), outerIndex);
               }}
-              placeholder="0"
+              value={obj.offset}
               min="-12"
               max="12"
             />

@@ -44,7 +44,7 @@ export default function NodeList({
   return (
     <List
       layout="horizontal"
-      height={94}
+      height={100}
       width={1900}
       itemCount={arr.innerArr.length}
       itemSize={73}
