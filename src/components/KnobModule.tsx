@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef, ReactElement } from "react";
+import { useContext, useRef, ReactElement } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
@@ -7,35 +7,16 @@ import {
   SquareWaveIcon,
   TriangleWaveIcon,
 } from "../assets/icons";
-import WaveformBtn from "./waveformBtn";
+import { cn } from "../utils/cn";
 
 export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
-  const { state, dispatch } = actx;
-  const [knobsDisabled, setKnobsDisabled] = useState(true);
+  const { state, dispatch, changeWaveform } = actx;
   const selectRef = useRef<HTMLSelectElement>(null);
-  const [currentSelectedWaveform, setCurrentSelectedWaveform] =
-    useState<OscillatorType>("sine");
 
   const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
 
-  // whenever state changes check if we've initialized audio engine and free controls if so
-  useEffect(() => {
-    if (state?.globSeqArr[0]?.gain) {
-      setKnobsDisabled(false);
-    }
-  }, [state]);
-
-  // whenever user changes waveform type update global state
-  useEffect(() => {
-    if (state && dispatch) {
-      const copiedGlobSeqArr = state?.globSeqArr;
-      copiedGlobSeqArr[outerIndex].waveform = currentSelectedWaveform;
-      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-    }
-  }, [currentSelectedWaveform]);
-
-  if (state && dispatch) {
+  if (state && dispatch && changeWaveform) {
     const knobArr = [
       {
         id: 1,
@@ -72,7 +53,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "1",
         step: "0.01",
         default: "0.5",
-        disabled: knobsDisabled,
+        disabled: state?.globSeqArr[outerIndex]?.gain !== null,
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
           const thisArr = copiedGlobSeqArr[outerIndex];
@@ -180,14 +161,18 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             <span className="ml-2 text-zinc-200">Waveform:</span>
             {waveFormButtonArr.map((btn) => {
               return (
-                <WaveformBtn
-                  thisOscType={btn.type}
-                  currentSelectedWaveform={currentSelectedWaveform}
-                  setCurrentSelectedWaveform={setCurrentSelectedWaveform}
-                  key={"wfba" + btn.id}
+                <button
+                  key={`knmk-${btn.id}-${outerIndex}`}
+                  onClick={() => changeWaveform(outerIndex, btn.type)}
+                  className={cn(
+                    state.globSeqArr[outerIndex].waveform === btn.type
+                      ? "fill-cyan-200 "
+                      : "fill-neutral-400",
+                    "rounded-full p-1.5",
+                  )}
                 >
                   {btn.icon}
-                </WaveformBtn>
+                </button>
               );
             })}
           </div>
