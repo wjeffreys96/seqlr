@@ -68,15 +68,19 @@ export default function Nav() {
           >
             <input
               defaultValue={state.sequencerCount}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                dispatch({
-                  type: "SETSEQUENCERCOUNT",
-                  payload: Number(e.target.value),
-                })
-              }
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                if (Number(e.target.value) <= 1000) {
+                  dispatch({
+                    type: "SETSEQUENCERCOUNT",
+                    payload: Number(e.target.value),
+                  });
+                }
+              }}
               type="number"
               ref={seqCountRef}
               className={cn("rounded-full bg-inherit w-8 text-center")}
+              max={1000}
+              min={1}
             />
           </InputLabel>
           <InputLabel
@@ -92,15 +96,21 @@ export default function Nav() {
           >
             <input
               defaultValue={state.nodeCount}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                dispatch({
-                  type: "SETNODECOUNT",
-                  payload: Number(e.target.value),
-                })
-              }
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                if (Number(e.target.value) <= 10000) {
+                  dispatch({
+                    type: "SETNODECOUNT",
+                    payload: Number(e.target.value),
+                  });
+                }
+              }}
               type="number"
               ref={nodeCountRef}
-              className={cn("rounded-full bg-inherit w-8 text-center")}
+              className={cn(
+                "rounded-full bg-inherit min-w-8 max-w-12 text-center",
+              )}
+              max={10000}
+              min={1}
             />
           </InputLabel>
         </div>
