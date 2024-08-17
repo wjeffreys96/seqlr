@@ -33,7 +33,7 @@ export default function NodeList({
         />
       );
     },
-    [arr, masterPlaying, currentNote],
+    [arr, masterPlaying, currentNote, nodeCount],
   );
 
   const itemKey = useCallback((index: number, data: NoteObject[]) => {
