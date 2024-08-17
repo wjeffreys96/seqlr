@@ -11,19 +11,6 @@ export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state } = actx;
   const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
-  const globXScrollRef = useRef<HTMLDivElement | null>(null);
-
-  const handleXScroll = () => {
-    const scrollBar = globXScrollRef.current;
-    seqRefArr.current.forEach((el) => {
-      if (el && scrollBar) {
-        el.scroll({
-          left: scrollBar.scrollLeft,
-          behavior: "auto",
-        });
-      }
-    });
-  };
 
   const itemKey = useCallback((index: number, arr: SequencerObject[]) => {
     const item = arr[index];
@@ -34,7 +21,6 @@ export default function Sequencer() {
     currentNote,
     masterPlaying,
     globSeqArr,
-    sequencerCount,
     nodeCount,
   }: {
     currentNote: number;
