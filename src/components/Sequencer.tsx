@@ -51,19 +51,20 @@ export default function Sequencer() {
     currentNote: number;
     masterPlaying: boolean;
     globSeqArr: SequencerObject[];
+    sequencerCount: number;
     nodeCount: number;
   } = state!;
 
   const SequencerList = useCallback(
     ({ style, index }: ListChildComponentProps) => {
-      if (globSeqArr.length > 1) {
+      if (globSeqArr.length > 0) {
         return (
           <div
             style={style}
-            className="flex flex-col gap-4 mx-1.5 my-2 bg-neutral-800 p-4 rounded-lg border border-neutral-700"
+            className="max-h-48 mb-2 flex flex-col gap-3 bg-neutral-800 pt-3 px-3 rounded-lg border border-neutral-700"
           >
             <KnobModule outerIndex={index} />
-            <div className={cn("flex bg-neutral-900 p-3 rounded-xl ")}>
+            <div className={cn("flex bg-neutral-900 p-2 rounded-xl ")}>
               <NodeList
                 arr={globSeqArr[index]}
                 outerIndex={index}
@@ -76,7 +77,7 @@ export default function Sequencer() {
         );
       }
     },
-    [globSeqArr, currentNote, masterPlaying],
+    [state],
   );
   if (globSeqArr.length > 0) {
     return (
@@ -93,13 +94,12 @@ export default function Sequencer() {
             </div>
           </div>
         )}
-
         <List
-          className="scrollbar-thin"
+          className="scrollbar-thin scrollbar-thumb-neutral-500"
           height={880}
-          width={1910}
+          width={1920}
           itemCount={globSeqArr.length}
-          itemSize={210}
+          itemSize={200}
           itemData={globSeqArr}
           itemKey={itemKey}
         >
