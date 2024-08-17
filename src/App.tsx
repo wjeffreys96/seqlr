@@ -11,9 +11,7 @@ export default function App() {
         </h1>
         <AudioContextProvider>
           <Nav />
-          <main className="mx-auto min-h-custom max-h-custom overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-500 ">
-            <Sequencer />
-          </main>
+          <Sequencer />
         </AudioContextProvider>
       </div>
     </>
