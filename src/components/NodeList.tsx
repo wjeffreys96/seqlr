@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { SequencerObject, NoteObject } from "../@types/AudioContext";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 import SequencerNode from "./SequencerNode";
 
 interface NodeListProps {
@@ -42,18 +43,22 @@ export default function NodeList({
   }, []);
 
   return (
-    <List
-      layout="horizontal"
-      height={100}
-      width={1900}
-      itemCount={arr.innerArr.length}
-      itemSize={73}
-      className="scrollbar-thin"
-      overscanCount={2}
-      itemData={arr.innerArr}
-      itemKey={itemKey}
-    >
-      {InnerArr}
-    </List>
+    <AutoSizer>
+      {({ height, width }: { height: number; width: number }) => (
+        <List
+          layout="horizontal"
+          height={height}
+          width={width}
+          itemCount={arr.innerArr.length}
+          itemSize={73}
+          className="scrollbar-thin"
+          overscanCount={2}
+          itemData={arr.innerArr}
+          itemKey={itemKey}
+        >
+          {InnerArr}
+        </List>
+      )}
+    </AutoSizer>
   );
 }

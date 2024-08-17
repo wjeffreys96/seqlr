@@ -102,7 +102,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
     };
 
     return (
-      <div className="flex h-8 gap-2 items-center justify-center text-sm">
+      <div className="flex min-h-8 gap-2 items-center justify-center text-sm overflow-x-auto overflow-y-hidden">
         {knobArr.map((slider) => {
           return (
             <div

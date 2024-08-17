@@ -5,6 +5,7 @@ import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
 import KnobModule from "./KnobModule";
 import NodeList from "./NodeList.tsx";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
@@ -60,17 +61,19 @@ export default function Sequencer() {
       return (
         <div
           style={style}
-          className="max-h-48 mb-2 flex flex-col gap-3 bg-neutral-800 pt-3 px-3 rounded-lg border border-neutral-700"
+          className="max-h-48 mb-2 flex flex-col gap-3 bg-neutral-800 py-3 px-3 rounded-lg border border-neutral-700"
         >
           <KnobModule outerIndex={index} />
-          <div className={cn("flex bg-neutral-900 p-2 rounded-xl ")}>
-            <NodeList
-              arr={globSeqArr[index]}
-              outerIndex={index}
-              masterPlaying={masterPlaying}
-              nodeCount={nodeCount}
-              currentNote={currentNote}
-            />
+          <div className={cn("flex h-full bg-neutral-900 p-2 rounded-xl ")}>
+            <div className="flex-auto">
+              <NodeList
+                arr={globSeqArr[index]}
+                outerIndex={index}
+                masterPlaying={masterPlaying}
+                nodeCount={nodeCount}
+                currentNote={currentNote}
+              />
+            </div>
           </div>
         </div>
       );
@@ -80,7 +83,7 @@ export default function Sequencer() {
 
   if (globSeqArr.length > 0) {
     return (
-      <main>
+      <main className="min-h-custom">
         {seqRefArr.current[0] && (
           <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 lg:h-4 lg:bg-inherit bg-neutral-800 rounded-lg h-8 ">
             <div
@@ -93,17 +96,21 @@ export default function Sequencer() {
             </div>
           </div>
         )}
-        <List
-          className="scrollbar-thin scrollbar-thumb-neutral-500"
-          height={880}
-          width={1920}
-          itemCount={globSeqArr.length}
-          itemSize={200}
-          itemData={globSeqArr}
-          itemKey={itemKey}
-        >
-          {SequencerList}
-        </List>
+        <AutoSizer>
+          {({ height, width }: { height: number; width: number }) => (
+            <List
+              className="scrollbar-thin scrollbar-thumb-neutral-500"
+              height={height}
+              width={width}
+              itemCount={globSeqArr.length}
+              itemSize={200}
+              itemData={globSeqArr}
+              itemKey={itemKey}
+            >
+              {SequencerList}
+            </List>
+          )}
+        </AutoSizer>
       </main>
     );
   }

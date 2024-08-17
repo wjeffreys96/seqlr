@@ -40,7 +40,7 @@ export default function Nav() {
     };
 
     return (
-      <nav className="flex h-16 bg-zinc-900 shadow-zinc-950 text-black shadow-sm z-40 items-center justify-center">
+      <nav className="flex overflow-x-auto h-16 bg-zinc-900 shadow-zinc-950 text-black shadow-sm z-40 items-center justify-center">
         <div className="flex gap-[1px] h-12">
           <Button
             isDisplay={masterPlaying}
