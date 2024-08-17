@@ -12,19 +12,6 @@ export default function Sequencer() {
   const { state } = actx;
   const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const globXScrollRef = useRef<HTMLDivElement | null>(null);
-  const [scrollWidth, setScrollWidth] = useState<number>(
-    seqRefArr.current[0]?.scrollWidth ?? 0,
-  );
-  const [scrollContainerWidth, setScrollContainerWidth] = useState<number>(
-    seqRefArr.current[0]?.offsetWidth ?? 0,
-  );
-
-  useEffect(() => {
-    if (seqRefArr.current[0]) {
-      setScrollWidth(seqRefArr.current[0].scrollWidth);
-      setScrollContainerWidth(seqRefArr.current[0].offsetWidth);
-    }
-  }, [state]);
 
   const handleXScroll = () => {
     const scrollBar = globXScrollRef.current;
@@ -79,24 +66,12 @@ export default function Sequencer() {
         </div>
       );
     },
-    [globSeqArr, currentNote, sequencerCount, nodeCount],
+    [masterPlaying, globSeqArr, currentNote, nodeCount],
   );
 
   if (globSeqArr.length > 0) {
     return (
       <main className="min-h-custom">
-        {seqRefArr.current[0] && (
-          <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 lg:h-4 lg:bg-inherit bg-neutral-800 rounded-lg h-8 ">
-            <div
-              ref={globXScrollRef}
-              onScroll={handleXScroll}
-              style={{ maxWidth: `${scrollContainerWidth}px` }}
-              className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full h-full"
-            >
-              <div className="h-[1px]" style={{ width: `${scrollWidth}px` }} />
-            </div>
-          </div>
-        )}
         <AutoSizer>
           {({ height, width }: { height: number; width: number }) => (
             <List
