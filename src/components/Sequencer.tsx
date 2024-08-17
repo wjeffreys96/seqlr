@@ -47,6 +47,7 @@ export default function Sequencer() {
     currentNote,
     masterPlaying,
     globSeqArr,
+    sequencerCount,
     nodeCount,
   }: {
     currentNote: number;
@@ -78,7 +79,7 @@ export default function Sequencer() {
         </div>
       );
     },
-    [state],
+    [globSeqArr, currentNote, sequencerCount, nodeCount],
   );
 
   if (globSeqArr.length > 0) {
