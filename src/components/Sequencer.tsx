@@ -57,31 +57,30 @@ export default function Sequencer() {
 
   const SequencerList = useCallback(
     ({ style, index }: ListChildComponentProps) => {
-      if (globSeqArr.length > 0) {
-        return (
-          <div
-            style={style}
-            className="max-h-48 mb-2 flex flex-col gap-3 bg-neutral-800 pt-3 px-3 rounded-lg border border-neutral-700"
-          >
-            <KnobModule outerIndex={index} />
-            <div className={cn("flex bg-neutral-900 p-2 rounded-xl ")}>
-              <NodeList
-                arr={globSeqArr[index]}
-                outerIndex={index}
-                masterPlaying={masterPlaying}
-                nodeCount={nodeCount}
-                currentNote={currentNote}
-              />
-            </div>
+      return (
+        <div
+          style={style}
+          className="max-h-48 mb-2 flex flex-col gap-3 bg-neutral-800 pt-3 px-3 rounded-lg border border-neutral-700"
+        >
+          <KnobModule outerIndex={index} />
+          <div className={cn("flex bg-neutral-900 p-2 rounded-xl ")}>
+            <NodeList
+              arr={globSeqArr[index]}
+              outerIndex={index}
+              masterPlaying={masterPlaying}
+              nodeCount={nodeCount}
+              currentNote={currentNote}
+            />
           </div>
-        );
-      }
+        </div>
+      );
     },
     [state],
   );
+
   if (globSeqArr.length > 0) {
     return (
-      <>
+      <main>
         {seqRefArr.current[0] && (
           <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 lg:h-4 lg:bg-inherit bg-neutral-800 rounded-lg h-8 ">
             <div
@@ -105,7 +104,7 @@ export default function Sequencer() {
         >
           {SequencerList}
         </List>
-      </>
+      </main>
     );
   }
 }
