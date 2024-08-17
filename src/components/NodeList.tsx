@@ -34,13 +34,13 @@ export default function NodeList({
         />
       );
     },
-    [arr, masterPlaying, currentNote, nodeCount],
+    [outerIndex, arr, masterPlaying, currentNote, nodeCount],
   );
 
   const itemKey = useCallback((index: number, data: NoteObject[]) => {
     const item = data[index];
     return `snak-${item.id}-${outerIndex}`;
-  }, []);
+  }, [outerIndex]);
 
   return (
     <AutoSizer>
