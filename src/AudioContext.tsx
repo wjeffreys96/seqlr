@@ -258,7 +258,7 @@ export const AudioContextProvider = ({
         nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
       }
     }
-  }, [engine, globSeqArr, sequencerCount, nodeCount]);
+  }, [masterVol, engine, globSeqArr, sequencerCount, nodeCount]);
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
