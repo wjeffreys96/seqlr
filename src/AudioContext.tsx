@@ -9,17 +9,18 @@ import {
 
 const initialState: ActxStateType = {
   engine: null,
-  masterPlaying: false,
   masterVol: null,
+  globSeqArr: [],
   currentNote: 0,
   rhythmResolution: 2,
+  masterPlaying: false,
+  scrollLocked: false,
   currentRoot: "C",
   attack: 0.03,
   release: 0.03,
   tempo: 120,
   sequencerCount: 8,
   nodeCount: 128,
-  globSeqArr: [],
 };
 
 interface Action {
@@ -121,6 +122,16 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         return {
           ...state,
           tempo: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+
+    case "SETSCROLLLOCKED":
+      if (typeof action.payload === "boolean") {
+        return {
+          ...state,
+          scrollLocked: action.payload,
         };
       } else {
         throw new Error("Incorrect or missing payload");

@@ -28,9 +28,11 @@ export interface OscParams {
 
 export interface ActxStateType {
   engine: AudioContext | null;
-  masterPlaying: boolean;
   masterVol: GainNode | null;
+  globSeqArr: SequencerObject[] | [];
+  scrollLocked: boolean;
   rhythmResolution: number;
+  masterPlaying: boolean;
   currentRoot: string;
   attack: number;
   release: number;
@@ -38,7 +40,6 @@ export interface ActxStateType {
   tempo: number;
   sequencerCount: number;
   nodeCount: number;
-  globSeqArr: SequencerObject[] | [];
 }
 
 export interface AudioContextType {
