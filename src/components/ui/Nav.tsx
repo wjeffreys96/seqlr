@@ -4,7 +4,7 @@ import { useRef, useContext, ChangeEvent, SyntheticEvent } from "react";
 import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
 import { Button } from "./MovingBorder";
-import { PlayIcon, StopIcon } from "../../assets/icons";
+import { LockedIcon, PlayIcon, StopIcon, UnlockedIcon } from "../../assets/icons";
 import LogSlider from "./LogSlider";
 import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
@@ -50,6 +50,7 @@ export default function Nav() {
           >
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
+
           <Scheduler globSeqArr={globSeqArr} />
           <RootSelecter />
           <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
@@ -113,6 +114,12 @@ export default function Nav() {
               min={1}
             />
           </InputLabel>
+          <button
+            onClick={() => dispatch({ type: "SETSCROLLLOCKED", payload: !state.scrollLocked })}
+            className="rounded fill-neutral-200 h-[46px] px-4 m-auto border border-neutral-600 bg-neutral-800"
+          >
+            {state.scrollLocked ? LockedIcon() : UnlockedIcon()}
+          </button>
         </div>
       </nav>
     );
