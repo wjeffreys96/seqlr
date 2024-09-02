@@ -30,7 +30,7 @@ export default function Sequencer() {
     nodeCount: number;
   } = state!;
 
-  const SequencerList = useCallback(
+  const SequencerListItem = useCallback(
     ({ style, index }: ListChildComponentProps) => {
       return (
         <div
@@ -69,7 +69,7 @@ export default function Sequencer() {
               itemData={globSeqArr}
               itemKey={itemKey}
             >
-              {SequencerList}
+              {SequencerListItem}
             </List>
           )}
         </AutoSizer>
