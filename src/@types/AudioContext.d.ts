@@ -31,6 +31,7 @@ export interface ActxStateType {
   masterVol: GainNode | null;
   globSeqArr: SequencerObject[] | [];
   scrollLocked: boolean;
+  followEnabled: boolean;
   rhythmResolution: number;
   masterPlaying: boolean;
   currentRoot: string;
