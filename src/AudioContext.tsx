@@ -14,7 +14,8 @@ const initialState: ActxStateType = {
   currentNote: 0,
   rhythmResolution: 2,
   masterPlaying: false,
-  scrollLocked: false,
+  scrollLocked: true,
+  followEnabled: true,
   currentRoot: "C",
   attack: 0.03,
   release: 0.03,
@@ -136,7 +137,15 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
       } else {
         throw new Error("Incorrect or missing payload");
       }
-
+    case "SETFOLLOWENABLED":
+      if (typeof action.payload === "boolean") {
+        return {
+          ...state,
+          followEnabled: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
     case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
         return {

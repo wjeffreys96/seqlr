@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useCallback, useContext, useState } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
@@ -10,7 +10,11 @@ import AutoSizer from "react-virtualized-auto-sizer";
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state } = actx;
-  const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
+  const [scrollPos, setScrollPos] = useState<number>(0);
+
+  useEffect(() => {
+    console.log(scrollPos);
+  }, [scrollPos]);
 
   const itemKey = useCallback((index: number, arr: SequencerObject[]) => {
     const item = arr[index];
@@ -43,9 +47,8 @@ export default function Sequencer() {
               <NodeList
                 arr={globSeqArr[index]}
                 outerIndex={index}
-                masterPlaying={masterPlaying}
-                nodeCount={nodeCount}
-                currentNote={currentNote}
+                scrollPos={scrollPos}
+                setScrollPos={setScrollPos}
               />
             </div>
           </div>
