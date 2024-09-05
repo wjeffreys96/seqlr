@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useRef } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType } from "../@types/AudioContext";
@@ -12,10 +12,6 @@ export default function Sequencer() {
   const { globSeqArr } = state!;
 
   const nodeListRef = useRef<List[] | []>([]);
-
-  useEffect(() => {
-    // console.log(nodeListRef);
-  }, [nodeListRef]);
 
   const handleScroll = (scrollPos: number) => {
     nodeListRef.current.forEach((list) => {

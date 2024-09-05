@@ -2,6 +2,7 @@ import { AudioContextType, NoteObject } from "../@types/AudioContext";
 import { useContext, CSSProperties } from "react";
 import { cn } from "../utils/cn";
 import { audioCtx } from "../AudioContext.ctx";
+import SequencerNodeSkel from "./SequencerNodeSkel";
 
 export default function SequencerNode({
   obj,

@@ -4,6 +4,7 @@ import { SequencerObject, NoteObject } from "../@types/AudioContext";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import SequencerNode from "./SequencerNode";
+import SequencerNodeSkel from "./SequencerNodeSkel";
 import { useContext } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
@@ -40,13 +41,26 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
       }
     };
 
+    const getOverscanCount = () => {
+      let count;
+      if (nodeCount >= 200) {
+        count = Math.floor(Math.log(nodeCount) * 5);
+      } else {
+        count = 7;
+      }
+      return count;
+    };
+
     const InnerArrItem = useCallback(
       ({ index, style }: ListChildComponentProps) => {
         const obj = arr.innerArr[index];
         const columnIsPlaying =
           (masterPlaying && obj.id === currentNote - 1) ||
           (masterPlaying && currentNote === 0 && obj.id === nodeCount - 1);
-        return (
+        const isScrolling = false;
+        return isScrolling ? (
+          <SequencerNodeSkel style={style} />
+        ) : (
           <SequencerNode
             style={style}
             obj={obj}
@@ -72,6 +86,7 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
           {({ height, width }: { height: number; width: number }) => (
             <List
               ref={getRef}
+              // useIsScrolling
               onScroll={() => {
                 if (ref && typeof ref !== "function") {
                   if (ref.current) {
@@ -94,7 +109,7 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
                   : "scrollbar-thumb-neutral-600",
                 "scrollbar-thin bg-zinc-900 rounded-lg",
               )}
-              overscanCount={7}
+              overscanCount={getOverscanCount()}
               itemData={arr.innerArr}
               itemKey={itemKey}
             >
