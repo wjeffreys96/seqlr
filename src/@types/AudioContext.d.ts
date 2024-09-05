@@ -5,6 +5,7 @@ export interface NoteObject {
 }
 
 export interface SequencerObject {
+  id: number;
   attack: number;
   release: number;
   gain: GainNode | null;
@@ -27,9 +28,12 @@ export interface OscParams {
 
 export interface ActxStateType {
   engine: AudioContext | null;
-  masterPlaying: boolean;
   masterVol: GainNode | null;
+  globSeqArr: SequencerObject[] | [];
+  scrollLocked: boolean;
+  followEnabled: boolean;
   rhythmResolution: number;
+  masterPlaying: boolean;
   currentRoot: string;
   attack: number;
   release: number;
@@ -37,7 +41,6 @@ export interface ActxStateType {
   tempo: number;
   sequencerCount: number;
   nodeCount: number;
-  globSeqArr: SequencerObject[] | [];
 }
 
 export interface AudioContextType {
@@ -47,5 +50,6 @@ export interface AudioContextType {
   spliceSelectedBoxes?: (index: number) => void;
   changeOffset?: (id: number, offset: number, index: number) => void;
   toggleNotePlaying?: (id: number, index: number) => void;
+  changeWaveform?: (index: number, waveform: OscillatorType) => void;
   state?: ActxStateType;
 }

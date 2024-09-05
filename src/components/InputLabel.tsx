@@ -10,7 +10,7 @@ export default function InputLabel({
   onSubmit,
 }: InputLabelProps) {
   return (
-    <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
+    <div className="flex justify-between gap-4 border rounded p-2 m-px bg-neutral-800 border-neutral-600">
       <form
         className="flex justify-between items-center gap-2 w-full"
         onSubmit={onSubmit}

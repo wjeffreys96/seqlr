@@ -9,17 +9,19 @@ import {
 
 const initialState: ActxStateType = {
   engine: null,
-  masterPlaying: false,
   masterVol: null,
+  globSeqArr: [],
   currentNote: 0,
   rhythmResolution: 2,
+  masterPlaying: false,
+  scrollLocked: true,
+  followEnabled: false,
   currentRoot: "C",
   attack: 0.03,
   release: 0.03,
   tempo: 120,
-  sequencerCount: 3,
-  nodeCount: 16,
-  globSeqArr: [],
+  sequencerCount: 8,
+  nodeCount: 128,
 };
 
 interface Action {
@@ -126,6 +128,24 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
+    case "SETSCROLLLOCKED":
+      if (typeof action.payload === "boolean") {
+        return {
+          ...state,
+          scrollLocked: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+    case "SETFOLLOWENABLED":
+      if (typeof action.payload === "boolean") {
+        return {
+          ...state,
+          followEnabled: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
     case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
         return {
@@ -157,14 +177,11 @@ export const AudioContextProvider = ({
     if (!globSeqArrInitRef.current) {
       // initializing sequencers
       const outerArr = [];
-
       for (let index = 0; index < sequencerCount; index++) {
         const innerArr = [];
-
         for (let index = 0; index < nodeCount; index++) {
           innerArr.push({ id: index, offset: 0, isPlaying: false });
         }
-
         outerArr.push({
           attack: 0.03,
           release: 0.1,
@@ -173,27 +190,22 @@ export const AudioContextProvider = ({
           waveform: "sine",
           innerArr,
         });
-
         nodeCountRef.current = innerArr.length;
       }
       globSeqArrLengthRef.current = outerArr.length;
-
       dispatch({ type: "SETGLOBSEQARR", payload: outerArr });
-
       globSeqArrInitRef.current = true;
     } else {
       // updating sequencers
       if (sequencerCount > globSeqArrLengthRef.current) {
         // adding sequencers
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-
         for (
           let index = 0;
           index < sequencerCount - globSeqArrLengthRef.current;
           index++
         ) {
           let gainNode: GainNode | null;
-
           if (engine && masterVol) {
             gainNode = engine.createGain();
             gainNode.gain.value = 0.5;
@@ -201,14 +213,12 @@ export const AudioContextProvider = ({
           } else {
             gainNode = null;
           }
-
           const innerArr = [];
-
           for (let index = 0; index < nodeCount; index++) {
             innerArr.push({ id: index, offset: 0, isPlaying: false });
           }
-
           copiedGlobSeqArr.push({
+            id: index,
             attack: 0.03,
             release: 0.1,
             gain: gainNode,
@@ -218,12 +228,10 @@ export const AudioContextProvider = ({
           });
         }
         globSeqArrLengthRef.current = copiedGlobSeqArr.length;
-
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
       } else if (sequencerCount < globSeqArrLengthRef.current) {
         // removing sequencers
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-
         for (
           let index = 0;
           index < globSeqArrLengthRef.current - sequencerCount;
@@ -231,13 +239,11 @@ export const AudioContextProvider = ({
         ) {
           copiedGlobSeqArr.pop();
         }
-
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
         globSeqArrLengthRef.current = copiedGlobSeqArr.length;
       } else if (nodeCount > nodeCountRef.current) {
         // adding nodes to all sequencers
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-
         copiedGlobSeqArr.forEach((thisSequencer) => {
           for (let i = 0; i < nodeCount - nodeCountRef.current; i++) {
             thisSequencer.innerArr.push({
@@ -247,64 +253,49 @@ export const AudioContextProvider = ({
             });
           }
         });
-
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
         nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
       } else if (nodeCount < nodeCountRef.current) {
         // removing nodes from each sequencer
         const copiedGlobSeqArr: SequencerObject[] = globSeqArr;
-
         copiedGlobSeqArr.forEach((thisSequencer) => {
           for (let i = 0; i < nodeCountRef.current - nodeCount; i++) {
             thisSequencer.innerArr.pop();
           }
         });
-
         dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-
         nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
       }
     }
-  }, [engine, globSeqArr, sequencerCount, nodeCount]);
+  }, [masterVol, engine, globSeqArr, sequencerCount, nodeCount]);
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {
       // grab a ref to the main audio engine
       const eng: AudioContext = state.engine;
-
       // create the oscillator that will play the tone
       const osc: OscillatorNode = eng.createOscillator();
-
       // create a gain node to control the tone's envelope
       const gain: GainNode = eng.createGain();
-
       // we can't actually start at 0 so we start the gain node at the lowest level we can
       gain.gain.setValueAtTime(0.01, time);
-
       // set attack
       gain.gain.linearRampToValueAtTime(1, time + seqOpts.attack);
-
       // connect envelope gainNode to the gainNode on the specified sequencer
       gain.connect(seqOpts.volume);
-
       // connect the oscillator to the gain node
       osc.connect(gain);
-
       // set waveform type
       osc.type = seqOpts.waveform;
-
       // set pitch
       osc.frequency.value = freq;
-
       // begin playing the note
       osc.start(time);
-
       // set release
       gain.gain.exponentialRampToValueAtTime(
         0.01,
         time + duration + seqOpts.release,
       );
-
       // stop playing the note
       osc.stop(time + duration + seqOpts.release);
     } else {
@@ -343,6 +334,17 @@ export const AudioContextProvider = ({
     }
   };
 
+  const changeWaveform = (index: number, waveform: OscillatorType) => {
+    const copiedGlobSeqArr = state.globSeqArr;
+    const innerArr = copiedGlobSeqArr[index];
+    if (innerArr) {
+      innerArr.waveform = waveform;
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+    } else {
+      throw new Error("Could not find sequencer to update waveform");
+    }
+  };
+
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!engineInitRef.current) {
@@ -350,7 +352,6 @@ export const AudioContextProvider = ({
       const engine: AudioContext = new AudioContext();
       const masterVol = engine.createGain();
       masterVol.connect(engine.destination);
-
       // create gainNodes for each sequencer and set volume on each
       const copiedGlobSeqArr = state.globSeqArr;
       copiedGlobSeqArr.forEach((el) => {
@@ -358,12 +359,10 @@ export const AudioContextProvider = ({
         el.gain.gain.value = 0.5;
         el.gain.connect(masterVol);
       });
-
       // save to state
       dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
       dispatch({ type: "SETENGINE", payload: engine });
       dispatch({ type: "SETMASTERVOL", payload: masterVol });
-
       // we only need to do this the very first time the user hits play
       engineInitRef.current = true;
     }
@@ -377,6 +376,7 @@ export const AudioContextProvider = ({
     toggleMasterPlayPause,
     toggleNotePlaying,
     changeOffset,
+    changeWaveform,
     state,
   };
 

@@ -1,118 +1,55 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useRef } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
-import type { AudioContextType, SequencerObject } from "../@types/AudioContext";
-import { NoteObject } from "../@types/AudioContext";
-import SequencerNode from "./SequencerNode";
+import type { AudioContextType } from "../@types/AudioContext";
 import KnobModule from "./KnobModule";
+import NodeList from "./NodeList.tsx";
+import { FixedSizeList as List } from "react-window";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
-  const { state, dispatch } = actx;
-  const seqRefArr = useRef<(HTMLDivElement | null)[]>([]);
-  const globXScrollRef = useRef<HTMLDivElement | null>(null);
-  const [scrollWidth, setScrollWidth] = useState<number>(
-    seqRefArr.current[0]?.scrollWidth || 0,
-  );
-  const [scrollContainerWidth, setScrollContainerWidth] = useState<number>(
-    seqRefArr.current[0]?.offsetWidth || 0,
-  );
+  const { state } = actx;
+  const { globSeqArr } = state!;
 
-  useEffect(() => {
-    if (seqRefArr.current[0]) {
-      setScrollWidth(seqRefArr.current[0].scrollWidth);
-      setScrollContainerWidth(seqRefArr.current[0].offsetWidth);
-    }
-  }, [state]);
+  const nodeListRef = useRef<List[] | []>([]);
 
-  const handleXScroll = () => {
-    const scrollBar = globXScrollRef.current;
-    seqRefArr.current.forEach((el) => {
-      if (el && scrollBar) {
-        el.scroll({
-          left: scrollBar.scrollLeft,
-          behavior: "auto",
-        });
-      }
+  const handleScroll = (scrollPos: number) => {
+    nodeListRef.current.forEach((list) => {
+      list.scrollTo(scrollPos);
     });
   };
 
-  if (state && dispatch) {
-    const {
-      currentNote,
-      masterPlaying,
-      globSeqArr,
-      nodeCount,
-    }: {
-      currentNote: number;
-      masterPlaying: boolean;
-      globSeqArr: SequencerObject[];
-      nodeCount: number;
-    } = state;
+  const itemKey = useCallback(
+    (index: number, id: number) => {
+      return `gsak-${id}-${index}`;
+    },
+    [globSeqArr],
+  );
 
-    if (globSeqArr.length > 0) {
-      return (
-        <>
-          {seqRefArr.current[0] && (
-            <div className="flex flex-col justify-center pb-[1px] gap-4 mx-1.5 px-4 lg:h-4 lg:bg-inherit bg-neutral-800 rounded-lg h-8 ">
-              <div
-                ref={globXScrollRef}
-                onScroll={handleXScroll}
-                style={{ maxWidth: `${scrollContainerWidth}px` }}
-                className="overflow-x-scroll scrollbar-thin scrollbar-track-neutral-700 w-full h-full"
-              >
-                <div
-                  className="h-[1px]"
-                  style={{ width: `${scrollWidth}px` }}
-                />
-              </div>
+  if (globSeqArr.length > 0) {
+    return (
+      <main className="min-h-custom">
+        {globSeqArr.map((seq, index) => {
+          return (
+            <div
+              key={itemKey(index, seq.id)}
+              className={cn(
+                "flex flex-col gap-3 h-48 mb-2",
+                "bg-neutral-800 py-4 px-3 rounded-lg",
+                "border border-neutral-700",
+              )}
+            >
+              <KnobModule outerIndex={index} />
+              <NodeList
+                ref={nodeListRef}
+                handleScroll={handleScroll}
+                arr={seq}
+                outerIndex={index}
+              />
             </div>
-          )}
-          {globSeqArr.map((arr, outerIndex) => {
-            return (
-              <div
-                key={"gnak" + outerIndex}
-                className="flex flex-col gap-4 mx-1.5 my-2 bg-neutral-800 p-4 rounded-lg border border-neutral-700"
-              >
-                <KnobModule outerIndex={outerIndex} />
-                <div
-                  ref={(el) => {
-                    seqRefArr.current[outerIndex] = el;
-                  }}
-                  className={cn(
-                    "flex scrollbar-thumb-neutral-600 scrollbar-thin overflow-auto bg-neutral-900 p-5 rounded-xl ",
-                  )}
-                >
-                  {arr.innerArr.map((obj: NoteObject) => {
-                    const columnIsPlaying =
-                      (masterPlaying && obj.id === currentNote - 1) ||
-                      (masterPlaying &&
-                        currentNote === 0 &&
-                        obj.id === nodeCount - 1);
-                    return (
-                      <div className="flex" key={"iadk" + obj.id}>
-                        <SequencerNode
-                          key={"snk" + obj.id}
-                          obj={obj}
-                          outerIndex={outerIndex}
-                          columnIsPlaying={columnIsPlaying}
-                        />
-                        {(obj.id + 1) % 16 === 0 && (
-                          <>
-                            <span className="m-1 my-2 border-l border-neutral-700" />
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </>
-      );
-    }
-  } else {
-    throw new Error("actx is undefined");
+          );
+        })}
+      </main>
+    );
   }
 }
