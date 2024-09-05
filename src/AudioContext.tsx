@@ -15,7 +15,7 @@ const initialState: ActxStateType = {
   rhythmResolution: 2,
   masterPlaying: false,
   scrollLocked: true,
-  followEnabled: true,
+  followEnabled: false,
   currentRoot: "C",
   attack: 0.03,
   release: 0.03,

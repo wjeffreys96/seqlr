@@ -75,7 +75,7 @@ export default function Nav() {
             <input
               defaultValue={state.sequencerCount}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                if (Number(e.target.value) <= 1000) {
+                if (Number(e.target.value) <= 15) {
                   dispatch({
                     type: "SETSEQUENCERCOUNT",
                     payload: Number(e.target.value),
@@ -85,7 +85,7 @@ export default function Nav() {
               type="number"
               ref={seqCountRef}
               className={cn("rounded-full bg-inherit w-8 text-center")}
-              max={1000}
+              max={15}
               min={1}
             />
           </InputLabel>

@@ -1,10 +1,5 @@
-import {
-  useEffect,
-  ComponentState,
-  SetStateAction,
-  useCallback,
-  useRef,
-} from "react";
+import { useCallback, useRef } from "react";
+import { cn } from "../utils/cn";
 import { SequencerObject, NoteObject } from "../@types/AudioContext";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -16,23 +11,12 @@ import { AudioContextType } from "../@types/AudioContext";
 interface NodeListProps {
   arr: SequencerObject;
   outerIndex: number;
-  scrollPos: number;
-  setScrollPos: React.Dispatch<SetStateAction<number>>;
 }
-export default function NodeList({
-  arr,
-  outerIndex,
-  scrollPos,
-  setScrollPos,
-}: NodeListProps) {
+
+export default function NodeList({ arr, outerIndex }: NodeListProps) {
   const actx = useContext<AudioContextType>(audioCtx);
   const { followEnabled, masterPlaying, currentNote, nodeCount } = actx.state!;
   const nodeListRef = useRef<List<NoteObject[]> | null>(null);
-
-  useEffect(() => {
-    if (nodeListRef.current) {
-    }
-  }, []);
 
   const InnerArrItem = useCallback(
     ({ index, style }: ListChildComponentProps) => {
@@ -61,39 +45,37 @@ export default function NodeList({
   );
 
   return (
-    <AutoSizer>
-      {({ height, width }: { height: number; width: number }) => (
-        <List
-          ref={(el) => {
-            nodeListRef.current = el;
-            if (nodeListRef.current) {
-              console.log(nodeListRef.current.state);
-              if (followEnabled) {
-                nodeListRef.current.scrollToItem(currentNote, "center");
-              } else {
-                nodeListRef.current.scrollTo(scrollPos);
+    <div className="h-full">
+      <AutoSizer>
+        {({ height, width }: { height: number; width: number }) => (
+          <List
+            ref={(el) => {
+              nodeListRef.current = el;
+              if (nodeListRef.current) {
+                if (followEnabled) {
+                  nodeListRef.current.scrollToItem(currentNote, "center");
+                }
               }
-            }
-          }}
-          layout="horizontal"
-          onScroll={() => {
-            nodeListRef.current &&
-              setScrollPos(
-                (nodeListRef.current.state as ComponentState).scrollOffset,
-              );
-          }}
-          height={height}
-          width={width}
-          itemCount={arr.innerArr.length}
-          itemSize={73}
-          className="scrollbar-thin"
-          overscanCount={2}
-          itemData={arr.innerArr}
-          itemKey={itemKey}
-        >
-          {InnerArrItem}
-        </List>
-      )}
-    </AutoSizer>
+            }}
+            layout="horizontal"
+            height={height}
+            width={width}
+            itemCount={arr.innerArr.length}
+            itemSize={72}
+            className={cn(
+              followEnabled
+                ? "scrollbar-thumb-neutral-900"
+                : "scrollbar-thumb-neutral-600",
+              "scrollbar-thin bg-zinc-900 rounded-lg",
+            )}
+            overscanCount={2}
+            itemData={arr.innerArr}
+            itemKey={itemKey}
+          >
+            {InnerArrItem}
+          </List>
+        )}
+      </AutoSizer>
+    </div>
   );
 }
