@@ -1,14 +1,27 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType } from "../@types/AudioContext";
 import KnobModule from "./KnobModule";
 import NodeList from "./NodeList.tsx";
+import { FixedSizeList as List } from "react-window";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { state } = actx;
-  const { globSeqArr, followEnabled } = state!;
+  const { globSeqArr } = state!;
+
+  const nodeListRef = useRef<List[] | []>([]);
+
+  useEffect(() => {
+    // console.log(nodeListRef);
+  }, [nodeListRef]);
+
+  const handleScroll = (scrollPos: number) => {
+    nodeListRef.current.forEach((list) => {
+      list.scrollTo(scrollPos);
+    });
+  };
 
   const itemKey = useCallback(
     (index: number, id: number) => {
@@ -31,7 +44,12 @@ export default function Sequencer() {
               )}
             >
               <KnobModule outerIndex={index} />
-              <NodeList arr={seq} outerIndex={index} />
+              <NodeList
+                ref={nodeListRef}
+                handleScroll={handleScroll}
+                arr={seq}
+                outerIndex={index}
+              />
             </div>
           );
         })}
