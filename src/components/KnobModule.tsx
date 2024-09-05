@@ -24,7 +24,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         min: "0.01",
         max: "1",
         step: "0.005",
-        default: "0.03",
+        value: state.globSeqArr[outerIndex].attack,
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
           const thisArr = copiedGlobSeqArr[outerIndex];
@@ -38,7 +38,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         min: "0.01",
         max: "2",
         step: "0.005",
-        default: "0.03",
+        value: state.globSeqArr[outerIndex].release,
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
           const thisArr = copiedGlobSeqArr[outerIndex];
@@ -52,8 +52,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         min: "0.01",
         max: "1",
         step: "0.01",
-        default: "0.5",
-        disabled: state?.globSeqArr[outerIndex]?.gain !== null,
+        // disabled: state?.globSeqArr[outerIndex].gain !== null,
+        value: state.globSeqArr[outerIndex].gain?.gain.value ?? "0.5",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
           const thisArr = copiedGlobSeqArr[outerIndex];
@@ -115,9 +115,9 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
               >
                 <span className="text-zinc-200">{slider.name}:</span>
                 <input
+                  value={slider.value}
                   disabled={slider.disabled}
                   className="h-0.5 w-24"
-                  defaultValue={slider.default}
                   type="range"
                   min={slider.min}
                   max={slider.max}

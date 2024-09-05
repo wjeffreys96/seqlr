@@ -4,7 +4,12 @@ import { useRef, useContext, ChangeEvent, SyntheticEvent } from "react";
 import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";
 import { Button } from "./MovingBorder";
-import { PlayIcon, StopIcon } from "../../assets/icons";
+import {
+  LockedIcon,
+  PlayIcon,
+  StopIcon,
+  UnlockedIcon,
+} from "../../assets/icons";
 import LogSlider from "./LogSlider";
 import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
@@ -41,18 +46,19 @@ export default function Nav() {
 
     return (
       <nav className="flex overflow-x-auto h-16 bg-zinc-900 shadow-zinc-950 text-black shadow-sm z-40 items-center md:justify-center">
-        <div className="flex gap-[1px] h-12">
+        <div className="flex gap-0.5 h-12">
           <Button
             isDisplay={masterPlaying}
             borderRadius=".25rem"
-            className="border border-neutral-600 bg-neutral-800 h-full"
+            className="border border-neutral-600 bg-neutral-800"
             onClick={toggleMasterPlayPause}
           >
             {!masterPlaying ? <PlayIcon /> : <StopIcon />}
           </Button>
+
           <Scheduler globSeqArr={globSeqArr} />
           <RootSelecter />
-          <div className="flex justify-between gap-4 border rounded p-2 m-[1px] bg-neutral-800 border-neutral-600">
+          <div className="flex justify-between border rounded p-2 m-px bg-neutral-800 border-neutral-600">
             <LogSlider options={MasterVolSliderOpts} />
           </div>
           <InputLabel
@@ -69,7 +75,7 @@ export default function Nav() {
             <input
               defaultValue={state.sequencerCount}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                if (Number(e.target.value) <= 1000) {
+                if (Number(e.target.value) <= 15) {
                   dispatch({
                     type: "SETSEQUENCERCOUNT",
                     payload: Number(e.target.value),
@@ -79,7 +85,7 @@ export default function Nav() {
               type="number"
               ref={seqCountRef}
               className={cn("rounded-full bg-inherit w-8 text-center")}
-              max={1000}
+              max={15}
               min={1}
             />
           </InputLabel>
@@ -113,6 +119,30 @@ export default function Nav() {
               min={1}
             />
           </InputLabel>
+          <div className="flex gap-1 p-px">
+            <button
+              onClick={() =>
+                dispatch({
+                  type: "SETSCROLLLOCKED",
+                  payload: !state.scrollLocked,
+                })
+              }
+              className="rounded fill-neutral-200 h-[46px] px-4 m-auto border border-neutral-600 bg-neutral-800"
+            >
+              {state.scrollLocked ? LockedIcon() : UnlockedIcon()}
+            </button>
+            <button
+              onClick={() =>
+                dispatch({
+                  type: "SETFOLLOWENABLED",
+                  payload: !state.followEnabled,
+                })
+              }
+              className="rounded text-sm min-w-16 text-neutral-200 h-[46px] m-auto border border-neutral-600 bg-neutral-800"
+            >
+              {state.followEnabled ? "Follow" : "Free"}
+            </button>
+          </div>
         </div>
       </nav>
     );

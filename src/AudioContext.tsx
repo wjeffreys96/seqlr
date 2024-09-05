@@ -9,17 +9,19 @@ import {
 
 const initialState: ActxStateType = {
   engine: null,
-  masterPlaying: false,
   masterVol: null,
+  globSeqArr: [],
   currentNote: 0,
   rhythmResolution: 2,
+  masterPlaying: false,
+  scrollLocked: true,
+  followEnabled: false,
   currentRoot: "C",
   attack: 0.03,
   release: 0.03,
   tempo: 120,
   sequencerCount: 8,
   nodeCount: 128,
-  globSeqArr: [],
 };
 
 interface Action {
@@ -126,6 +128,24 @@ const reducer = (state: ActxStateType, action: Action): ActxStateType => {
         throw new Error("Incorrect or missing payload");
       }
 
+    case "SETSCROLLLOCKED":
+      if (typeof action.payload === "boolean") {
+        return {
+          ...state,
+          scrollLocked: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
+    case "SETFOLLOWENABLED":
+      if (typeof action.payload === "boolean") {
+        return {
+          ...state,
+          followEnabled: action.payload,
+        };
+      } else {
+        throw new Error("Incorrect or missing payload");
+      }
     case "SETGLOBSEQARR": {
       if (Array.isArray(action.payload)) {
         return {
@@ -247,7 +267,7 @@ export const AudioContextProvider = ({
         nodeCountRef.current = copiedGlobSeqArr[0].innerArr.length;
       }
     }
-  }, [engine, globSeqArr, sequencerCount, nodeCount]);
+  }, [masterVol, engine, globSeqArr, sequencerCount, nodeCount]);
 
   const playTone = ({ freq, duration, time, seqOpts }: OscParams) => {
     if (state.engine && state.masterVol) {

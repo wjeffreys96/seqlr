@@ -23,12 +23,12 @@ export default function SequencerNode({
       Math.sign(obj.offset) > -1 && obj.offset !== 0 ? true : false;
 
     return (
-      <div style={style} className="flex items-center pb-1">
+      <div style={style} className="flex items-center pt-2">
         <label
           htmlFor={String("cbi" + objId + outerIndex)}
           key={String("cbk" + obj.id)}
           className={cn(
-            "mx-1 min-w-16 bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
+            "mx-2 min-w-16 bg-neutral-800 border-neutral-500 cursor-pointer flex lg:h-20 lg:w-16 md:w-12",
             "w-8 justify-center text-center text-blue-300 flex-col pb-2 pt-1 px-1 rounded-lg",
             "ease-in-out transition-transform",
             columnIsPlaying ? "-translate-y-1 border" : "hover:bg-cyan-950",
