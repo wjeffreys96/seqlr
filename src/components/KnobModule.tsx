@@ -17,6 +17,34 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
 
   if (state && dispatch && changeWaveform) {
+    const handleKnobChange = (property: string, value: number) => {
+      const copiedGlobSeqArr = state.globSeqArr;
+      const thisArr = copiedGlobSeqArr[outerIndex];
+
+      switch (property) {
+        case "attack":
+          thisArr.attack = value;
+          break;
+
+        case "release":
+          thisArr.release = value;
+          break;
+
+        case "gain":
+          if (thisArr.gain && state.engine) {
+            thisArr.gain.gain.value = value;
+          } else {
+            console.error("engine or gain undefined");
+          }
+          break;
+
+        default:
+          console.error("fallthrough");
+          break;
+      }
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+    };
+
     const knobArr = [
       {
         id: 1,
@@ -25,12 +53,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "1",
         step: "0.005",
         value: state.globSeqArr[outerIndex].attack,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobSeqArr = state.globSeqArr;
-          const thisArr = copiedGlobSeqArr[outerIndex];
-          thisArr.attack = Number(e.target.value);
-          dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-        },
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          handleKnobChange("attack", Number(e.target.value)),
       },
       {
         id: 2,
@@ -52,7 +76,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         min: "0.01",
         max: "1",
         step: "0.01",
-        // disabled: state?.globSeqArr[outerIndex].gain !== null,
         value: state.globSeqArr[outerIndex].gain?.gain.value ?? "0.5",
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
           const copiedGlobSeqArr = state.globSeqArr;
@@ -116,7 +139,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
                 <span className="text-zinc-200">{slider.name}:</span>
                 <input
                   value={slider.value}
-                  disabled={slider.disabled}
                   className="h-0.5 w-24"
                   type="range"
                   min={slider.min}

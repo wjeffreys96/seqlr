@@ -8,8 +8,7 @@ import { FixedSizeList as List } from "react-window";
 
 export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
-  const { state } = actx;
-  const { globSeqArr } = state!;
+  const { globSeqArr } = actx.state!;
 
   const nodeListRef = useRef<List[] | []>([]);
 
