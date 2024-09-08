@@ -20,7 +20,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
     const handleKnobChange = (property: string, value: number) => {
       const copiedGlobSeqArr = state.globSeqArr;
       const thisArr = copiedGlobSeqArr[outerIndex];
-
       switch (property) {
         case "attack":
           thisArr.attack = value;
@@ -39,7 +38,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
           break;
 
         default:
-          console.error("fallthrough");
+          console.error("how'd we get here?")
           break;
       }
       dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
@@ -63,12 +62,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "2",
         step: "0.005",
         value: state.globSeqArr[outerIndex].release,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobSeqArr = state.globSeqArr;
-          const thisArr = copiedGlobSeqArr[outerIndex];
-          thisArr.release = Number(e.target.value);
-          dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-        },
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          handleKnobChange("release", Number(e.target.value)),
       },
       {
         id: 3,
@@ -77,14 +72,9 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "1",
         step: "0.01",
         value: state.globSeqArr[outerIndex].gain?.gain.value ?? "0.5",
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobSeqArr = state.globSeqArr;
-          const thisArr = copiedGlobSeqArr[outerIndex];
-          if (thisArr.gain && state.engine?.currentTime) {
-            thisArr.gain.gain.value = Number(e.target.value);
-            dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-          }
-        },
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          handleKnobChange("gain", Number(e.target.value)),
+
       },
     ];
 
