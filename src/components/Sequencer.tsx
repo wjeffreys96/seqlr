@@ -1,7 +1,7 @@
 import { useCallback, useContext, useRef } from "react";
 import { cn } from "../utils/cn.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
-import type { AudioContextType } from "../@types/AudioContext";
+import type { AudioContextType, NoteObject } from "../@types/AudioContext";
 import KnobModule from "./KnobModule";
 import NodeList from "./NodeList.tsx";
 import { FixedSizeList as List } from "react-window";
@@ -10,7 +10,7 @@ export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { globSeqArr } = actx.state!;
 
-  const nodeListRef = useRef<List[] | []>([]);
+  const nodeListRef = useRef<List<NoteObject>[] | []>([]);
 
   const handleScroll = (scrollPos: number) => {
     nodeListRef.current.forEach((list) => {
@@ -22,7 +22,7 @@ export default function Sequencer() {
     (index: number, id: number) => {
       return `gsak-${id}-${index}`;
     },
-    [globSeqArr],
+    [],
   );
 
   if (globSeqArr.length > 0) {

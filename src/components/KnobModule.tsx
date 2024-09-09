@@ -1,4 +1,4 @@
-import { useContext, useRef, ReactElement } from "react";
+import { useContext, ReactElement } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
@@ -11,12 +11,11 @@ import { cn } from "../utils/cn";
 
 export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
-  const { state, dispatch, changeWaveform } = actx;
-  const selectRef = useRef<HTMLSelectElement>(null);
+  const { state, dispatch, changeWaveform, changeOctave } = actx;
 
   const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
 
-  if (state && dispatch && changeWaveform) {
+  if (state && dispatch && changeWaveform && changeOctave) {
     const handleKnobChange = (property: string, value: number) => {
       const copiedGlobSeqArr = state.globSeqArr;
       const thisArr = copiedGlobSeqArr[outerIndex];
@@ -107,13 +106,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       },
     ];
 
-    const handleOctaveChange = () => {
-      const copiedGlobSeqArr = state.globSeqArr;
-      const thisArr = copiedGlobSeqArr[outerIndex];
-      thisArr.octave = Number(selectRef.current?.value);
-      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-    };
-
     return (
       <div className="flex min-h-8 gap-2 items-center md:justify-center text-sm overflow-x-auto overflow-y-hidden">
         {knobArr.map((slider) => {
@@ -152,11 +144,10 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             <div>
               <select
                 name="OctaveSelecter"
-                ref={selectRef}
                 defaultValue="3"
                 onChange={(e) => {
                   e.preventDefault();
-                  handleOctaveChange();
+                  changeOctave(outerIndex, Number(e.target.value))
                 }}
                 className="rounded-full min-w-14 bg-neutral-900 text-cyan-200 text-center text-sm px-0.5 py-[3px]"
               >
