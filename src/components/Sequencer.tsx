@@ -10,7 +10,7 @@ export default function Sequencer() {
   const actx = useContext<AudioContextType>(audioCtx);
   const { globSeqArr } = actx.state!;
 
-  const nodeListRef = useRef<List<NoteObject>[] | []>([]);
+  const nodeListRef = useRef<List<NoteObject[]>[] | []>([]);
 
   const handleScroll = (scrollPos: number) => {
     nodeListRef.current.forEach((list) => {
