@@ -100,7 +100,7 @@ const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
                 followEnabled
                   ? "scrollbar-thumb-neutral-900"
                   : "scrollbar-thumb-neutral-600",
-                "scrollbar-thin bg-zinc-900 rounded-lg",
+                "px-1 scrollbar-thin bg-zinc-900 rounded-lg",
               )}
               overscanCount={getOverscanCount()}
               itemData={arr.innerArr}
