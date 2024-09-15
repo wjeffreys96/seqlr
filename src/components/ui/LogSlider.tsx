@@ -27,14 +27,7 @@ class LogRange {
 }
 
 
-const LogSlider = forwardRef(function LogSlider(
-  {
-    options,
-  }: {
-    options: LogSliderProps;
-  },
-  ref: LegacyRef<HTMLInputElement>,
-) {
+const LogSlider = forwardRef(function LogSlider({ options, }: { options: LogSliderProps; }, ref: LegacyRef<HTMLInputElement>) {
   const sliderNumRef = useRef<HTMLInputElement>(null);
   const {
     defaultValue = options.defaultValue ?? 50,
