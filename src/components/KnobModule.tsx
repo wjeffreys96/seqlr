@@ -13,8 +13,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
   const { state, dispatch, changeWaveform, changeOctave } = actx;
 
-  const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
-
   if (state && dispatch && changeWaveform && changeOctave) {
     const handleKnobChange = (property: string, value: number) => {
       const copiedGlobSeqArr = state.globSeqArr;
@@ -151,7 +149,7 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
                 }}
                 className="rounded-full min-w-14 bg-neutral-900 text-cyan-200 text-center text-sm px-0.5 py-[3px]"
               >
-                {octaves.map((oct) => {
+                {[0, 1, 2, 3, 4, 5, 6, 7].map((oct) => {
                   return <option key={"ook" + oct}>{oct}</option>;
                 })}
               </select>
