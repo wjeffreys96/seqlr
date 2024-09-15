@@ -41,16 +41,6 @@ const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
       }
     }, [currentNote, followEnabled, outerIndex, ref])
 
-    const getOverscanCount = () => {
-      let count;
-      if (nodeCount >= 200) {
-        count = Math.floor(Math.log(nodeCount) * 5);
-      } else {
-        count = 7;
-      }
-      return count;
-    };
-
     const InnerArrItem = useCallback(
       ({ index, style }: ListChildComponentProps<NoteObject[]>) => {
         const obj = arr.innerArr[index];
@@ -102,7 +92,7 @@ const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
                   : "scrollbar-thumb-neutral-600",
                 "px-1 scrollbar-thin bg-zinc-900 rounded-lg",
               )}
-              overscanCount={getOverscanCount()}
+              overscanCount={5}
               itemData={arr.innerArr}
               itemKey={itemKey}
             >
