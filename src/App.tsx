@@ -8,7 +8,9 @@ export default function App() {
       <div className="font-sans text-white bg-inherit overflow-hidden">
         <AudioContextProvider>
           <Nav />
-          <Sequencer />
+          <main className="min-h-custom">
+            <Sequencer />
+          </main>
         </AudioContextProvider>
       </div>
     </>

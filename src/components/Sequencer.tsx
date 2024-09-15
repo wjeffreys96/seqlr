@@ -27,7 +27,7 @@ export default function Sequencer() {
 
   if (globSeqArr.length > 0) {
     return (
-      <main className="min-h-custom">
+      <>
         {globSeqArr.map((seq, index) => {
           return (
             <div
@@ -48,7 +48,7 @@ export default function Sequencer() {
             </div>
           );
         })}
-      </main>
+      </>
     );
   }
 }
