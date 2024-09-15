@@ -29,7 +29,7 @@ class LogRange {
 const LogSlider = forwardRef(function LogSlider(
   { options }: { options: LogSliderProps },
   ref: LegacyRef<HTMLInputElement>) {
-  const sliderNumRef = useRef<HTMLInputElement>(null);
+
   const {
     defaultValue = options.defaultValue ?? 50,
     minpos = options.minpos ?? 0,
@@ -48,7 +48,11 @@ const LogSlider = forwardRef(function LogSlider(
     maxval,
   });
 
+  const [value, setValue] = useState(defaultValue);
+  const [sliderNumVal, setSliderNumVal] = useState<number>(value);
   const [position, setPosition] = useState(log.position(defaultValue));
+
+  const sliderNumRef = useRef<HTMLInputElement>(null);
 
   const calculateValue = (position: number) => {
     if (position == 0) {
@@ -59,10 +63,6 @@ const LogSlider = forwardRef(function LogSlider(
     if (value > 500) return Math.round(value / 10) * 10;
     return Math.round(value);
   };
-
-  const [value, setValue] = useState(defaultValue);
-  const [sliderNumVal, setSliderNumVal] = useState<number>(value);
-
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const newPos = Number(e.target.value);
