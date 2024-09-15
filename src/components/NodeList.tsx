@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useCallback } from "react";
-import { cn } from "../utils/cn";
+import { cn } from "../utils/utils.ts";
 import { SequencerObject, NoteObject } from "../@types/AudioContext";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";

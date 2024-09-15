@@ -7,7 +7,7 @@ import {
   SquareWaveIcon,
   TriangleWaveIcon,
 } from "../assets/icons";
-import { cn } from "../utils/cn";
+import { cn } from "../utils/utils.ts";
 
 export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
@@ -27,16 +27,15 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
           break;
 
         case "gain":
-          if (thisArr.gain && state.engine) {
+          if (thisArr.gain) {
             thisArr.gain.gain.value = value;
           } else {
-            console.error("engine or gain undefined");
+            throw new Error("Attempted to access gain node before initialization")
           }
           break;
 
         default:
-          console.error("how'd we get here?")
-          break;
+          throw new Error("Unhandled property for handleKnobChange")
       }
       dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
     };
@@ -181,6 +180,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       </div>
     );
   } else {
-    throw new Error("actx not initialized");
+    throw new Error("knobModule loaded before AudioContext initialized");
   }
 }

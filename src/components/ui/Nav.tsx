@@ -1,5 +1,5 @@
 import { LogSliderProps } from "../../@types/LogSlider";
-import { cn } from "../../utils/cn.ts";
+import { cn } from "../../utils/utils.ts";
 import { useRef, useContext, ChangeEvent, SyntheticEvent } from "react";
 import { audioCtx } from "../../AudioContext.ctx.tsx";
 import { AudioContextType } from "../../@types/AudioContext";

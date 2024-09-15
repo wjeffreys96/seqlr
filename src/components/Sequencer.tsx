@@ -1,5 +1,5 @@
 import { useCallback, useContext, useRef } from "react";
-import { cn } from "../utils/cn.ts";
+import { cn } from "../utils/utils.ts";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import type { AudioContextType, NoteObject } from "../@types/AudioContext";
 import KnobModule from "./KnobModule";
