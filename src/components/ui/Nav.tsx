@@ -27,12 +27,9 @@ const Nav = memo(function Nav() {
   if (state && dispatch) {
     const { masterVol, masterPlaying, globSeqArr } = state;
 
-    const handleMasterVolChange = (values: {
-      position: number;
-      value: number;
-    }) => {
+    const handleMasterVolChange = (value: number) => {
       if (masterVol) {
-        masterVol.gain.value = values.value / 100;
+        masterVol.gain.value = value / 100;
       }
     };
 

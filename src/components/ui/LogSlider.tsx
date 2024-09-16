@@ -29,7 +29,7 @@ class LogRange {
 const LogSlider = memo(forwardRef(function LogSlider(
   { options }: { options: LogSliderProps },
   ref: LegacyRef<HTMLInputElement>) {
-  console.log("Rendered LogSlier");
+  console.log("Rendered LogSlider");
   const {
     defaultValue = options.defaultValue ?? 50,
     minpos = options.minpos ?? 0,
@@ -49,34 +49,20 @@ const LogSlider = memo(forwardRef(function LogSlider(
   });
 
   const [value, setValue] = useState(defaultValue);
-  const [sliderNumVal, setSliderNumVal] = useState<number>(value);
+  const [numberInputValue, setNumberInputValue] = useState<number>(value);
   const [position, setPosition] = useState(log.position(defaultValue));
 
   const sliderNumRef = useRef<HTMLInputElement>(null);
 
-  const calculateValue = (position: number) => {
-    if (position == 0) {
-      return 0;
-    }
-    const value = log.value(position);
-    if (value > 1000) return Math.round(value / 100) * 100;
-    if (value > 500) return Math.round(value / 10) * 10;
-    return Math.round(value);
-  };
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSliderInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const newPos = Number(e.target.value);
     setPosition(newPos);
-
-    const newValues = {
-      position: newPos,
-      value: calculateValue(newPos),
-    };
-
-    setValue(newValues.value);
-    setSliderNumVal(newValues.value);
+    const value = newPos === 0 ? 0 : Math.round(log.value(position));
+    setValue(value);
+    setNumberInputValue(value);
     if (onChange) {
-      onChange(newValues);
+      onChange(value);
     } else {
       console.error("Pass an onChange prop to LogSlider");
     }
@@ -84,16 +70,12 @@ const LogSlider = memo(forwardRef(function LogSlider(
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={(e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setValue(Number(sliderNumVal));
-        setPosition(Number(log.position(sliderNumVal)));
-        const newValues = {
-          position: Number(log.position(sliderNumVal)),
-          value: sliderNumVal,
-        };
+        setValue(Number(numberInputValue));
+        setPosition(Number(log.position(numberInputValue)));
         if (onChange) {
-          onChange(newValues);
+          onChange(Number(numberInputValue));
         } else {
           console.error("Pass an onChange or onChange prop to LogSlider");
         }
@@ -110,7 +92,7 @@ const LogSlider = memo(forwardRef(function LogSlider(
           type="range"
           min={minpos}
           max={maxpos}
-          onChange={handleInput}
+          onChange={handleSliderInput}
           value={position}
           step={maxpos / 1000}
         />
@@ -119,9 +101,9 @@ const LogSlider = memo(forwardRef(function LogSlider(
         <input
           className="bg-inherit rounded-full min-w-10 text-center"
           name={labelFor}
-          value={sliderNumVal}
+          value={numberInputValue}
           onChange={(e) => {
-            setSliderNumVal(Number(e.target.value));
+            setNumberInputValue(Number(e.target.value));
           }}
           ref={sliderNumRef}
           type="number"
