@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { LogSliderProps } from "../../@types/LogSlider";
 import { cn } from "../../utils/utils.ts";
 import { useRef, useContext, ChangeEvent, SyntheticEvent } from "react";
@@ -15,7 +16,7 @@ import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
 import InputLabel from "../InputLabel.tsx";
 
-export default function Nav() {
+const Nav = memo(function Nav() {
   const masterVolRef = useRef<HTMLInputElement>(null);
   const seqCountRef = useRef<HTMLInputElement>(null);
   const nodeCountRef = useRef<HTMLInputElement>(null);
@@ -25,12 +26,9 @@ export default function Nav() {
   if (state && dispatch) {
     const { masterVol, masterPlaying, globSeqArr } = state;
 
-    const handleMasterVolChange = (values: {
-      position: number;
-      value: number;
-    }) => {
+    const handleMasterVolChange = (value: number) => {
       if (masterVol) {
-        masterVol.gain.value = values.value / 100;
+        masterVol.gain.value = value / 100;
       }
     };
 
@@ -45,7 +43,12 @@ export default function Nav() {
     };
 
     return (
-      <nav className="flex overflow-x-auto h-16 bg-zinc-900 shadow-zinc-950 text-black shadow-sm z-40 items-center md:justify-center">
+      <nav className={cn(
+        "flex overflow-x-auto h-16",
+        "bg-zinc-900 shadow-zinc-950",
+        "text-black shadow-sm z-40",
+        "items-center md:justify-center"
+      )}>
         <div className="flex gap-0.5 h-12">
           <Button
             isDisplay={masterPlaying}
@@ -147,4 +150,6 @@ export default function Nav() {
       </nav>
     );
   } else throw new Error("state is undefined");
-}
+})
+
+export default Nav;

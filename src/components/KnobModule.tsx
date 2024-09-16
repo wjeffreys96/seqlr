@@ -1,4 +1,4 @@
-import { useContext, ReactElement } from "react";
+import { useContext, memo, ReactElement } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../assets/icons";
 import { cn } from "../utils/utils.ts";
 
-export default function KnobModule({ outerIndex }: { outerIndex: number }) {
+const KnobModule = memo(function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
   const { state, dispatch, changeWaveform, changeOctave } = actx;
 
@@ -182,4 +182,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   } else {
     throw new Error("knobModule loaded before AudioContext initialized");
   }
-}
+});
+
+export default KnobModule;

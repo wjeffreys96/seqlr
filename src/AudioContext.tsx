@@ -20,7 +20,7 @@ const initialState: ActxStateType = {
   attack: 0.03,
   release: 0.03,
   tempo: 120,
-  sequencerCount: 4,
+  sequencerCount: 3,
   nodeCount: 32,
 };
 

@@ -1,9 +1,9 @@
 import { AudioContextType, NoteObject } from "../@types/AudioContext";
-import { useContext, CSSProperties } from "react";
+import { useContext, memo, CSSProperties } from "react";
 import { cn } from "../utils/utils.ts";
 import { audioCtx } from "../AudioContext.ctx";
 
-export default function SequencerNode({
+const SequencerNode = memo(function SequencerNode({
   obj,
   columnIsPlaying,
   outerIndex,
@@ -77,4 +77,6 @@ export default function SequencerNode({
   } else {
     throw new Error("state is not initialized");
   }
-}
+});
+
+export default SequencerNode;

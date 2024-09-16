@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useCallback } from "react";
+import { forwardRef, useRef, useCallback, memo } from "react";
 import { cn } from "../utils/utils.ts";
 import { SequencerObject, NoteObject } from "../@types/AudioContext";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
@@ -14,12 +14,11 @@ interface NodeListProps {
   handleScroll: (scrollPos: number) => void;
 }
 
-const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
+const NodeList = memo(forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
   ({ arr, outerIndex, handleScroll }, ref) => {
     const actx = useContext<AudioContextType>(audioCtx);
     const {
       followEnabled,
-      masterPlaying,
       currentNote,
       nodeCount,
       scrollLocked,
@@ -45,8 +44,8 @@ const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
       ({ index, style }: ListChildComponentProps<NoteObject[]>) => {
         const obj = arr.innerArr[index];
         const columnIsPlaying =
-          (masterPlaying && obj.id === currentNote - 1) ||
-          (masterPlaying && currentNote === 0 && obj.id === nodeCount - 1);
+          (obj.id === currentNote - 1) ||
+          (currentNote === 0 && obj.id === nodeCount - 1);
         return (
           <SequencerNode
             style={style}
@@ -56,7 +55,7 @@ const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
           />
         )
       },
-      [outerIndex, arr, masterPlaying, currentNote, nodeCount],
+      [outerIndex, arr, currentNote, nodeCount],
     );
 
     const itemKey = useCallback(
@@ -103,7 +102,7 @@ const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
       </div>
     );
   },
-);
+));
 
 NodeList.displayName = "NodeList";
 

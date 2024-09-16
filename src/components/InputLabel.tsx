@@ -1,10 +1,11 @@
+import { memo } from "react";
 interface InputLabelProps {
   children: React.ReactNode;
   labelText: string;
   onSubmit?: (e: React.SyntheticEvent) => void;
 }
 
-export default function InputLabel({
+const InputLabel = memo(function InputLabel({
   children,
   labelText,
   onSubmit,
@@ -24,4 +25,6 @@ export default function InputLabel({
       </form>
     </div>
   );
-}
+});
+
+export default InputLabel;

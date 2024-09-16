@@ -7,7 +7,7 @@ export interface LogSliderProps {
   maxval?: number;
   labelFor: string;
   unit: string;
-  onChange?: (newValues: { position: number; value: number }) => void;
+  onChange?: (value: number) => void;
 }
 
 export interface LogRangeOptionsTypes {
