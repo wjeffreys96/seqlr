@@ -1,10 +1,9 @@
-import { forwardRef, useCallback } from "react";
-import { cn } from "../utils/cn";
+import { forwardRef, useRef, useCallback } from "react";
+import { cn } from "../utils/utils.ts";
 import { SequencerObject, NoteObject } from "../@types/AudioContext";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import SequencerNode from "./SequencerNode";
-import SequencerNodeSkel from "./SequencerNodeSkel";
 import { useContext } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
@@ -15,7 +14,7 @@ interface NodeListProps {
   handleScroll: (scrollPos: number) => void;
 }
 
-const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
+const NodeList = forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
   ({ arr, outerIndex, handleScroll }, ref) => {
     const actx = useContext<AudioContextType>(audioCtx);
     const {
@@ -25,49 +24,37 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
       nodeCount,
       scrollLocked,
     } = actx.state!;
+    const listRef = useRef<List<NoteObject[]> | null>(null);
 
-    const getRef = (el: List) => {
-      if (ref) {
+    const updateRef = useCallback((el: List<NoteObject[]>) => {
+      if (ref && el) {
         if (typeof ref === "function") {
           return;
         } else {
           if (ref.current) {
             ref.current[outerIndex] = el;
             if (ref.current[outerIndex] && followEnabled) {
-              ref.current[outerIndex].scrollToItem(currentNote, "center");
+              ref.current[outerIndex].scrollToItem(currentNote, "smart");
             }
           }
         }
       }
-    };
-
-    const getOverscanCount = () => {
-      let count;
-      if (nodeCount >= 200) {
-        count = Math.floor(Math.log(nodeCount) * 5);
-      } else {
-        count = 7;
-      }
-      return count;
-    };
+    }, [currentNote, followEnabled, outerIndex, ref])
 
     const InnerArrItem = useCallback(
-      ({ index, style }: ListChildComponentProps) => {
+      ({ index, style }: ListChildComponentProps<NoteObject[]>) => {
         const obj = arr.innerArr[index];
         const columnIsPlaying =
           (masterPlaying && obj.id === currentNote - 1) ||
           (masterPlaying && currentNote === 0 && obj.id === nodeCount - 1);
-        const isScrolling = false;
-        return isScrolling ? (
-          <SequencerNodeSkel style={style} />
-        ) : (
+        return (
           <SequencerNode
             style={style}
             obj={obj}
             outerIndex={outerIndex}
             columnIsPlaying={columnIsPlaying}
           />
-        );
+        )
       },
       [outerIndex, arr, masterPlaying, currentNote, nodeCount],
     );
@@ -85,17 +72,13 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
         <AutoSizer>
           {({ height, width }: { height: number; width: number }) => (
             <List
-              ref={getRef}
-              // useIsScrolling
+              ref={(el: List<NoteObject[]>) => {
+                listRef.current = el;
+                updateRef(listRef.current);
+              }}
               onScroll={() => {
-                if (ref && typeof ref !== "function") {
-                  if (ref.current) {
-                    if (ref.current[outerIndex] && scrollLocked) {
-                      handleScroll(
-                        (ref.current[outerIndex].state as any).scrollOffset,
-                      );
-                    }
-                  }
+                if (listRef.current && scrollLocked) {
+                  handleScroll((listRef.current.state as { scrollOffset: number }).scrollOffset);
                 }
               }}
               layout="horizontal"
@@ -107,9 +90,9 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
                 followEnabled
                   ? "scrollbar-thumb-neutral-900"
                   : "scrollbar-thumb-neutral-600",
-                "scrollbar-thin bg-zinc-900 rounded-lg",
+                "px-1 scrollbar-thin bg-zinc-900 rounded-lg",
               )}
-              overscanCount={getOverscanCount()}
+              overscanCount={5}
               itemData={arr.innerArr}
               itemKey={itemKey}
             >
@@ -121,5 +104,7 @@ const NodeList = forwardRef<List<NoteObject>[] | [], NodeListProps>(
     );
   },
 );
+
+NodeList.displayName = "NodeList";
 
 export default NodeList;

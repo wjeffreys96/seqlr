@@ -1,37 +1,12 @@
-import { LogRangeOptionsTypes } from "../@types/LogSlider";
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
-// ========= Logarithmic Range Input Class ========== //
-
-// Generates values on a logarithmic scale from a range input element's position.
-
-export class LogRange {
-  minpos: number;
-  maxpos: number;
-  minval: number;
-  maxval: number;
-  scale: number;
-
-  constructor(options: LogRangeOptionsTypes) {
-    this.minpos = options.minpos || 0;
-    this.maxpos = options.minpos || 100;
-    this.minval = Math.log(options.minval || 1);
-    this.maxval = Math.log(options.maxval || 9000);
-    this.scale = (this.maxval - this.minval) / (this.maxpos - this.minpos);
-  }
-
-  value(position: number) {
-    return Math.exp((position - this.minpos) * this.scale + this.minval);
-  }
-
-  position(value: number) {
-    return this.minpos + (Math.log(value) - this.minval) / this.scale;
-  }
+// Tailwind class name helper function
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
-// ========= Note Frequency Chart ========== //
-
 // Frequency values of notes. Each array item is a different octave.
-
 export const noteFreqs: Record<string, number[]> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
@@ -47,10 +22,7 @@ export const noteFreqs: Record<string, number[]> = {
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 };
 
-// ========= Note Getter by Semitone ========== //
-
 // Returns a frequency value based on the prevFreq parameter adjusted by the semitone parameter.
-
 export const getAdjustedFrequencyBySemitone = (
   semitone: number,
   prevFreq: number,

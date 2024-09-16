@@ -1,4 +1,4 @@
-import { useContext, useRef, ReactElement } from "react";
+import { useContext, ReactElement } from "react";
 import { audioCtx } from "../AudioContext.ctx";
 import { AudioContextType } from "../@types/AudioContext";
 import {
@@ -7,16 +7,39 @@ import {
   SquareWaveIcon,
   TriangleWaveIcon,
 } from "../assets/icons";
-import { cn } from "../utils/cn";
+import { cn } from "../utils/utils.ts";
 
 export default function KnobModule({ outerIndex }: { outerIndex: number }) {
   const actx: AudioContextType = useContext(audioCtx);
-  const { state, dispatch, changeWaveform } = actx;
-  const selectRef = useRef<HTMLSelectElement>(null);
+  const { state, dispatch, changeWaveform, changeOctave } = actx;
 
-  const octaves: number[] = [0, 1, 2, 3, 4, 5, 6, 7];
+  if (state && dispatch && changeWaveform && changeOctave) {
+    const handleKnobChange = (property: string, value: number) => {
+      const copiedGlobSeqArr = state.globSeqArr;
+      const thisArr = copiedGlobSeqArr[outerIndex];
+      switch (property) {
+        case "attack":
+          thisArr.attack = value;
+          break;
 
-  if (state && dispatch && changeWaveform) {
+        case "release":
+          thisArr.release = value;
+          break;
+
+        case "gain":
+          if (thisArr.gain) {
+            thisArr.gain.gain.value = value;
+          } else {
+            throw new Error("Attempted to access gain node before initialization")
+          }
+          break;
+
+        default:
+          throw new Error("Unhandled property for handleKnobChange")
+      }
+      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+    };
+
     const knobArr = [
       {
         id: 1,
@@ -25,12 +48,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "1",
         step: "0.005",
         value: state.globSeqArr[outerIndex].attack,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobSeqArr = state.globSeqArr;
-          const thisArr = copiedGlobSeqArr[outerIndex];
-          thisArr.attack = Number(e.target.value);
-          dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-        },
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          handleKnobChange("attack", Number(e.target.value)),
       },
       {
         id: 2,
@@ -39,12 +58,8 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         max: "2",
         step: "0.005",
         value: state.globSeqArr[outerIndex].release,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobSeqArr = state.globSeqArr;
-          const thisArr = copiedGlobSeqArr[outerIndex];
-          thisArr.release = Number(e.target.value);
-          dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-        },
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          handleKnobChange("release", Number(e.target.value)),
       },
       {
         id: 3,
@@ -52,16 +67,10 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
         min: "0.01",
         max: "1",
         step: "0.01",
-        // disabled: state?.globSeqArr[outerIndex].gain !== null,
         value: state.globSeqArr[outerIndex].gain?.gain.value ?? "0.5",
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const copiedGlobSeqArr = state.globSeqArr;
-          const thisArr = copiedGlobSeqArr[outerIndex];
-          if (thisArr.gain && state.engine?.currentTime) {
-            thisArr.gain.gain.value = Number(e.target.value);
-            dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-          }
-        },
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          handleKnobChange("gain", Number(e.target.value)),
+
       },
     ];
 
@@ -94,13 +103,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       },
     ];
 
-    const handleOctaveChange = () => {
-      const copiedGlobSeqArr = state.globSeqArr;
-      const thisArr = copiedGlobSeqArr[outerIndex];
-      thisArr.octave = Number(selectRef.current?.value);
-      dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
-    };
-
     return (
       <div className="flex min-h-8 gap-2 items-center md:justify-center text-sm overflow-x-auto overflow-y-hidden">
         {knobArr.map((slider) => {
@@ -116,7 +118,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
                 <span className="text-zinc-200">{slider.name}:</span>
                 <input
                   value={slider.value}
-                  disabled={slider.disabled}
                   className="h-0.5 w-24"
                   type="range"
                   min={slider.min}
@@ -140,15 +141,14 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
             <div>
               <select
                 name="OctaveSelecter"
-                ref={selectRef}
                 defaultValue="3"
                 onChange={(e) => {
                   e.preventDefault();
-                  handleOctaveChange();
+                  changeOctave(outerIndex, Number(e.target.value))
                 }}
                 className="rounded-full min-w-14 bg-neutral-900 text-cyan-200 text-center text-sm px-0.5 py-[3px]"
               >
-                {octaves.map((oct) => {
+                {[0, 1, 2, 3, 4, 5, 6, 7].map((oct) => {
                   return <option key={"ook" + oct}>{oct}</option>;
                 })}
               </select>
@@ -180,6 +180,6 @@ export default function KnobModule({ outerIndex }: { outerIndex: number }) {
       </div>
     );
   } else {
-    throw new Error("actx not initialized");
+    throw new Error("knobModule loaded before AudioContext initialized");
   }
 }

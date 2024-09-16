@@ -20,8 +20,8 @@ const initialState: ActxStateType = {
   attack: 0.03,
   release: 0.03,
   tempo: 120,
-  sequencerCount: 8,
-  nodeCount: 128,
+  sequencerCount: 4,
+  nodeCount: 32,
 };
 
 interface Action {
@@ -345,6 +345,14 @@ export const AudioContextProvider = ({
     }
   };
 
+  const changeOctave = (index: number, value: number) => {
+    const copiedGlobSeqArr = state.globSeqArr;
+    const thisArr = copiedGlobSeqArr[index];
+    thisArr.octave = value;
+    dispatch({ type: "SETGLOBSEQARR", payload: copiedGlobSeqArr });
+  };
+
+
   const toggleMasterPlayPause = () => {
     // first time user presses play we initialize audio engine (autoplay policy)
     if (!engineInitRef.current) {
@@ -377,6 +385,7 @@ export const AudioContextProvider = ({
     toggleNotePlaying,
     changeOffset,
     changeWaveform,
+    changeOctave,
     state,
   };
 

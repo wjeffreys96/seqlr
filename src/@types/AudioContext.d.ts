@@ -51,5 +51,6 @@ export interface AudioContextType {
   changeOffset?: (id: number, offset: number, index: number) => void;
   toggleNotePlaying?: (id: number, index: number) => void;
   changeWaveform?: (index: number, waveform: OscillatorType) => void;
+  changeOctave?: (index: number, value: number) => void;
   state?: ActxStateType;
 }

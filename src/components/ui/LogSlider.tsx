@@ -1,16 +1,35 @@
 import { LegacyRef, forwardRef, useState, useRef } from "react";
-import { LogRange } from "../../utils/utils";
-import { LogSliderProps } from "../../@types/LogSlider";
+import { LogSliderProps, LogRangeOptionsTypes } from "../../@types/LogSlider";
+
+class LogRange {
+  // Generates values on a logarithmic scale from a range input element's position.
+  minpos: number;
+  maxpos: number;
+  minval: number;
+  maxval: number;
+  scale: number;
+
+  constructor(options: LogRangeOptionsTypes) {
+    this.minpos = options.minpos || 0;
+    this.maxpos = options.minpos || 100;
+    this.minval = Math.log(options.minval || 1);
+    this.maxval = Math.log(options.maxval || 9000);
+    this.scale = (this.maxval - this.minval) / (this.maxpos - this.minpos);
+  }
+
+  value(position: number) {
+    return Math.exp((position - this.minpos) * this.scale + this.minval);
+  }
+
+  position(value: number) {
+    return this.minpos + (Math.log(value) - this.minval) / this.scale;
+  }
+}
 
 const LogSlider = forwardRef(function LogSlider(
-  {
-    options,
-  }: {
-    options: LogSliderProps;
-  },
-  ref: LegacyRef<HTMLInputElement>,
-) {
-  const sliderNumRef = useRef<HTMLInputElement>(null);
+  { options }: { options: LogSliderProps },
+  ref: LegacyRef<HTMLInputElement>) {
+
   const {
     defaultValue = options.defaultValue ?? 50,
     minpos = options.minpos ?? 0,
@@ -29,7 +48,11 @@ const LogSlider = forwardRef(function LogSlider(
     maxval,
   });
 
+  const [value, setValue] = useState(defaultValue);
+  const [sliderNumVal, setSliderNumVal] = useState<number>(value);
   const [position, setPosition] = useState(log.position(defaultValue));
+
+  const sliderNumRef = useRef<HTMLInputElement>(null);
 
   const calculateValue = (position: number) => {
     if (position == 0) {
@@ -40,10 +63,6 @@ const LogSlider = forwardRef(function LogSlider(
     if (value > 500) return Math.round(value / 10) * 10;
     return Math.round(value);
   };
-
-  const [value, setValue] = useState(defaultValue);
-  const [sliderNumVal, setSliderNumVal] = useState<number>(value);
-
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const newPos = Number(e.target.value);
