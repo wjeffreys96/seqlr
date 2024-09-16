@@ -17,7 +17,6 @@ import RootSelecter from "../RootSelecter";
 import InputLabel from "../InputLabel.tsx";
 
 const Nav = memo(function Nav() {
-  console.log("Rendered Nav");
   const masterVolRef = useRef<HTMLInputElement>(null);
   const seqCountRef = useRef<HTMLInputElement>(null);
   const nodeCountRef = useRef<HTMLInputElement>(null);
@@ -51,11 +50,6 @@ const Nav = memo(function Nav() {
         "items-center md:justify-center"
       )}>
         <div className="flex gap-0.5 h-12">
-          <button
-            className="border-neutral-600 border bg-neutral-800 text-neutral-100 rounded p-2"
-            onClick={() => dispatch({ type: "SETCURRENTNOTE", payload: state.currentNote + 1 })}>
-            CurrentNote++
-          </button>
           <Button
             isDisplay={masterPlaying}
             borderRadius=".25rem"

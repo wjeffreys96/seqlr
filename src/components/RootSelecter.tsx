@@ -5,7 +5,6 @@ import type { AudioContextType } from "../@types/AudioContext.d.ts";
 import InputLabel from "./InputLabel.tsx";
 
 const RootSelecter = memo(function RootSelecter() {
-  console.log("Rendered RootSelecter");
   const notes = Object.keys(noteFreqs);
   const selectRef = useRef<HTMLSelectElement>(null);
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);

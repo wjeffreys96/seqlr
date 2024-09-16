@@ -16,7 +16,6 @@ interface NodeListProps {
 
 const NodeList = memo(forwardRef<List<NoteObject[]>[] | [], NodeListProps>(
   ({ arr, outerIndex, handleScroll }, ref) => {
-    console.log("Rendered NodeList: ", outerIndex);
     const actx = useContext<AudioContextType>(audioCtx);
     const {
       followEnabled,

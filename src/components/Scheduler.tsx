@@ -30,7 +30,6 @@ export default function Scheduler({
 }: {
   globSeqArr: SequencerObject[];
 }) {
-  console.log("Rendered Scheduler");
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { state, playTone, dispatch } = actx;
   const {

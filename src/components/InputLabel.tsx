@@ -10,7 +10,6 @@ const InputLabel = memo(function InputLabel({
   labelText,
   onSubmit,
 }: InputLabelProps) {
-  console.log("Rendered InputLabel: ", labelText);
   return (
     <div className="flex justify-between gap-4 border rounded p-2 m-px bg-neutral-800 border-neutral-600">
       <form

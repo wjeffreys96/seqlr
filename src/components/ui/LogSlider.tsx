@@ -29,7 +29,6 @@ class LogRange {
 const LogSlider = memo(forwardRef(function LogSlider(
   { options }: { options: LogSliderProps },
   ref: LegacyRef<HTMLInputElement>) {
-  console.log("Rendered LogSlider");
   const {
     defaultValue = options.defaultValue ?? 50,
     minpos = options.minpos ?? 0,

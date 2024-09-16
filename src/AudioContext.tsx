@@ -166,7 +166,6 @@ export const AudioContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  console.log("Rendering Context");
   const [state, dispatch] = useReducer(reducer, initialState);
   const { masterVol, engine, sequencerCount, nodeCount, globSeqArr } = state;
   const globSeqArrInitRef = useRef(false);
