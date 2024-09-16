@@ -1,14 +1,16 @@
+import { memo } from "react";
 interface InputLabelProps {
   children: React.ReactNode;
   labelText: string;
   onSubmit?: (e: React.SyntheticEvent) => void;
 }
 
-export default function InputLabel({
+const InputLabel = memo(function InputLabel({
   children,
   labelText,
   onSubmit,
 }: InputLabelProps) {
+  console.log("Rendered InputLabel: ", labelText);
   return (
     <div className="flex justify-between gap-4 border rounded p-2 m-px bg-neutral-800 border-neutral-600">
       <form
@@ -24,4 +26,6 @@ export default function InputLabel({
       </form>
     </div>
   );
-}
+});
+
+export default InputLabel;

@@ -7,6 +7,7 @@ import NodeList from "./NodeList.tsx";
 import { FixedSizeList as List } from "react-window";
 
 export default function Sequencer() {
+  console.log("Rendered Sequencer");
   const actx = useContext<AudioContextType>(audioCtx);
   const { globSeqArr } = actx.state!;
 

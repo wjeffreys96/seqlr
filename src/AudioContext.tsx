@@ -20,7 +20,7 @@ const initialState: ActxStateType = {
   attack: 0.03,
   release: 0.03,
   tempo: 120,
-  sequencerCount: 4,
+  sequencerCount: 3,
   nodeCount: 32,
 };
 
@@ -166,6 +166,7 @@ export const AudioContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  console.log("Rendering Context");
   const [state, dispatch] = useReducer(reducer, initialState);
   const { masterVol, engine, sequencerCount, nodeCount, globSeqArr } = state;
   const globSeqArrInitRef = useRef(false);

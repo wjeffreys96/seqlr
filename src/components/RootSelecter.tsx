@@ -1,16 +1,17 @@
-import { useRef, useContext } from "react";
+import { useRef, useContext, memo } from "react";
 import { audioCtx } from "../AudioContext.ctx.tsx";
 import { noteFreqs } from "../utils/utils.ts";
 import type { AudioContextType } from "../@types/AudioContext.d.ts";
 import InputLabel from "./InputLabel.tsx";
 
-export default function RootSelecter() {
+const RootSelecter = memo(function RootSelecter() {
+  console.log("Rendered RootSelecter");
   const notes = Object.keys(noteFreqs);
   const selectRef = useRef<HTMLSelectElement>(null);
   const actx: AudioContextType = useContext<AudioContextType>(audioCtx);
   const { dispatch } = actx;
 
-  if (actx && dispatch) {
+  if (dispatch) {
     return (
       <InputLabel labelText="Root:">
         <select
@@ -34,4 +35,6 @@ export default function RootSelecter() {
       </InputLabel>
     );
   } else throw new Error("RootSelecter loaded before AudioContext initialized");
-}
+});
+
+export default RootSelecter;

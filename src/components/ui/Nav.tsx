@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { LogSliderProps } from "../../@types/LogSlider";
 import { cn } from "../../utils/utils.ts";
 import { useRef, useContext, ChangeEvent, SyntheticEvent } from "react";
@@ -15,7 +16,8 @@ import Scheduler from "../Scheduler";
 import RootSelecter from "../RootSelecter";
 import InputLabel from "../InputLabel.tsx";
 
-export default function Nav() {
+const Nav = memo(function Nav() {
+  console.log("Rendered Nav");
   const masterVolRef = useRef<HTMLInputElement>(null);
   const seqCountRef = useRef<HTMLInputElement>(null);
   const nodeCountRef = useRef<HTMLInputElement>(null);
@@ -45,8 +47,18 @@ export default function Nav() {
     };
 
     return (
-      <nav className="flex overflow-x-auto h-16 bg-zinc-900 shadow-zinc-950 text-black shadow-sm z-40 items-center md:justify-center">
+      <nav className={cn(
+        "flex overflow-x-auto h-16",
+        "bg-zinc-900 shadow-zinc-950",
+        "text-black shadow-sm z-40",
+        "items-center md:justify-center"
+      )}>
         <div className="flex gap-0.5 h-12">
+          <button
+            className="border-neutral-600 border bg-neutral-800 text-neutral-100 rounded p-2"
+            onClick={() => dispatch({ type: "SETCURRENTNOTE", payload: state.currentNote + 1 })}>
+            CurrentNote++
+          </button>
           <Button
             isDisplay={masterPlaying}
             borderRadius=".25rem"
@@ -147,4 +159,6 @@ export default function Nav() {
       </nav>
     );
   } else throw new Error("state is undefined");
-}
+})
+
+export default Nav;
